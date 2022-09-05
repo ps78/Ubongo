@@ -96,11 +96,11 @@ func GetBlockVolume(shape BlockShape) int {
 
 // GetBoundBoxSize returns the dimensions of the given volume
 // which correspond to the size of the bounding box
-func GetBoundingBoxFromBlockShape(shape BlockShape) [3]int {
+func GetBoundingBoxFromBlockShape(shape BlockShape) BoundingBox {
 	xdim := len(shape)
 	ydim := len(shape[0])
 	zdim := len(shape[0][0])
-	return [3]int{xdim, ydim, zdim}
+	return BoundingBox{xdim, ydim, zdim}
 }
 
 // ****************************************************************************
