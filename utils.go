@@ -37,6 +37,8 @@ func (outer BoundingBox) GetShiftVectors(inner BoundingBox) []Vector {
 	}
 }
 
+// tries to add the given blockShape to the volume, at the position defined by shift
+// return true and the updated volume on success, false, nil otherwise
 func TryAdd(vol *ProblemVolume, block BlockShape, shift Vector) (bool, *ProblemVolume) {
 	result := CopyVolume(vol)
 	box := GetBoundingBoxFromBlockShape(block)
@@ -55,4 +57,19 @@ func TryAdd(vol *ProblemVolume, block BlockShape, shift Vector) (bool, *ProblemV
 		}
 	}
 	return true, result
+}
+
+// Checks if the the given volume is full, i.e. all spaces are either 0 or 2
+func IsSolved(vol *ProblemVolume) bool {
+	xdim, ydim, zdim := len(*vol), len((*vol)[0]), len((*vol)[0][0])
+	for x := 0; x < xdim; x++ {
+		for y := 0; y < ydim; y++ {
+			for z := 0; z < zdim; z++ {
+				if (*vol)[x][y][z] == 1 {
+					return false
+				}
+			}
+		}
+	}
+	return true
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -94,5 +93,5 @@ func TestTryAdd(t *testing.T) {
 	if !success {
 		t.Errorf(("TryAdd returned no success"))
 	}
-	fmt.Printf("%v", newVol)
+	t.Logf("%v", newVol)
 }
