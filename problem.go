@@ -57,6 +57,9 @@ type Problem struct {
 	// The area of the problem in unit squares
 	Area int
 
+	// Bounding box of the problem volume
+	BoundingBox [3]int
+
 	// Blocks is an array of the blocks to be used to fill the volume
 	Blocks []*Block
 }
@@ -78,6 +81,13 @@ func GetProblemArea(shape ProblemShape) int {
 		}
 	}
 	return area
+}
+
+// Get the dimension of the bounding box given the problem shape and height
+func GetBoundingBoxFromProblemShape(shape ProblemShape, height int) [3]int {
+	xdim := len(shape)
+	ydim := len(shape[0])
+	return [3]int{xdim, ydim, height}
 }
 
 // creates a problem instance

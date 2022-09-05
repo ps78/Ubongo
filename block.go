@@ -1,3 +1,13 @@
+/*
+*******************************************************************
+
+This file contains all block-related types and functions:
+
+- Block struct: defines a block
+- MakeBlockXX functions: create specific block types
+
+*******************************************************************
+*/
 package main
 
 import (
@@ -58,56 +68,15 @@ type Block struct {
 	// This can be max 24 theoretically, but is usually less due to symmetries
 	NumOrientations int
 
-	// NumCubes is the number of unit cubes the block consists of.
+	// Volume is the number of unit cubes the block consists of.
 	// All blocks of the original game consist of 3, 4 or 5 unit cubes
-	NumCubes int
+	Volume int
 }
 
 // Returns a string representation of the block
 func (b Block) String() string {
 	return fmt.Sprintf("Block %d: %s %s (volume %d, %d orientations)",
-		b.Number, b.Color, b.Name, b.NumCubes, b.NumOrientations)
-}
-
-// A function that creates a block
-type BlockFactoryFunc func() *Block
-
-// ****************************************************************************
-// Factory functions for the 16 block types of the original game
-// ****************************************************************************
-
-// makeBlockb8 creates the blue small L-shaped block
-func MakeBlock08() *Block {
-	var b *Block = new(Block)
-
-	b.Color = Blue
-	b.Name = "Angle"
-	b.Number = 8
-	b.Shapes = []BlockShape{
-		{{{0, 1}, {1, 1}}},
-		{{{1, 0}, {1, 1}}},
-		{{{1, 1}, {1, 0}}},
-		{{{1, 1}, {0, 1}}},
-		{{{1, 0}, {1, 0}}, {{0, 0}, {1, 0}}},
-		{{{1, 1}}, {{1, 0}}},
-		{{{1}, {1}}, {{1}, {0}}},
-		{{{1, 1}}, {{0, 1}}},
-		{{{1, 0}}, {{1, 1}}},
-		{{{1}, {0}}, {{1}, {1}}},
-		{{{0, 1}}, {{1, 1}}},
-		{{{0}, {1}}, {{1}, {1}}}}
-
-	b.NumOrientations = len(b.Shapes)
-	b.NumCubes = GetBlockVolume(b.Shapes[0])
-
-	// all orientations must have the same volume, check this:
-	for idx, shape := range b.Shapes {
-		if GetBlockVolume(shape) != b.NumCubes {
-			panic(fmt.Sprintf("Invalid shape with index %d in block %d (wrong volume)", idx, b.Number))
-		}
-	}
-
-	return b
+		b.Number, b.Color, b.Name, b.Volume, len(b.Shapes))
 }
 
 // GetBlockVolume calculates the volume of the given block shape in unit cubes
@@ -123,4 +92,47 @@ func GetBlockVolume(shape BlockShape) int {
 		}
 	}
 	return volume
+}
+
+// GetBoundBoxSize returns the dimensions of the given volume
+// which correspond to the size of the bounding box
+func GetBoundingBoxFromBlockShape(shape BlockShape) [3]int {
+	xdim := len(shape)
+	ydim := len(shape[0])
+	zdim := len(shape[0][0])
+	return [3]int{xdim, ydim, zdim}
+}
+
+// ****************************************************************************
+// Factory functions for the 16 block types of the original game
+// ****************************************************************************
+
+// A function that creates a block
+type BlockFactoryFunc func() *Block
+
+// MakeBlock08 creates the blue small angle-shaped block
+func MakeBlock08() *Block {
+	var b *Block = new(Block)
+
+	b.Number = 8
+	b.Color = Blue
+	b.Name = "Angle"
+
+	b.Shapes = []BlockShape{
+		{{{0, 1}, {1, 1}}},
+		{{{1, 0}, {1, 1}}},
+		{{{1, 1}, {1, 0}}},
+		{{{1, 1}, {0, 1}}},
+		{{{1}, {1}}, {{0}, {1}}},
+		{{{1, 1}}, {{1, 0}}},
+		{{{1}, {1}}, {{1}, {0}}},
+		{{{1, 1}}, {{0, 1}}},
+		{{{1, 0}}, {{1, 1}}},
+		{{{1}, {0}}, {{1}, {1}}},
+		{{{0, 1}}, {{1, 1}}},
+		{{{0}, {1}}, {{1}, {1}}}}
+
+	b.Volume = GetBlockVolume(b.Shapes[0])
+
+	return b
 }

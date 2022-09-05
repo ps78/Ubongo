@@ -11,12 +11,26 @@ func TestBlocks(t *testing.T) {
 		block := f()
 
 		// all shapes must have the same volume
-		expVolume := block.NumCubes
+		expVolume := block.Volume
 		for i, s := range block.Shapes {
 			actVolume := GetBlockVolume(s)
 			if actVolume != expVolume {
 				t.Errorf("Shapes[%d] of Block %d has the wrong volume (%d instead of %d)",
 					i, block.Number, actVolume, expVolume)
+			}
+		}
+
+		// all shapes must have the same size of a bounding box
+		baseBox := GetBoundingBoxFromBlockShape(block.Shapes[0])
+		boxSum := baseBox[0] + baseBox[1] + baseBox[2]
+		boxProd := baseBox[0] * baseBox[1] * baseBox[2]
+		for i, s := range block.Shapes {
+			box := GetBoundingBoxFromBlockShape(s)
+			sum := box[0] + box[1] + box[2]
+			prod := box[0] * box[1] * box[2]
+			if sum != boxSum || prod != boxProd {
+				t.Errorf("Shapes[%d] of Block %d has the wrong bounding box (%d,%d,%d) (expect sum/prod=%d/%d, actual sum/prod=%d/%d)",
+					i, block.Number, box[0], box[1], box[2], boxSum, boxProd, sum, prod)
 			}
 		}
 	}
