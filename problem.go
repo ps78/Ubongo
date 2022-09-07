@@ -4,15 +4,6 @@ import (
 	"fmt"
 )
 
-// ProblemShape is a 2-dimensional array representing the area of a problem,
-// where 1 indicates that the unit square is part of the shape, and 0 is not
-type ProblemShape = [][]int8
-
-// ProblemVolume is the 3-dimensional volume built upon the ProblemShape.
-// 0 indicates a unit cube is not part of the volume, 1 indicates it's part of the
-// volume an empty, 2 means it's occupied
-type ProblemVolume = [][][]int8
-
 // UbongoDifficulty is an enum representing the difficulty in the game
 type UbongoDifficulty int8
 
@@ -54,7 +45,7 @@ type Problem struct {
 
 	// Shape is the 2D shape of the puzzle, first is the index X-direction (horizontal, to the right),
 	// the second index is the Y-direction (up)
-	Shape ProblemShape // 0=not part of volume, 1=empty, 2=occupied by a block
+	Shape Array2d // -1=not part of volume, 0=empty, 1=occupied by a block
 
 	// Height of the volume to fill with the blocks. This is always 2 for the original game
 	Height int
@@ -63,7 +54,7 @@ type Problem struct {
 	Area int
 
 	// Bounding box of the problem volume
-	BoundingBox [3]int
+	BoundingBox BoundingBox
 
 	// Blocks is an array of the blocks to be used to fill the volume
 	Blocks []*Block
@@ -75,39 +66,8 @@ func (p Problem) String() string {
 		p.CardId, p.Animal, p.Difficulty, p.Number, len(p.Blocks), p.Area, p.Height)
 }
 
-// Creates a new empty volume for the given problem
-func (p Problem) CreateVolume() *ProblemVolume {
-	xdim, ydim, zdim := p.BoundingBox[0], p.BoundingBox[1], p.BoundingBox[2]
-	vol := make([][][]int8, xdim)
-	for x := 0; x < xdim; x++ {
-		vol[x] = make([][]int8, ydim)
-		for y := 0; y < ydim; y++ {
-			vol[x][y] = make([]int8, zdim)
-			for z := 0; z < zdim; z++ {
-				vol[x][y][z] = p.Shape[x][y]
-			}
-		}
-	}
-	return &vol
-}
-
-func CopyVolume(src *ProblemVolume) *ProblemVolume {
-	xdim, ydim, zdim := len(*src), len((*src)[0]), len((*src)[0][0])
-	vol := make([][][]int8, xdim)
-	for x := 0; x < xdim; x++ {
-		vol[x] = make([][]int8, ydim)
-		for y := 0; y < ydim; y++ {
-			vol[x][y] = make([]int8, zdim)
-			for z := 0; z < zdim; z++ {
-				vol[x][y][z] = (*src)[x][y][z]
-			}
-		}
-	}
-	return &vol
-}
-
 // GetProblemArea calculates the area in unit squares of a given problem shape
-func GetProblemArea(shape ProblemShape) int {
+func GetProblemArea(shape Array2d) int {
 	var area int = 0
 	for x, b := range shape {
 		for y := range b {
@@ -119,15 +79,8 @@ func GetProblemArea(shape ProblemShape) int {
 	return area
 }
 
-// Get the dimension of the bounding box given the problem shape and height
-func GetBoundingBoxFromProblemShape(shape ProblemShape, height int) BoundingBox {
-	xdim := len(shape)
-	ydim := len(shape[0])
-	return BoundingBox{xdim, ydim, height}
-}
-
 // creates a problem instance
-func MakeProblem(cardId string, number int, shape ProblemShape, blocks []*Block) *Problem {
+func MakeProblem(cardId string, number int, shape Array2d, blocks []*Block) *Problem {
 	var p *Problem = new(Problem)
 
 	p.CardId = cardId
@@ -178,7 +131,7 @@ func MakeProblem(cardId string, number int, shape ProblemShape, blocks []*Block)
 	}
 
 	p.Area = GetProblemArea(p.Shape)
-	p.BoundingBox = GetBoundingBoxFromProblemShape(p.Shape, p.Height)
+	p.BoundingBox = BoundingBox{len(p.Shape), len(p.Shape[0]), p.Height}
 
 	return p
 }
