@@ -19,6 +19,7 @@ func NewGame(shape Array2d, height int) *Game {
 	return g
 }
 
+// Removes all blocks from a game
 func (g *Game) Clear() {
 	for x := 0; x < g.Xdim; x++ {
 		for y := 0; y < g.Ydim; y++ {

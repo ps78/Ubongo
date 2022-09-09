@@ -14,6 +14,7 @@ type Array2d [][]int8
 // Vector represents a 3-dimensional int-vector
 type Vector [3]int
 
+// Returns a String representation of a vector
 func (v Vector) String() string {
 	return fmt.Sprintf("(%d,%d,%d)", v[0], v[1], v[2])
 }
@@ -22,7 +23,7 @@ func (v Vector) String() string {
 // inside the outer bounding box.
 // Returns an empty slice if inner does not fit into outer at all
 func (outerBoundingBox Vector) GetShiftVectors(innerBoundingBox Vector) []Vector {
-	delta := []int{
+	delta := Vector{
 		outerBoundingBox[0] - innerBoundingBox[0],
 		outerBoundingBox[1] - innerBoundingBox[1],
 		outerBoundingBox[2] - innerBoundingBox[2]}
@@ -84,6 +85,29 @@ func Extrude2DArray(shape Array2d, height int) Array3d {
 	return a
 }
 
+// Tests if the 2D arrays a and b contain the same elements
+func Equal2DArray(a Array2d, b Array2d) bool {
+	if a == nil && b == nil {
+		return true
+	} else if a == nil || b == nil {
+		return false
+	} else if len(a) != len(b) {
+		return false
+	} else if len(a[0]) != len(b[0]) {
+		return false
+	} else {
+		for x := 0; x < len(a); x++ {
+			for y := 0; y < len(a[x]); y++ {
+				if a[x][y] != b[x][y] {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+// Tests if the 3D array a and b contain the same elements
 func Equal3DArray(a Array3d, b Array3d) bool {
 	if a == nil && b == nil {
 		return true
@@ -102,21 +126,6 @@ func Equal3DArray(a Array3d, b Array3d) bool {
 					if a[x][y][z] != b[x][y][z] {
 						return false
 					}
-				}
-			}
-		}
-	}
-	return true
-}
-
-// Checks if the the given volume is full, i.e. all spaces are either 0 or 2
-func IsSolved(vol Array3d) bool {
-	xdim, ydim, zdim := len(vol), len(vol[0]), len(vol[0][0])
-	for x := 0; x < xdim; x++ {
-		for y := 0; y < ydim; y++ {
-			for z := 0; z < zdim; z++ {
-				if vol[x][y][z] == 1 {
-					return false
 				}
 			}
 		}
@@ -177,7 +186,7 @@ func CountValues3D(arr Array3d, lookFor int8) int {
 
 // GetBoundBoxSize returns the dimensions of the given volume
 // which correspond to the size of the bounding box
-func GetBoundingBoxFromBlockShape(shape Array3d) Vector {
+func GetBoundingBoxFromArray(shape Array3d) Vector {
 	xdim := len(shape)
 	ydim := len(shape[0])
 	zdim := len(shape[0][0])

@@ -82,8 +82,8 @@ func (b Block) String() string {
 // A function that creates a block
 type BlockFactoryFunc func() *Block
 
-// CreateBlock08 creates the blue small angle-shaped block
-func CreateBlock08() *Block {
+// NewBlock8 creates the blue small angle-shaped block
+func NewBlock8() *Block {
 	var b *Block = new(Block)
 
 	b.Number = 8
