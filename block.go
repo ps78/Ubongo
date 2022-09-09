@@ -79,6 +79,41 @@ func (b Block) String() string {
 // Factory functions for the 16 block types of the original game
 // ****************************************************************************
 
+type BlockFactory struct {
+	blocks map[int]*Block
+}
+
+func NewBlockFactory() *BlockFactory {
+	return &BlockFactory{blocks: map[int]*Block{}}
+}
+
+// Returns the block with the given number
+func (f *BlockFactory) Get(blockNumber int) *Block {
+	if block, ok := f.blocks[blockNumber]; ok {
+		return block
+	} else {
+		funcs := map[int]BlockFactoryFunc{
+			8: NewBlock8}
+
+		block = funcs[blockNumber]()
+		f.blocks[blockNumber] = block
+		return block
+	}
+}
+
+// Returns an array with all blocks
+func (f *BlockFactory) GetAll() []*Block {
+	a := make([]*Block, 1)
+	for i := 8; i <= 8; i++ {
+		a[0] = f.Get(i)
+	}
+	return a
+}
+
+// declare a global map that can be used to create blocks by its number
+var NewBlock map[int]BlockFactoryFunc = map[int]BlockFactoryFunc{
+	8: NewBlock8}
+
 // A function that creates a block
 type BlockFactoryFunc func() *Block
 

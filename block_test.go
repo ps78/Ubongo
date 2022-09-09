@@ -9,10 +9,9 @@ import (
 // Runs all block-factory functions and tests the blocks for
 // consistency
 func TestBlocks(t *testing.T) {
-	blockFactory := []BlockFactoryFunc{NewBlock8}
+	blocks := NewBlockFactory().GetAll()
 
-	for _, f := range blockFactory {
-		block := f()
+	for _, block := range blocks {
 
 		// all shapes must have the same volume
 		expVolume := block.Volume
