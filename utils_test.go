@@ -19,8 +19,8 @@ func arrayContainsVector(vectorArray []Vector, v Vector) bool {
 
 // Tests the function GetShiftVectors for arguments that result in an non-empty list
 func TestGetShiftVectors(t *testing.T) {
-	outer := BoundingBox{4, 3, 2}
-	inner := BoundingBox{3, 2, 1}
+	outer := Vector{4, 3, 2}
+	inner := Vector{3, 2, 1}
 	shifts := outer.GetShiftVectors(inner)
 	if len(shifts) != 8 {
 		t.Errorf("GetShiftVectors return %d results, expected %d", len(shifts), 8)
@@ -45,24 +45,12 @@ func TestGetShiftVectors(t *testing.T) {
 
 // Tests the function GetShiftVectors for arguments that result in an empty list
 func TestGetShiftVectorsEmpty(t *testing.T) {
-	outer := BoundingBox{4, 3, 2}
-	inner := BoundingBox{5, 2, 1}
+	outer := Vector{4, 3, 2}
+	inner := Vector{5, 2, 1}
 	shifts := outer.GetShiftVectors(inner)
 	if len(shifts) != 0 {
 		t.Errorf("GetShiftVectors did not return an empty slice")
 	}
-}
-
-func TestTryAdd(t *testing.T) {
-	p := MakeProblem("B12", 1, Array2d{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}}, []*Block{})
-	vol := Extrude2DArray(p.Shape, p.Height)
-	block := MakeBlock08()
-
-	success, newVol := TryAdd(vol, block.Shapes[0], Vector{0, 0, 0})
-	if !success {
-		t.Errorf(("TryAdd returned no success"))
-	}
-	t.Logf("%v", newVol)
 }
 
 func TestMake2DArray(t *testing.T) {
@@ -119,5 +107,22 @@ func TestCopy3DArray(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+func TestArray3dEqual(t *testing.T) {
+	a := [][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}}
+	b := [][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}} // == a
+	c := [][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 0}}} // != a
+	d := [][][]int8{{{2}, {3}}}
+
+	if !Equal3DArray(a, b) {
+		t.Errorf("Array a and b are equal but Equal3DArray reports they are not")
+	}
+	if Equal3DArray(a, c) {
+		t.Errorf("Array a and c are not equal but Equal3DArray reports they are")
+	}
+	if Equal3DArray(a, d) {
+		t.Errorf("Array a and d have different dimensions but Equal3DArray reports they are equal")
 	}
 }

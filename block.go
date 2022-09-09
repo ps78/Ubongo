@@ -75,30 +75,6 @@ func (b Block) String() string {
 		b.Number, b.Color, b.Name, b.Volume, len(b.Shapes))
 }
 
-// GetBlockVolume calculates the volume of the given block shape in unit cubes
-func GetBlockVolume(shape Array3d) int {
-	var volume int = 0
-	for x, b := range shape {
-		for y, c := range b {
-			for z := range c {
-				if shape[x][y][z] == 1 {
-					volume++
-				}
-			}
-		}
-	}
-	return volume
-}
-
-// GetBoundBoxSize returns the dimensions of the given volume
-// which correspond to the size of the bounding box
-func GetBoundingBoxFromBlockShape(shape Array3d) BoundingBox {
-	xdim := len(shape)
-	ydim := len(shape[0])
-	zdim := len(shape[0][0])
-	return BoundingBox{xdim, ydim, zdim}
-}
-
 // ****************************************************************************
 // Factory functions for the 16 block types of the original game
 // ****************************************************************************
@@ -106,8 +82,8 @@ func GetBoundingBoxFromBlockShape(shape Array3d) BoundingBox {
 // A function that creates a block
 type BlockFactoryFunc func() *Block
 
-// MakeBlock08 creates the blue small angle-shaped block
-func MakeBlock08() *Block {
+// CreateBlock08 creates the blue small angle-shaped block
+func CreateBlock08() *Block {
 	var b *Block = new(Block)
 
 	b.Number = 8
@@ -128,7 +104,7 @@ func MakeBlock08() *Block {
 		{{{0, 1}}, {{1, 1}}},
 		{{{0}, {1}}, {{1}, {1}}}}
 
-	b.Volume = GetBlockVolume(b.Shapes[0])
+	b.Volume = CountValues3D(b.Shapes[0], 1)
 
 	return b
 }

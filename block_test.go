@@ -7,7 +7,7 @@ import (
 // Runs all block-factory functions and tests the blocks for
 // consistency
 func TestBlocks(t *testing.T) {
-	blockFactory := []BlockFactoryFunc{MakeBlock08}
+	blockFactory := []BlockFactoryFunc{CreateBlock08}
 
 	for _, f := range blockFactory {
 		block := f()
@@ -15,7 +15,7 @@ func TestBlocks(t *testing.T) {
 		// all shapes must have the same volume
 		expVolume := block.Volume
 		for i, s := range block.Shapes {
-			actVolume := GetBlockVolume(s)
+			actVolume := CountValues3D(s, 1)
 			if actVolume != expVolume {
 				t.Errorf("Shapes[%d] of Block %d has the wrong volume (%d instead of %d)",
 					i, block.Number, actVolume, expVolume)

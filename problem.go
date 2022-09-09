@@ -54,7 +54,7 @@ type Problem struct {
 	Area int
 
 	// Bounding box of the problem volume
-	BoundingBox BoundingBox
+	BoundingBox Vector
 
 	// Blocks is an array of the blocks to be used to fill the volume
 	Blocks []*Block
@@ -66,21 +66,8 @@ func (p Problem) String() string {
 		p.CardId, p.Animal, p.Difficulty, p.Number, len(p.Blocks), p.Area, p.Height)
 }
 
-// GetProblemArea calculates the area in unit squares of a given problem shape
-func GetProblemArea(shape Array2d) int {
-	var area int = 0
-	for x, b := range shape {
-		for y := range b {
-			if shape[x][y] == 1 {
-				area++
-			}
-		}
-	}
-	return area
-}
-
 // creates a problem instance
-func MakeProblem(cardId string, number int, shape Array2d, blocks []*Block) *Problem {
+func CreateProblem(cardId string, number int, shape Array2d, blocks []*Block) *Problem {
 	var p *Problem = new(Problem)
 
 	p.CardId = cardId
@@ -130,8 +117,8 @@ func MakeProblem(cardId string, number int, shape Array2d, blocks []*Block) *Pro
 		p.Animal = "Warthog"
 	}
 
-	p.Area = GetProblemArea(p.Shape)
-	p.BoundingBox = BoundingBox{len(p.Shape), len(p.Shape[0]), p.Height}
+	p.Area = CountValues2D(p.Shape, 0)
+	p.BoundingBox = Vector{len(p.Shape), len(p.Shape[0]), p.Height}
 
 	return p
 }

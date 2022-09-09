@@ -11,9 +11,6 @@ type Array3d [][][]int8
 // where 0 indicates that the unit square is part of the shape, and -1 is not
 type Array2d [][]int8
 
-// BoundingBox describes a box with 3 dimensions expressed in unit-squares
-type BoundingBox [3]int
-
 // Vector represents a 3-dimensional int-vector
 type Vector [3]int
 
@@ -24,8 +21,12 @@ func (v Vector) String() string {
 // GetShiftVectors returns all possible placements of the inner bounding box
 // inside the outer bounding box.
 // Returns an empty slice if inner does not fit into outer at all
-func (outer BoundingBox) GetShiftVectors(inner BoundingBox) []Vector {
-	delta := []int{outer[0] - inner[0], outer[1] - inner[1], outer[2] - inner[2]}
+func (outerBoundingBox Vector) GetShiftVectors(innerBoundingBox Vector) []Vector {
+	delta := []int{
+		outerBoundingBox[0] - innerBoundingBox[0],
+		outerBoundingBox[1] - innerBoundingBox[1],
+		outerBoundingBox[2] - innerBoundingBox[2]}
+
 	n := (delta[0] + 1) * (delta[1] + 1) * (delta[2] + 1)
 
 	// return empty vector if there is not fit
@@ -44,29 +45,6 @@ func (outer BoundingBox) GetShiftVectors(inner BoundingBox) []Vector {
 		}
 		return shifts
 	}
-}
-
-// tries to add the given blockShape to the volume, at the position defined by shift
-// return true and the updated volume on success, false, nil otherwise
-func TryAdd(vol Array3d, block Array3d, shift Vector) (bool, Array3d) {
-	result := Copy3DArray(vol)
-	box := GetBoundingBoxFromBlockShape(block)
-	for x := shift[0]; x < box[0]+shift[0]; x++ {
-		for y := shift[1]; y < box[1]+shift[1]; y++ {
-			for z := shift[2]; z < box[2]+shift[2]; z++ {
-				// only run following test if the block-cube is solid at the current position
-				if block[x-shift[0]][y-shift[1]][z-shift[2]] == 1 {
-					// if space is part of volume and empty -> ok
-					if (vol)[x][y][z] == 0 {
-						(result)[x][y][z] = 1 // mark space as occupied
-					} else {
-						return false, nil // otherwise abort
-					}
-				}
-			}
-		}
-	}
-	return true, result
 }
 
 // Creates a [xdim]x[ydim] array of int8 and returns a slice to it
@@ -106,6 +84,31 @@ func Extrude2DArray(shape Array2d, height int) Array3d {
 	return a
 }
 
+func Equal3DArray(a Array3d, b Array3d) bool {
+	if a == nil && b == nil {
+		return true
+	} else if a == nil || b == nil {
+		return false
+	} else if len(a) != len(b) {
+		return false
+	} else if len(a[0]) != len(b[0]) {
+		return false
+	} else if len(a[0][0]) != len(b[0][0]) {
+		return false
+	} else {
+		for x := 0; x < len(a); x++ {
+			for y := 0; y < len(a[x]); y++ {
+				for z := 0; z < len(a[x][y]); z++ {
+					if a[x][y][z] != b[x][y][z] {
+						return false
+					}
+				}
+			}
+		}
+	}
+	return true
+}
+
 // Checks if the the given volume is full, i.e. all spaces are either 0 or 2
 func IsSolved(vol Array3d) bool {
 	xdim, ydim, zdim := len(vol), len(vol[0]), len(vol[0][0])
@@ -142,4 +145,41 @@ func Copy3DArray(src Array3d) Array3d {
 		}
 	}
 	return cp
+}
+
+// Counts the elements in arr that equal lookFor
+func CountValues2D(arr Array2d, lookFor int8) int {
+	count := 0
+	for x, b := range arr {
+		for y := range b {
+			if arr[x][y] == lookFor {
+				count++
+			}
+		}
+	}
+	return count
+}
+
+// Counts the elements in arr that equal lookFor
+func CountValues3D(arr Array3d, lookFor int8) int {
+	count := 0
+	for x, b := range arr {
+		for y, c := range b {
+			for z := range c {
+				if arr[x][y][z] == lookFor {
+					count++
+				}
+			}
+		}
+	}
+	return count
+}
+
+// GetBoundBoxSize returns the dimensions of the given volume
+// which correspond to the size of the bounding box
+func GetBoundingBoxFromBlockShape(shape Array3d) Vector {
+	xdim := len(shape)
+	ydim := len(shape[0])
+	zdim := len(shape[0][0])
+	return Vector{xdim, ydim, zdim}
 }
