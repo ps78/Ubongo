@@ -18,8 +18,11 @@ type Array3d struct {
 	DimZ int
 }
 
+// A function that can be applied to an Array3d
+type Array3dFunc func(x, y, z int, currentValue int8) int8
+
 // Creates a new zeroed 2D array
-func NewArray2d(dimX int, dimY int) *Array2d {
+func NewArray2d(dimX, dimY int) *Array2d {
 	a := make([][]int8, dimX)
 	for i := 0; i < dimX; i++ {
 		a[i] = make([]int8, dimY)
@@ -40,15 +43,15 @@ func NewArray2dFromData(data [][]int8) *Array2d {
 }
 
 // Creates a new zeroed 3D array
-func NewArray3d(xdim int, ydim int, zdim int) *Array3d {
-	a := make([][][]int8, xdim)
-	for i := 0; i < xdim; i++ {
-		a[i] = make([][]int8, ydim)
-		for j := 0; j < ydim; j++ {
-			a[i][j] = make([]int8, zdim)
+func NewArray3d(dimX, dimY, dimZ int) *Array3d {
+	a := make([][][]int8, dimX)
+	for i := 0; i < dimX; i++ {
+		a[i] = make([][]int8, dimY)
+		for j := 0; j < dimY; j++ {
+			a[i][j] = make([]int8, dimZ)
 		}
 	}
-	return &Array3d{data: a, DimX: xdim, DimY: ydim, DimZ: zdim}
+	return &Array3d{data: a, DimX: dimX, DimY: dimY, DimZ: dimZ}
 }
 
 // Creates a new 3D array from data
@@ -68,22 +71,22 @@ func NewArray3dFromData(data [][][]int8) *Array3d {
 }
 
 // Returns element [x][y] of the 2D array
-func (a *Array2d) Get(x int, y int) int8 {
+func (a *Array2d) Get(x, y int) int8 {
 	return a.data[x][y]
 }
 
 // Sets the element [x][y] of the 2D array
-func (a *Array2d) Set(x int, y int, value int8) {
+func (a *Array2d) Set(x, y int, value int8) {
 	a.data[x][y] = value
 }
 
 // Returns element [x][y][z] of the 3D array
-func (a *Array3d) Get(x int, y int, z int) int8 {
+func (a *Array3d) Get(x, y, z int) int8 {
 	return a.data[x][y][z]
 }
 
 // Sets the element [x][y][z] of the 3D array
-func (a *Array3d) Set(x int, y int, z int, value int8) {
+func (a *Array3d) Set(x, y, z int, value int8) {
 	a.data[x][y][z] = value
 }
 
@@ -199,4 +202,94 @@ func (a *Array3d) Count(lookFor int8) int {
 // which correspond to the size of the bounding box
 func (a *Array3d) GetBoundingBox() Vector {
 	return Vector{a.DimX, a.DimY, a.DimZ}
+}
+
+// Applies the function f to each element of the array
+func (a *Array3d) Apply(f Array3dFunc) *Array3d {
+	r := NewArray3d(a.DimX, a.DimY, a.DimZ)
+	for x := 0; x < a.DimX; x++ {
+		for y := 0; y < a.DimY; y++ {
+			for z := 0; z < a.DimZ; z++ {
+				r.Set(x, y, z, f(x, y, z, a.Get(x, y, z)))
+			}
+		}
+	}
+	return r
+}
+
+// Applies f to all elements and returns true if all return true
+func (a *Array3d) AllTrue(f func(x, y, z int, currentValue int8) bool) bool {
+	for x := 0; x < a.DimX; x++ {
+		for y := 0; y < a.DimY; y++ {
+			for z := 0; z < a.DimZ; z++ {
+				if !f(x, y, z, a.Get(x, y, z)) {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+// Rotates the array around the z-axis counter-clockwise by 90°
+func (a *Array3d) RotateZ() *Array3d {
+	r := NewArray3d(a.DimY, a.DimX, a.DimZ)
+	for x := 0; x < r.DimX; x++ {
+		for y := 0; y < r.DimY; y++ {
+			for z := 0; z < r.DimZ; z++ {
+				r.Set(x, y, z, a.Get(y, a.DimY-x-1, z))
+			}
+		}
+	}
+	return r
+}
+
+func (a *Array3d) RotateZ2() *Array3d {
+	return a.RotateZ().RotateZ()
+}
+
+func (a *Array3d) RotateZ3() *Array3d {
+	return a.RotateZ().RotateZ().RotateZ()
+}
+
+// Rotates the array around the y-axis counter-clockwise by 90°
+func (a *Array3d) RotateY() *Array3d {
+	r := NewArray3d(a.DimZ, a.DimY, a.DimX)
+	for x := 0; x < r.DimX; x++ {
+		for y := 0; y < r.DimY; y++ {
+			for z := 0; z < r.DimZ; z++ {
+				r.Set(x, y, z, a.Get(a.DimX-z-1, y, x))
+			}
+		}
+	}
+	return r
+}
+
+func (a *Array3d) RotateY2() *Array3d {
+	return a.RotateY().RotateY()
+}
+
+func (a *Array3d) RotateY3() *Array3d {
+	return a.RotateY().RotateY().RotateY()
+}
+
+// Rotates the array around the x-axis counter-clockwise by 90°
+func (a *Array3d) RotateX() *Array3d {
+	r := NewArray3d(a.DimX, a.DimZ, a.DimY)
+	for x := 0; x < r.DimX; x++ {
+		for y := 0; y < r.DimY; y++ {
+			for z := 0; z < r.DimZ; z++ {
+				r.Set(x, y, z, a.Get(x, a.DimY-z-1, y))
+			}
+		}
+	}
+	return r
+}
+
+func (a *Array3d) RotateX2() *Array3d {
+	return a.RotateX().RotateX()
+}
+
+func (a *Array3d) RotateX3() *Array3d {
+	return a.RotateX().RotateX().RotateX()
 }

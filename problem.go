@@ -45,7 +45,7 @@ type Problem struct {
 
 	// Shape is the 2D shape of the puzzle, first is the index X-direction (horizontal, to the right),
 	// the second index is the Y-direction (up)
-	Shape Array2d // -1=not part of volume, 0=empty, 1=occupied by a block
+	Shape *Array2d // -1=not part of volume, 0=empty, 1=occupied by a block
 
 	// Height of the volume to fill with the blocks. This is always 2 for the original game
 	Height int
@@ -67,7 +67,7 @@ func (p Problem) String() string {
 }
 
 // creates a problem instance
-func CreateProblem(cardId string, number int, shape Array2d, blocks []*Block) *Problem {
+func CreateProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Problem {
 	var p *Problem = new(Problem)
 
 	p.CardId = cardId

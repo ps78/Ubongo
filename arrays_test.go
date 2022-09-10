@@ -189,3 +189,61 @@ func TestGetBoundingBox(t *testing.T) {
 	box := a.GetBoundingBox()
 	assert.True(t, box[0] == a.DimX && box[1] == a.DimY && box[2] == a.DimZ, "Bounding box dimensions are wrong")
 }
+
+func TestApply(t *testing.T) {
+	f := func(x, y, z int, currentValue int8) int8 {
+		return int8(x + y + z)
+	}
+	a := NewArray3d(2, 3, 4).Apply(f)
+
+	for x := 0; x < a.DimX; x++ {
+		for y := 0; y < a.DimY; y++ {
+			for z := 0; z < a.DimZ; z++ {
+				assert.Equal(t, int8(x+y+z), a.Get(x, y, z))
+			}
+		}
+	}
+}
+
+func TestAllTrue(t *testing.T) {
+	a := NewArray3dFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
+	assert.True(t, a.AllTrue(func(x, y, z int, v int8) bool {
+		return int8(x+y+z) == v
+	}))
+}
+
+func TestRotateZ(t *testing.T) {
+	orig := NewArray3dFromData([][][]int8{{{0}, {3}}, {{1}, {4}}, {{2}, {5}}})
+	exp := NewArray3dFromData([][][]int8{{{3}, {4}, {5}}, {{0}, {1}, {2}}})
+	r := orig.RotateZ()
+
+	// rotate once
+	assert.True(t, r.IsEqual(exp))
+
+	// rotate 4x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateZ().RotateZ().RotateZ().RotateZ()))
+}
+
+func TestRotateY(t *testing.T) {
+	orig := NewArray3dFromData([][][]int8{{{3, 0}}, {{4, 1}}, {{5, 2}}})
+	exp := NewArray3dFromData([][][]int8{{{5, 4, 3}}, {{2, 1, 0}}})
+	r := orig.RotateY()
+
+	// rotate once
+	assert.True(t, r.IsEqual(exp))
+
+	// rotate 4x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateY().RotateY().RotateY().RotateY()))
+}
+
+func TestRotateX(t *testing.T) {
+	orig := NewArray3dFromData([][][]int8{{{0, 1, 2}, {3, 4, 5}}})
+	exp := NewArray3dFromData([][][]int8{{{3, 0}, {4, 1}, {5, 2}}})
+	r := orig.RotateX()
+
+	// rotate once
+	assert.True(t, r.IsEqual(exp))
+
+	// rotate 4x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateX().RotateX().RotateX().RotateX()))
+}

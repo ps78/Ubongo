@@ -38,3 +38,15 @@ func (outerBoundingBox Vector) GetShiftVectors(innerBoundingBox Vector) []Vector
 		return shifts
 	}
 }
+
+// Looks for a in lst (comparing the values)
+func FindArray3d(lst []*Array3d, a *Array3d) (bool, int) {
+	if lst != nil && a != nil {
+		for i, arr := range lst {
+			if a.IsEqual(arr) {
+				return true, i
+			}
+		}
+	}
+	return false, -1
+}
