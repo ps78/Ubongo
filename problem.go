@@ -117,8 +117,8 @@ func CreateProblem(cardId string, number int, shape Array2d, blocks []*Block) *P
 		p.Animal = "Warthog"
 	}
 
-	p.Area = CountValues2D(p.Shape, 0)
-	p.BoundingBox = Vector{len(p.Shape), len(p.Shape[0]), p.Height}
+	p.Area = p.Shape.Count(0)
+	p.BoundingBox = Vector{p.Shape.DimX, p.Shape.DimY, p.Height}
 
 	return p
 }

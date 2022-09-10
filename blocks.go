@@ -125,21 +125,21 @@ func NewBlock8() *Block {
 	b.Color = Blue
 	b.Name = "Angle"
 
-	b.Shapes = []Array3d{
-		{{{0, 1}, {1, 1}}},
-		{{{1, 0}, {1, 1}}},
-		{{{1, 1}, {1, 0}}},
-		{{{1, 1}, {0, 1}}},
-		{{{1}, {1}}, {{0}, {1}}},
-		{{{1, 1}}, {{1, 0}}},
-		{{{1}, {1}}, {{1}, {0}}},
-		{{{1, 1}}, {{0, 1}}},
-		{{{1, 0}}, {{1, 1}}},
-		{{{1}, {0}}, {{1}, {1}}},
-		{{{0, 1}}, {{1, 1}}},
-		{{{0}, {1}}, {{1}, {1}}}}
+	b.Shapes = make([]Array3d, 0, 24)
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{0, 1}, {1, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 0}, {1, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 1}, {0, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1}, {1}}, {{0}, {1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 1}}, {{1, 0}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1}, {1}}, {{1}, {0}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 1}}, {{0, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1, 0}}, {{1, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{1}, {0}}, {{1}, {1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{0, 1}}, {{1, 1}}}))
+	b.Shapes = append(b.Shapes, *NewArray3dFromData([][][]int8{{{0}, {1}}, {{1}, {1}}}))
 
-	b.Volume = CountValues3D(b.Shapes[0], 1)
+	b.Volume = b.Shapes[0].Count(1)
 
 	return b
 }
