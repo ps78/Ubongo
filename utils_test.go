@@ -43,3 +43,13 @@ func TestGetShiftVectorsEmpty(t *testing.T) {
 	shifts := outer.GetShiftVectors(inner)
 	assert.Equal(t, 0, len(shifts), "GetShiftVectors did not return an empty slice")
 }
+
+func TestFindArray3d(t *testing.T) {
+	block := NewBlockFactory().Get(1)
+
+	for i, a := range block.Shapes {
+		ok, idx := FindArray3d(block.Shapes, a)
+		assert.True(t, ok)
+		assert.Equal(t, i, idx)
+	}
+}

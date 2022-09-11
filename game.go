@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Game struct {
 	Shape  *Array2d
@@ -36,6 +38,18 @@ func NewGameSolution(blocks []*Block, shapes []*Array3d, shifts []Vector) *GameS
 func (g *Game) String() string {
 	return fmt.Sprintf("Game (area %d, volume %d, empty %d)",
 		g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
+}
+
+func (gs *GameSolution) String() string {
+	result := "GameSolution\n\t"
+	for i := 0; i < len(gs.Blocks); i++ {
+		_, shapeIdx := FindArray3d(gs.Blocks[i].Shapes, gs.Shapes[i])
+		result += fmt.Sprintf("<#%d (v%d) Shape #%d %s Shift %s>", gs.Blocks[i].Number, gs.Blocks[i].Volume, shapeIdx, gs.Shapes[i], gs.Shifts[i])
+		if i < len(gs.Blocks)-1 {
+			result += "\n\t"
+		}
+	}
+	return result
 }
 
 // Removes all blocks from a game
@@ -86,12 +100,30 @@ func (g *Game) TryAddBlock(block *Array3d, pos Vector) (bool, *Game) {
 }
 
 func (g *Game) Solve(blocks []*Block) {
+	sum := 0
+	for _, b := range blocks {
+		sum += b.Volume
+	}
+	if g.Volume.Count(0) != sum {
+		fmt.Printf("Game has no solution, volume of blocks does not match volume of game")
+		return
+	}
+
 	solutions := make([]GameSolution, 0)
 	shapes := make([]*Array3d, 0)
 	shifts := make([]Vector, 0)
 
 	g.recursiveSolver(blocks, 0, &shapes, &shifts, &solutions)
 
+	fmt.Printf("Found %d solutions\n", len(solutions))
+	for _, sol := range solutions {
+		fmt.Println(sol.String())
+	}
+
+	fmt.Printf("Block #%d\n", blocks[0].Number)
+	for i, shape := range blocks[0].Shapes {
+		fmt.Printf("%d - %s\n", i, shape)
+	}
 }
 
 func (g *Game) recursiveSolver(blocks []*Block, currentBlockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]GameSolution) {
@@ -115,7 +147,7 @@ func (g *Game) recursiveSolver(blocks []*Block, currentBlockIdx int, shapes *[]*
 						}
 						// if it wasn't the last block, continue recursion
 					} else {
-						g.recursiveSolver(blocks, currentBlockIdx+1, shapes, shifts, solutions)
+						newGame.recursiveSolver(blocks, currentBlockIdx+1, shapes, shifts, solutions)
 					}
 
 					// remove shape+shift from the stack

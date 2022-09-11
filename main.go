@@ -7,7 +7,7 @@ import (
 func main() {
 	f := NewBlockFactory()
 
-	blocks := []*Block{f.Get(3), f.Get(9), f.Get(12), f.Get(16)}
+	blocks := []*Block{f.Get(8), f.Get(9), f.Get(12), f.Get(16)}
 	area := NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
 	p := CreateProblem("B12", 1, area, blocks)
 	fmt.Println(p)

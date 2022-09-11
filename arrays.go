@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // Array2d is a 2-dimensional array representing the area of a problem,
 // where 0 indicates that the unit square is part of the shape, and -1 is not
 type Array2d struct {
@@ -16,6 +18,14 @@ type Array3d struct {
 	DimX int
 	DimY int
 	DimZ int
+}
+
+func (a *Array3d) String() string {
+	return fmt.Sprintf("<%d-%d-%d>%v", a.DimX, a.DimY, a.DimZ, a.data)
+}
+
+func (a *Array2d) String() string {
+	return fmt.Sprintf("<%d-%d>%v", a.DimX, a.DimY, a.data)
 }
 
 // A function that can be applied to an Array3d
