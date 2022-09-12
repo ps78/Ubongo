@@ -17,20 +17,22 @@ type GameSolution struct {
 
 // Creates a new game, initialized with the given shape and height and an empty volume
 func NewGame(shape *Array2d, height int) *Game {
-	g := new(Game)
-	g.Shape = shape.Clone()
-	g.Volume = shape.Extrude(height)
-	return g
+	return &Game{Shape: shape.Clone(), Volume: shape.Extrude(height)}
 }
 
+// Creates an instance of GameSolution
 func NewGameSolution(blocks []*Block, shapes []*Array3d, shifts []Vector) *GameSolution {
 	sol := GameSolution{}
+
 	sol.Blocks = make([]*Block, len(blocks))
 	copy(sol.Blocks, blocks)
+
 	sol.Shapes = make([]*Array3d, len(shapes))
 	copy(sol.Shapes, shapes)
+
 	sol.Shifts = make([]Vector, len(shifts))
 	copy(sol.Shifts, shifts)
+
 	return &sol
 }
 
@@ -40,6 +42,7 @@ func (g *Game) String() string {
 		g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
 }
 
+// Returns a multi-line string representing the GameSolution
 func (gs *GameSolution) String() string {
 	result := "GameSolution\n\t"
 	for i := 0; i < len(gs.Blocks); i++ {
@@ -109,52 +112,52 @@ func (g *Game) Solve(blocks []*Block) {
 		return
 	}
 
-	solutions := make([]GameSolution, 0)
+	solutions := make([]*GameSolution, 0)
 	shapes := make([]*Array3d, 0)
 	shifts := make([]Vector, 0)
 
 	g.recursiveSolver(blocks, 0, &shapes, &shifts, &solutions)
 
-	fmt.Printf("Found %d solutions\n", len(solutions))
 	for _, sol := range solutions {
 		fmt.Println(sol.String())
 	}
-
-	fmt.Printf("Block #%d\n", blocks[0].Number)
-	for i, shape := range blocks[0].Shapes {
-		fmt.Printf("%d - %s\n", i, shape)
-	}
+	fmt.Printf("Found %d solutions\n", len(solutions))
 }
 
-func (g *Game) recursiveSolver(blocks []*Block, currentBlockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]GameSolution) {
+func (g *Game) recursiveSolver(blocks []*Block, startAtBlockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]*GameSolution) {
 	gameBox := g.Volume.GetBoundingBox()
 
-	for _, block := range blocks[currentBlockIdx:] {
+	// cycle through the remaining blocks
+	for blockIdx := startAtBlockIdx; blockIdx < len(blocks); blockIdx++ {
+		block := blocks[blockIdx]
 
 		for _, shape := range block.Shapes {
-			sh := gameBox.GetShiftVectors(shape.GetBoundingBox())
-			for _, shift := range sh {
+			*shapes = append(*shapes, shape)
+
+			shiftVectors := gameBox.GetShiftVectors(shape.GetBoundingBox())
+			for _, shift := range shiftVectors {
 				if ok, newGame := g.TryAddBlock(shape, shift); ok {
-					// add shape+shift to the stack
-					*shapes = append(*shapes, shape)
+
 					*shifts = append(*shifts, shift)
 
-					// if this was the last block, stop
-					if currentBlockIdx == len(blocks)-1 {
+					// if this was the last block, stop recursion
+					if blockIdx == len(blocks)-1 {
 						// check if we have a solution
 						if newGame.Volume.Count(0) == 0 {
-							*solutions = append(*solutions, *NewGameSolution(blocks, *shapes, *shifts))
+							*solutions = append(*solutions, NewGameSolution(blocks, *shapes, *shifts))
 						}
 						// if it wasn't the last block, continue recursion
 					} else {
-						newGame.recursiveSolver(blocks, currentBlockIdx+1, shapes, shifts, solutions)
+						newGame.recursiveSolver(blocks, blockIdx+1, shapes, shifts, solutions)
 					}
 
-					// remove shape+shift from the stack
-					*shapes = (*shapes)[:len(*shapes)-1]
 					*shifts = (*shifts)[:len(*shifts)-1]
 				}
-			}
-		}
-	}
+			} // end loop over shifts
+
+			*shapes = (*shapes)[:len(*shapes)-1]
+
+		} // end loop over shapes
+
+	} // end loop over blocks
 }

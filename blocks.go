@@ -56,11 +56,6 @@ type Block struct {
 	// - 4th index: z-dimension (up into the 3rd dimension)
 	Shapes []*Array3d
 
-	// NumShapes is the total number of all rotations including the base shape
-	// i.e. the lenght of the first dimension of Shapes
-	// This can be max 24 theoretically, but is usually less due to symmetries
-	NumShapes int
-
 	// Volume is the number of unit cubes the block consists of.
 	// All blocks of the original game consist of 3, 4 or 5 unit cubes
 	Volume int
