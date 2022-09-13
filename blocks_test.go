@@ -6,6 +6,35 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBlockColorString(t *testing.T) {
+	f := NewBlockFactory()
+	for _, b := range f.GetAll() {
+		colorName := b.Color.String()
+		assert.True(t, len(colorName) > 0)
+	}
+}
+
+func TestBlockString(t *testing.T) {
+	b := NewBlockFactory().Get(1)
+	assert.True(t, len(b.String()) > 0)
+}
+
+func TestBlockFactoryGet(t *testing.T) {
+	f := NewBlockFactory()
+	var nilBlock *Block = nil
+
+	assert.Equal(t, nilBlock, f.Get(f.MinBlockNumber-1))
+	assert.Equal(t, nilBlock, f.Get(f.MaxBlockNumber+1))
+	for n := f.MinBlockNumber; n <= f.MaxBlockNumber; n++ {
+		assert.True(t, f.Get(n) != nil)
+	}
+
+	// test that repeatedely returning the same block does not create a new instance
+	var a *Block = f.Get(1)
+	var b *Block = f.Get(1)
+	assert.True(t, a == b, "References to block are not identical after repeated BlockFactory.Get() calls")
+}
+
 // Runs all block-factory functions and tests the blocks for
 // consistency
 func TestBlocks(t *testing.T) {

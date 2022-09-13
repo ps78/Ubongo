@@ -39,6 +39,10 @@ func (s BlockColor) String() string {
 	return "Unknown"
 }
 
+// block Array3D can only have the following values:
+const IS_BLOCK int8 = 1
+const IS_NOT_BLOCK int8 = 0
+
 // Block represents a single Ubongo block including all
 // of it's possible rotations in space
 type Block struct {

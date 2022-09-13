@@ -67,13 +67,14 @@ func (p Problem) String() string {
 }
 
 // creates a problem instance
-func CreateProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Problem {
+func NewProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Problem {
 	var p *Problem = new(Problem)
 
 	p.CardId = cardId
 	p.Number = number
-	p.Shape = shape
-	p.Blocks = blocks
+	p.Shape = shape.Clone()
+	p.Blocks = make([]*Block, len(blocks))
+	copy(p.Blocks, blocks)
 
 	// the first character or the cardId defines the difficulty
 	switch p.CardId[0] {

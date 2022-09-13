@@ -75,6 +75,20 @@ func TestNewArray3dFromData(t *testing.T) {
 	}
 }
 
+func TestArray2dString(t *testing.T) {
+	a := NewArray2dFromData([][]int8{{0, 1, 0}, {1, 0, 1}})
+	exp := "<2-3>[[0 1 0] [1 0 1]]"
+	act := a.String()
+	assert.Equal(t, exp, act)
+}
+
+func TestArray3dString(t *testing.T) {
+	a := NewArray3dFromData([][][]int8{{{0}, {1}, {0}}, {{1}, {0}, {1}}})
+	exp := "<2-3-1>[[[0] [1] [0]] [[1] [0] [1]]]"
+	act := a.String()
+	assert.Equal(t, exp, act)
+}
+
 func TestArray2dGetSet(t *testing.T) {
 	a := NewArray2d(7, 9)
 	for x := 0; x < a.DimX; x++ {
@@ -116,10 +130,14 @@ func TestArray2dIsEqual(t *testing.T) {
 	b := NewArray2dFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 5}}) // == a
 	c := NewArray2dFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 0}}) // != a
 	d := NewArray2dFromData([][]int8{{2}, {3}})
+	var e *Array2d = nil
 
 	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal2DArray reports they are not")
 	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal2DArray reports they are")
 	assert.False(t, a.IsEqual(d), "Array a and d have different dimensions but Equal2DArray reports they are equal")
+	assert.True(t, e.IsEqual(nil))
+	assert.False(t, e.IsEqual(a))
+	assert.False(t, a.IsEqual(e))
 }
 
 func TestArray3dIsEqual(t *testing.T) {
@@ -127,10 +145,14 @@ func TestArray3dIsEqual(t *testing.T) {
 	b := NewArray3dFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}}) // == a
 	c := NewArray3dFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 0}}}) // != a
 	d := NewArray3dFromData([][][]int8{{{2}, {3}}})
+	var e *Array3d = nil
 
 	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal3DArray reports they are not")
 	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal3DArray reports they are")
 	assert.False(t, a.IsEqual(d), "Array a and d have different dimensions but Equal3DArray reports they are equal")
+	assert.True(t, e.IsEqual(nil))
+	assert.False(t, e.IsEqual(a))
+	assert.False(t, a.IsEqual(e))
 }
 
 func TestArray2dClone(t *testing.T) {
@@ -207,8 +229,13 @@ func TestApply(t *testing.T) {
 
 func TestAllTrue(t *testing.T) {
 	a := NewArray3dFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
+
 	assert.True(t, a.AllTrue(func(x, y, z int, v int8) bool {
 		return int8(x+y+z) == v
+	}))
+
+	assert.False(t, a.AllTrue(func(x, y, z int, v int8) bool {
+		return int8(x+y) == v
 	}))
 }
 
@@ -219,6 +246,12 @@ func TestRotateZ(t *testing.T) {
 
 	// rotate once
 	assert.True(t, r.IsEqual(exp))
+
+	// rotate 2x 2x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateZ2().RotateZ2()))
+
+	// rotate x and 3x shoudl be the identity
+	assert.True(t, orig.IsEqual(orig.RotateZ3().RotateZ()))
 
 	// rotate 4x should be the identity
 	assert.True(t, orig.IsEqual(orig.RotateZ().RotateZ().RotateZ().RotateZ()))
@@ -232,6 +265,12 @@ func TestRotateY(t *testing.T) {
 	// rotate once
 	assert.True(t, r.IsEqual(exp))
 
+	// rotate 2x 2x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateY2().RotateY2()))
+
+	// rotate x and 3x shoudl be the identity
+	assert.True(t, orig.IsEqual(orig.RotateY3().RotateY()))
+
 	// rotate 4x should be the identity
 	assert.True(t, orig.IsEqual(orig.RotateY().RotateY().RotateY().RotateY()))
 }
@@ -243,6 +282,12 @@ func TestRotateX(t *testing.T) {
 
 	// rotate once
 	assert.True(t, r.IsEqual(exp))
+
+	// rotate 2x 2x should be the identity
+	assert.True(t, orig.IsEqual(orig.RotateX2().RotateX2()))
+
+	// rotate x and 3x shoudl be the identity
+	assert.True(t, orig.IsEqual(orig.RotateX3().RotateX()))
 
 	// rotate 4x should be the identity
 	assert.True(t, orig.IsEqual(orig.RotateX().RotateX().RotateX().RotateX()))

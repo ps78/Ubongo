@@ -52,4 +52,8 @@ func TestFindArray3d(t *testing.T) {
 		assert.True(t, ok)
 		assert.Equal(t, i, idx)
 	}
+
+	ok, idx := FindArray3d(block.Shapes, NewArray3d(2, 3, 4))
+	assert.Equal(t, -1, idx)
+	assert.False(t, ok)
 }
