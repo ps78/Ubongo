@@ -7,6 +7,7 @@ import (
 type Game struct {
 	Shape  *Array2d
 	Volume *Array3d
+	Blocks []*Block
 }
 
 // the following constants define the allowed values of the shape and volume array values of a game
@@ -21,8 +22,13 @@ type GameSolution struct {
 }
 
 // Creates a new game, initialized with the given shape and height and an empty volume
-func NewGame(shape *Array2d, height int) *Game {
-	return &Game{Shape: shape.Clone(), Volume: shape.Extrude(height)}
+func NewGame(p *Problem) *Game {
+	blockCopy := make([]*Block, len(p.Blocks))
+	copy(blockCopy, p.Blocks)
+	return &Game{
+		Shape:  p.Shape.Clone(),
+		Volume: p.Shape.Extrude(p.Height),
+		Blocks: blockCopy}
 }
 
 // Creates an instance of GameSolution
@@ -73,7 +79,12 @@ func (g *Game) Clear() {
 
 // Creates a copy of the game
 func (g *Game) Clone() *Game {
-	return &Game{Shape: g.Shape.Clone(), Volume: g.Volume.Clone()}
+	blocksCopy := make([]*Block, len(g.Blocks))
+	copy(blocksCopy, g.Blocks)
+	return &Game{
+		Shape:  g.Shape.Clone(),
+		Volume: g.Volume.Clone(),
+		Blocks: blocksCopy}
 }
 
 // Tries to add the given block to the game volume
@@ -142,10 +153,10 @@ func (g *Game) RemoveBlock(block *Array3d, pos Vector) bool {
 }
 
 // Finds all solutino for a given game using the set of blocks provided
-func (g *Game) Solve(blocks []*Block) []*GameSolution {
+func (g *Game) Solve() []*GameSolution {
 	// check the sum of the block volumes, it must match the empty volume of the game to yield a solution
 	sum := 0
-	for _, b := range blocks {
+	for _, b := range g.Blocks {
 		sum += b.Volume
 	}
 	if g.Volume.Count(EMPTY) != sum {
@@ -157,7 +168,7 @@ func (g *Game) Solve(blocks []*Block) []*GameSolution {
 	shapes := make([]*Array3d, 0)
 	shifts := make([]Vector, 0)
 
-	g.recursiveSolver(blocks, 0, &shapes, &shifts, &solutions)
+	g.recursiveSolver(0, &shapes, &shifts, &solutions)
 
 	return solutions
 }
@@ -165,13 +176,13 @@ func (g *Game) Solve(blocks []*Block) []*GameSolution {
 var recursiveSolverCount int64 = 0
 
 // Recursive function called by Solve, don't call directly
-func (g *Game) recursiveSolver(blocks []*Block, startAtBlockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]*GameSolution) {
+func (g *Game) recursiveSolver(startAtBlockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]*GameSolution) {
 	recursiveSolverCount++
 	gameBox := g.Volume.GetBoundingBox()
 
 	// cycle through the remaining blocks
-	for blockIdx := startAtBlockIdx; blockIdx < len(blocks); blockIdx++ {
-		block := blocks[blockIdx]
+	for blockIdx := startAtBlockIdx; blockIdx < len(g.Blocks); blockIdx++ {
+		block := g.Blocks[blockIdx]
 
 		for _, shape := range block.Shapes {
 			*shapes = append(*shapes, shape)
@@ -183,14 +194,14 @@ func (g *Game) recursiveSolver(blocks []*Block, startAtBlockIdx int, shapes *[]*
 					*shifts = append(*shifts, shift)
 
 					// if this was the last block, stop recursion
-					if blockIdx == len(blocks)-1 {
+					if blockIdx == len(g.Blocks)-1 {
 						// check if we have a solution
 						if g.Volume.Count(0) == 0 {
-							*solutions = append(*solutions, NewGameSolution(blocks, *shapes, *shifts))
+							*solutions = append(*solutions, NewGameSolution(g.Blocks, *shapes, *shifts))
 						}
 						// if it wasn't the last block, continue recursion
 					} else {
-						g.recursiveSolver(blocks, blockIdx+1, shapes, shifts, solutions)
+						g.recursiveSolver(blockIdx+1, shapes, shifts, solutions)
 					}
 
 					*shifts = (*shifts)[:len(*shifts)-1]

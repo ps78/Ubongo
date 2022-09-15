@@ -1,26 +1,28 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBlockColorString(t *testing.T) {
-	f := NewBlockFactory()
+	f := GetBlockFactory()
 	for _, b := range f.GetAll() {
-		colorName := b.Color.String()
-		assert.True(t, len(colorName) > 0)
+		colorName := strings.ToLower(b.Color.String())
+		assert.NotEqual(t, "unknown", colorName)
 	}
+	assert.Equal(t, "unknown", strings.ToLower(BlockColor(99).String()))
 }
 
 func TestBlockString(t *testing.T) {
-	b := NewBlockFactory().Get(1)
+	b := GetBlockFactory().Get(1)
 	assert.True(t, len(b.String()) > 0)
 }
 
 func TestBlockFactoryGet(t *testing.T) {
-	f := NewBlockFactory()
+	f := GetBlockFactory()
 	var nilBlock *Block = nil
 
 	assert.Equal(t, nilBlock, f.Get(f.MinBlockNumber-1))
@@ -35,10 +37,36 @@ func TestBlockFactoryGet(t *testing.T) {
 	assert.True(t, a == b, "References to block are not identical after repeated BlockFactory.Get() calls")
 }
 
+func TestBlockFactoryGetByName(t *testing.T) {
+	f := GetBlockFactory()
+
+	assert.NotNil(t, f.ByName(Yellow, "hello"))
+	assert.NotNil(t, f.ByName(Yellow, "big hook"))
+	assert.NotNil(t, f.ByName(Yellow, "small hook"))
+	assert.NotNil(t, f.ByName(Yellow, "gate"))
+
+	assert.NotNil(t, f.ByName(Blue, "big hook"))
+	assert.NotNil(t, f.ByName(Blue, "flash"))
+	assert.NotNil(t, f.ByName(Blue, "lighter"))
+	assert.NotNil(t, f.ByName(Blue, "v"))
+
+	assert.NotNil(t, f.ByName(Red, "stool"))
+	assert.NotNil(t, f.ByName(Red, "small hook"))
+	assert.NotNil(t, f.ByName(Red, "big hook"))
+	assert.NotNil(t, f.ByName(Red, "flash"))
+
+	assert.NotNil(t, f.ByName(Green, "flash"))
+	assert.NotNil(t, f.ByName(Green, "big hook"))
+	assert.NotNil(t, f.ByName(Green, "T"))
+	assert.NotNil(t, f.ByName(Green, "L"))
+
+	assert.Nil(t, f.ByName(Blue, "Superman"))
+}
+
 // Runs all block-factory functions and tests the blocks for
 // consistency
 func TestBlocks(t *testing.T) {
-	blocks := NewBlockFactory().GetAll()
+	blocks := GetBlockFactory().GetAll()
 
 	for _, block := range blocks {
 

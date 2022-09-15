@@ -45,7 +45,7 @@ func TestGetShiftVectorsEmpty(t *testing.T) {
 }
 
 func TestFindArray3d(t *testing.T) {
-	block := NewBlockFactory().Get(1)
+	block := GetBlockFactory().Get(1)
 
 	for i, a := range block.Shapes {
 		ok, idx := FindArray3d(block.Shapes, a)

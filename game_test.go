@@ -7,23 +7,22 @@ import (
 )
 
 func TestNewGame(t *testing.T) {
-	shape := NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
-	height := 2
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	g := NewGame(p)
 
-	g := NewGame(shape, height)
-
-	assert.True(t, g.Shape.IsEqual(shape), "Shape is wrong")
-	assert.True(t, g.Volume.IsEqual(shape.Extrude(height)), "Wrong volume")
+	assert.True(t, g.Shape.IsEqual(p.Shape), "Shape is wrong")
+	assert.True(t, g.Volume.IsEqual(p.Shape.Extrude(p.Height)), "Wrong volume")
 }
 
 func TestGameString(t *testing.T) {
-	g := NewGame(NewArray2d(5, 3), 3)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	g := NewGame(p)
 	s := g.String()
 	assert.True(t, len(s) > 10)
 }
 
 func TestGameSolution(t *testing.T) {
-	f := NewBlockFactory()
+	f := GetBlockFactory()
 	b := []*Block{f.Get(1), f.Get(2)}
 	gs := NewGameSolution(b, []*Array3d{b[0].Shapes[0], b[1].Shapes[0]}, []Vector{{0, 0, 0}, {0, 0, 0}})
 	s := gs.String()
@@ -31,32 +30,32 @@ func TestGameSolution(t *testing.T) {
 }
 
 func TestClear(t *testing.T) {
-	shape := NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
-	height := 3
-	g := NewGame(shape, height)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	g := NewGame(p)
 
-	g.Volume.Set(0, 1, 0, 1)
-	g.Volume.Set(0, 1, 1, 1)
-	g.Volume.Set(1, 0, 0, 1)
+	g.Volume.Set(0, 1, 0, OCCUPIED)
+	g.Volume.Set(0, 1, 1, OCCUPIED)
+	g.Volume.Set(1, 0, 0, OCCUPIED)
 
 	g.Clear()
 
-	assert.True(t, g.Volume.IsEqual(shape.Extrude(height)), "Clear() didn't produce the right result")
+	assert.True(t, g.Volume.IsEqual(p.Shape.Extrude(p.Height)), "Clear() didn't produce the right result")
 }
 
 func TestClone(t *testing.T) {
-	shape := NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
-	height := 2
-	g := NewGame(shape, height)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	g := NewGame(p)
 	c := g.Clone()
 
 	assert.True(t, g.Shape.IsEqual(c.Shape), "Shape does not match")
 	assert.True(t, g.Volume.IsEqual(c.Volume), "Volume does not match")
+	assert.Equal(t, len(g.Blocks), len(c.Blocks), "Block arrays do not match")
 }
 
 func TestTryAddBlock(t *testing.T) {
-	shape := NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
-	g := NewGame(shape, 2)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p.Shape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
+	g := NewGame(p)
 	origVolume := g.Volume.Clone()
 	blockShape := NewBlock8().Shapes[0]
 	pos := Vector{0, 0, 0}
@@ -86,31 +85,28 @@ func TestRemoveBlock(t *testing.T) {
 	assert.True(t, g.Volume.IsEqual(origVolume), "The the volume changed after a failed RemoveBlock() call")
 
 	// test case where removal works
-	shape := NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
-	exp := NewGame(shape, 2)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p.Shape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
+	exp := NewGame(p)
 	ok := g.RemoveBlock(blockShape, pos)
 	assert.True(t, ok)
 	assert.True(t, exp.Volume.IsEqual(g.Volume))
 }
 
 func TestSolveNoSolution(t *testing.T) {
-	f := NewBlockFactory()
-	blocks := []*Block{f.Get(8), f.Get(9), f.Get(12), f.Get(14)}
-	area := NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	g := NewGame(area, 2)
-
-	solutions := g.Solve(blocks)
+	p := GetProblemFactory().Get(Difficult, 12, 1).Clone()
+	p.Blocks[3] = GetBlockFactory().Green_T
+	g := NewGame(p)
+	solutions := g.Solve()
 
 	assert.Equal(t, 0, len(solutions), "Expected 0 solutions, but found %d", len(solutions))
 }
 
 func TestSolve(t *testing.T) {
-	f := NewBlockFactory()
-	blocks := []*Block{f.Get(8), f.Get(9), f.Get(12), f.Get(16)}
-	area := NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	g := NewGame(area, 2)
+	p := GetProblemFactory().Get(Difficult, 12, 1)
+	g := NewGame(p)
 
-	solutions := g.Solve(blocks)
+	solutions := g.Solve()
 
 	assert.Equal(t, 6, len(solutions), "Expected 6 solutions, but found %d", len(solutions))
 }

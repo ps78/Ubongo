@@ -2,7 +2,14 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
+
+// used to create a thread-safe singleton instance of a problemFactory
+var onceProblemFactorySingleton sync.Once
+
+// the singleton
+var problemFactoryInstance *ProblemFactory
 
 // UbongoDifficulty is an enum representing the difficulty in the game
 type UbongoDifficulty int8
@@ -29,10 +36,51 @@ func (s UbongoDifficulty) String() string {
 	return "Unknown"
 }
 
+// Represents the singleton problem factory. Get instance with GetProblemFactory()
+type ProblemFactory struct {
+	Problems map[UbongoDifficulty](map[int](map[int]*Problem))
+}
+
+// Returns the singleton instance of the problem factory
+func GetProblemFactory() *ProblemFactory {
+	onceProblemFactorySingleton.Do(func() {
+		bf := GetBlockFactory()
+
+		f := new(ProblemFactory)
+
+		f.Problems = make(map[UbongoDifficulty]map[int]map[int]*Problem)
+
+		for _, p := range createAllProblems(bf) {
+			if _, ok := f.Problems[p.Difficulty]; !ok {
+				f.Problems[p.Difficulty] = make(map[int]map[int]*Problem)
+			}
+			if _, ok := f.Problems[p.Difficulty][p.CardNumber]; !ok {
+				f.Problems[p.Difficulty][p.CardNumber] = make(map[int]*Problem)
+			}
+			f.Problems[p.Difficulty][p.CardNumber][p.DiceNumber] = p
+		}
+
+		problemFactoryInstance = f
+	})
+	return problemFactoryInstance
+}
+
+// Returns the problem with the given parameters if it exists, nil otherwise
+func (f *ProblemFactory) Get(difficulty UbongoDifficulty, cardNumber, diceNumber int) *Problem {
+	if _, okDiff := f.Problems[difficulty]; okDiff {
+		if _, okCard := f.Problems[difficulty][cardNumber]; okCard {
+			if _, okDice := f.Problems[difficulty][cardNumber][diceNumber]; okDice {
+				return f.Problems[difficulty][cardNumber][diceNumber]
+			}
+		}
+	}
+	return nil
+}
+
 // Problem represents a single Ubongo problem to solve
 type Problem struct {
-	// CardId represents the number printed on each side of a card in the original game
-	CardId string
+	// CardId represents the number printed on each side of a card in the original game, without the letter
+	CardNumber int
 
 	// Animal is the name of the animal as printed on the original game
 	Animal string
@@ -40,8 +88,8 @@ type Problem struct {
 	// Difficulty is either e = easy or d=difficult
 	Difficulty UbongoDifficulty
 
-	// Number is the problem number as printed on the card (1..10)
-	Number int
+	// DiceNumber is the problem number as printed on the card corresponding to the dice (1..10)
+	DiceNumber int
 
 	// Shape is the 2D shape of the puzzle, first is the index X-direction (horizontal, to the right),
 	// the second index is the Y-direction (up)
@@ -62,29 +110,21 @@ type Problem struct {
 
 // Returns a string representation of the problem
 func (p Problem) String() string {
-	return fmt.Sprintf("Problem: card %s (%s-%s-%d) (%d blocks, area %d, height %d)",
-		p.CardId, p.Animal, p.Difficulty, p.Number, len(p.Blocks), p.Area, p.Height)
+	return fmt.Sprintf("Problem: card %d (%s-%s-%d) (%d blocks, area %d, height %d)",
+		p.DiceNumber, p.Animal, p.Difficulty, p.DiceNumber, len(p.Blocks), p.Area, p.Height)
 }
 
 // creates a problem instance
-func NewProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Problem {
+func NewProblem(cardNumber int, difficulty UbongoDifficulty, number int, shape *Array2d, blocks []*Block) *Problem {
 	var p *Problem = new(Problem)
 
-	p.CardId = cardId
-	p.Number = number
+	p.CardNumber = cardNumber
+	p.DiceNumber = number
 	p.Shape = shape.Clone()
 	p.Blocks = make([]*Block, len(blocks))
 	copy(p.Blocks, blocks)
 
-	// the first character or the cardId defines the difficulty
-	switch p.CardId[0] {
-	case 'A':
-		p.Difficulty = Easy
-	case 'B':
-		p.Difficulty = Difficult
-	case 'C':
-		p.Difficulty = Insane
-	}
+	p.Difficulty = difficulty
 
 	// original game: height=2, for insane level, one more
 	switch p.Difficulty {
@@ -97,24 +137,24 @@ func NewProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Pro
 	}
 
 	// the animal depends on the card number
-	switch cardId[1:] {
-	case "1", "2", "3", "4":
+	switch cardNumber {
+	case 1, 2, 3, 4:
 		p.Animal = "Elephant"
-	case "5", "6", "7", "8":
+	case 5, 6, 7, 8:
 		p.Animal = "Gazelle"
-	case "9", "10", "11", "12":
+	case 9, 10, 11, 12:
 		p.Animal = "Snake"
-	case "13", "14", "15", "16":
+	case 13, 14, 15, 16:
 		p.Animal = "Gnu"
-	case "17", "18", "19", "20":
+	case 17, 18, 19, 20:
 		p.Animal = "Ostrich"
-	case "21", "22", "23", "24":
+	case 21, 22, 23, 24:
 		p.Animal = "Rhino"
-	case "25", "26", "27", "28":
+	case 25, 26, 27, 28:
 		p.Animal = "Giraffe"
-	case "29", "30", "31", "32":
+	case 29, 30, 31, 32:
 		p.Animal = "Zebra"
-	case "33", "34", "35", "36":
+	case 33, 34, 35, 36:
 		p.Animal = "Warthog"
 	}
 
@@ -122,4 +162,63 @@ func NewProblem(cardId string, number int, shape *Array2d, blocks []*Block) *Pro
 	p.BoundingBox = Vector{p.Shape.DimX, p.Shape.DimY, p.Height}
 
 	return p
+}
+
+// Creates a deep copy of the given object p
+func (p *Problem) Clone() *Problem {
+	c := new(Problem)
+
+	c.CardNumber = p.CardNumber
+	c.DiceNumber = p.DiceNumber
+	c.Difficulty = p.Difficulty
+	c.BoundingBox = p.BoundingBox
+	c.Animal = p.Animal
+	c.Shape = p.Shape.Clone()
+	c.Blocks = make([]*Block, len(p.Blocks))
+	copy(c.Blocks, p.Blocks)
+	c.Area = p.Area
+
+	return c
+}
+
+// Creates all problem on one side of a card (as many as there are keys in the blocks-map)
+func createProblems(cardNum int, difficulty UbongoDifficulty, topShape, bottomShape *Array2d, blocks map[int][]*Block, f *BlockFactory) []*Problem {
+
+	result := make([]*Problem, 0)
+
+	for k, v := range blocks {
+		var shape *Array2d
+		if (k <= 4 && difficulty == Easy) || (k <= 5) {
+			shape = topShape
+		} else {
+			shape = bottomShape
+		}
+
+		p := NewProblem(12, difficulty, k, shape, v)
+		result = append(result, p)
+	}
+
+	return result
+}
+
+func createAllProblems(f *BlockFactory) []*Problem {
+	problems := make([]*Problem, 0)
+
+	topShape := NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape := NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
+	blockNums := map[int][]*Block{
+		1:  {f.Red_stool, f.Green_L, f.Blue_v, f.Red_flash},
+		2:  {f.Red_stool, f.Yellow_smallhook, f.Green_T, f.Blue_v},
+		3:  {f.Red_stool, f.Yellow_smallhook, f.Blue_v, f.Green_L},
+		4:  {f.Red_bighook, f.Red_smallhook, f.Blue_v, f.Green_T},
+		5:  {f.Green_L, f.Yellow_smallhook, f.Blue_flash, f.Blue_v},
+		6:  {f.Yellow_smallhook, f.Green_L, f.Red_stool, f.Green_bighook},
+		7:  {f.Blue_v, f.Yellow_hello, f.Yellow_gate, f.Blue_flash},
+		8:  {f.Blue_flash, f.Green_L, f.Green_flash, f.Red_smallhook},
+		9:  {f.Red_stool, f.Red_flash, f.Yellow_bighook, f.Red_smallhook},
+		10: {f.Yellow_smallhook, f.Red_stool, f.Red_smallhook, f.Green_bighook}}
+
+	problems = append(problems, createProblems(12, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	return problems
 }

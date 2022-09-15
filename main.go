@@ -6,26 +6,19 @@ import (
 )
 
 func main() {
+	f := GetProblemFactory()
 
-	f := NewBlockFactory()
+	for dice := 1; dice <= 10; dice++ {
+		p := f.Get(Difficult, 12, dice)
+		g := NewGame(p)
 
-	blocks := []*Block{f.Get(8), f.Get(9), f.Get(12), f.Get(16)}
-	area := NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	p := NewProblem("B12", 1, area, blocks)
-	fmt.Println(p)
+		start := time.Now()
+		solutions := g.Solve()
+		runtime := time.Since(start)
 
-	g := NewGame(p.Shape, p.Height)
-	fmt.Println(g)
-
-	start := time.Now()
-	solutions := g.Solve(blocks)
-	runtime := time.Since(start)
-
-	for _, sol := range solutions {
-		fmt.Println(sol.String())
+		//for _, sol := range solutions {
+		//	fmt.Println(sol.String())
+		//}
+		fmt.Printf("%s\tFound %d solutions in %s\n", p, len(solutions), runtime)
 	}
-	fmt.Printf("Found %d solutions in %s\n", len(solutions), runtime)
-	fmt.Printf("recursive solver function was called %d times\n", recursiveSolverCount)
-
-	fmt.Printf("%s", NewArray2dFromData([][]int8{{0, 1, 0}, {1, 0, 1}}))
 }
