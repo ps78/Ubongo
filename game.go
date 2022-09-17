@@ -15,12 +15,6 @@ const EMPTY int8 = 0
 const OCCUPIED int8 = 1
 const OUTSIDE int8 = -1
 
-type GameSolution struct {
-	Blocks []*Block
-	Shapes []*Array3d
-	Shifts []Vector
-}
-
 // Creates a new game, initialized with the given shape and height and an empty volume
 func NewGame(p *Problem) *Game {
 	blockCopy := make([]*Block, len(p.Blocks))
@@ -31,39 +25,10 @@ func NewGame(p *Problem) *Game {
 		Blocks: blockCopy}
 }
 
-// Creates an instance of GameSolution
-func NewGameSolution(blocks []*Block, shapes []*Array3d, shifts []Vector) *GameSolution {
-	sol := GameSolution{}
-
-	sol.Blocks = make([]*Block, len(blocks))
-	copy(sol.Blocks, blocks)
-
-	sol.Shapes = make([]*Array3d, len(shapes))
-	copy(sol.Shapes, shapes)
-
-	sol.Shifts = make([]Vector, len(shifts))
-	copy(sol.Shifts, shifts)
-
-	return &sol
-}
-
 // Returns a nicely formatted string representation of the game
 func (g *Game) String() string {
 	return fmt.Sprintf("Game (area %d, volume %d, empty %d)",
 		g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
-}
-
-// Returns a multi-line string representing the GameSolution
-func (gs *GameSolution) String() string {
-	result := "GameSolution\n\t"
-	for i := 0; i < len(gs.Blocks); i++ {
-		_, shapeIdx := FindArray3d(gs.Blocks[i].Shapes, gs.Shapes[i])
-		result += fmt.Sprintf("<#%d (v%d) Shape #%d %s Shift %s>", gs.Blocks[i].Number, gs.Blocks[i].Volume, shapeIdx, gs.Shapes[i], gs.Shifts[i])
-		if i < len(gs.Blocks)-1 {
-			result += "\n\t"
-		}
-	}
-	return result
 }
 
 // Removes all blocks from a game

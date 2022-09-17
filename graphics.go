@@ -9,21 +9,25 @@ import (
 // pinhole has a coordinate system confined to +/-1
 // also the z-axis is flipped, -1 is directed towards the viewer, y is up, x is right
 // x, y, z are expected to be integer-array coordinates ranging from 0..maxDim-1
-func convertCoords(x1, y1, z1, x2, y2, z2 int, offset Vector) (xf1, yf1, zf1, xf2, yf2, zf2 float64) {
+func convertCoords(x1, y1, z1, x2, y2, z2 int, offset Vectorf) (xf1, yf1, zf1, xf2, yf2, zf2 float64) {
 	var maxDim float64 = 5.0
 
-	xf1 = (float64(x1+offset[0]) - maxDim/2) / maxDim
-	yf1 = (float64(y1+offset[1]) - maxDim/2) / maxDim
-	zf1 = (maxDim/2 - float64(z1+offset[2])) / maxDim
-	xf2 = (float64(x2+offset[0]) - maxDim/2) / maxDim
-	yf2 = (float64(y2+offset[1]) - maxDim/2) / maxDim
-	zf2 = (maxDim/2 - float64(z2+offset[2])) / maxDim
+	xf1 = (float64(x1) + offset[0] - maxDim/2) / maxDim
+	yf1 = (float64(y1) + offset[1] - maxDim/2) / maxDim
+	zf1 = (maxDim/2 - float64(z1) - offset[2]) / maxDim
+	xf2 = (float64(x2) + offset[0] - maxDim/2) / maxDim
+	yf2 = (float64(y2) + offset[1] - maxDim/2) / maxDim
+	zf2 = (maxDim/2 - float64(z2) - offset[2]) / maxDim
 
 	return xf1, yf1, zf1, xf2, yf2, zf2
 }
 
-func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, pos Vector) {
+// draws the given block at the given position to the pinhole object
+func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, pos Vectorf) {
 
+	// implements the logical function that decides if an edge should be
+	// shown based on the presence of a block at the two adjacient and the
+	// diagonal volumes
 	truthTable := func(adjacient1, adjacient2, diagonal bool) bool {
 		if !adjacient1 && !adjacient2 {
 			return true
@@ -34,6 +38,8 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, 
 		}
 	}
 
+	// returns true if there is solid block at position px,py,z. Returns false
+	// if empty of if the coordinates are outside of the volume
 	get := func(px, py, pz int) bool {
 		if px < 0 || py < 0 || pz < 0 ||
 			px >= blockShape.DimX || py >= blockShape.DimY || pz >= blockShape.DimZ {
@@ -42,31 +48,32 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, 
 		return blockShape.Get(px, py, pz) == 1
 	}
 
+	// evaluates if a specific edge of block (x,y,z) is visible or not
 	showEdge := func(x, y, z, direction int) bool {
 		switch direction {
-		case 0:
+		case 0: // top front
 			return truthTable(get(x, y-1, z), get(x, y, z-1), get(x, y-1, z-1))
-		case 1:
+		case 1: // top right
 			return truthTable(get(x, y-1, z), get(x+1, y, z), get(x+1, y-1, z))
-		case 2:
+		case 2: // top back
 			return truthTable(get(x, y-1, z), get(x, y, z+1), get(x, y-1, z+1))
-		case 3:
+		case 3: // top left
 			return truthTable(get(x, y-1, z), get(x-1, y, z), get(x-1, y-1, z))
-		case 4:
+		case 4: // front left
 			return truthTable(get(x-1, y, z), get(x, y, z-1), get(x-1, y, z-1))
-		case 5:
+		case 5: // front right
 			return truthTable(get(x, y, z-1), get(x+1, y, z), get(x+1, y, z-1))
-		case 6:
+		case 6: // back right
 			return truthTable(get(x+1, y, z), get(x, y, z+1), get(x+1, y, z+1))
-		case 7:
+		case 7: // back left
 			return truthTable(get(x-1, y, z), get(x, y, z+1), get(x-1, y, z+1))
-		case 8:
+		case 8: // down front
 			return truthTable(get(x, y+1, z), get(x, y, z-1), get(x, y+1, z-1))
-		case 9:
+		case 9: // down right
 			return truthTable(get(x, y+1, z), get(x+1, y, z), get(x+1, y+1, z))
-		case 10:
+		case 10: // down back
 			return truthTable(get(x, y+1, z), get(x, y, z+1), get(x, y+1, z+1))
-		case 11:
+		case 11: // down left
 			return truthTable(get(x, y+1, z), get(x-1, y, z), get(x-1, y+1, z))
 		}
 		return false
@@ -85,7 +92,6 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, 
 					// Y-direction, starting front left: 4, 5, 6, 7
 					// bottom-face, starting fron, ccw: 8, 9, 10, 11
 					if showEdge(x, y, z, 0) {
-						//pn.DrawLine(xf, yf, zf, xf+1, yf, zf)
 						pn.DrawLine(convertCoords(x, y, z, x+1, y, z, pos))
 					}
 					if showEdge(x, y, z, 1) {
@@ -144,21 +150,24 @@ func DrawSolution(gs *GameSolution, filename string) {
 
 	pn := pinhole.New()
 
+	gameCog := gs.GetCenterOfGravity()
+
 	for i, block := range gs.Blocks {
 		shape := gs.Shapes[i]
-		pos := gs.Shifts[i]
+		pos := gs.Shifts[i].Float64()
+		offset := pos.Sub(gameCog).Mult(0.2)
 
-		drawBlock(pn, shape, block.Color, pos)
+		drawBlock(pn, shape, block.Color, pos.Add(offset))
 	}
 
 	pn.Rotate(-2.5, 0, 0)
 	pn.Rotate(0, 0, 0.1)
-	pn.Translate(0.1, -0.2, 0)
+	pn.Translate(0.2, -0.2, 0)
 
 	opt := pinhole.ImageOptions{
 		BGColor:   color.Black,
 		LineWidth: 1.0,
-		Scale:     1.0}
+		Scale:     0.9}
 
-	pn.SavePNG(filename, 500, 500, &opt)
+	pn.SavePNG(filename, 800, 600, &opt)
 }

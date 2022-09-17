@@ -77,7 +77,7 @@ func (b Block) String() string {
 // Creates all 90° rotations of the base 3d array along the x, y and z axis
 // A maximum of 24 arrays are returned, but identical rotations are removed,
 // hence the number can be smaller (depending on symmetries of the base array)
-func (base *Array3d) CreateRotations() []*Array3d {
+func (base *Array3d) createRotations() []*Array3d {
 	arr := make([]*Array3d, 0)
 
 	// helper function that adds el to lst if it is not already in lst
@@ -136,7 +136,7 @@ func NewBlock1() *Block {
 		Number: 1,
 		Name:   "hello",
 		Color:  Yellow,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -146,7 +146,7 @@ func NewBlock2() *Block {
 		Number: 2,
 		Name:   "big hook",
 		Color:  Yellow,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -156,7 +156,7 @@ func NewBlock3() *Block {
 		Number: 3,
 		Name:   "small hook",
 		Color:  Yellow,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -166,7 +166,7 @@ func NewBlock4() *Block {
 		Number: 4,
 		Name:   "gate",
 		Color:  Yellow,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -176,7 +176,7 @@ func NewBlock5() *Block {
 		Number: 5,
 		Name:   "big hook",
 		Color:  Blue,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -186,7 +186,7 @@ func NewBlock6() *Block {
 		Number: 6,
 		Name:   "flash",
 		Color:  Blue,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -196,7 +196,7 @@ func NewBlock7() *Block {
 		Number: 7,
 		Name:   "lighter",
 		Color:  Blue,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -206,7 +206,7 @@ func NewBlock8() *Block {
 		Number: 8,
 		Name:   "v",
 		Color:  Blue,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -216,7 +216,7 @@ func NewBlock9() *Block {
 		Number: 9,
 		Name:   "stool",
 		Color:  Red,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -226,7 +226,7 @@ func NewBlock10() *Block {
 		Number: 10,
 		Name:   "small hook",
 		Color:  Red,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -236,7 +236,7 @@ func NewBlock11() *Block {
 		Number: 11,
 		Name:   "big hook",
 		Color:  Red,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -246,7 +246,7 @@ func NewBlock12() *Block {
 		Number: 12,
 		Name:   "flash",
 		Color:  Red,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -256,7 +256,7 @@ func NewBlock13() *Block {
 		Number: 13,
 		Name:   "flash",
 		Color:  Green,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -266,7 +266,7 @@ func NewBlock14() *Block {
 		Number: 14,
 		Name:   "big hook",
 		Color:  Green,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -276,7 +276,7 @@ func NewBlock15() *Block {
 		Number: 15,
 		Name:   "T",
 		Color:  Green,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }
 
@@ -286,6 +286,6 @@ func NewBlock16() *Block {
 		Number: 16,
 		Name:   "L",
 		Color:  Green,
-		Shapes: baseShape.CreateRotations(),
+		Shapes: baseShape.createRotations(),
 		Volume: baseShape.Count(1)}
 }

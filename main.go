@@ -33,6 +33,7 @@ func main() {
 	fmt.Printf("Found %d solutions for Insane problem\n", len(sols))
 
 	DrawSolution(sols[0], "solution0.png")
+
 	//s := NewArray3d(3, 3, 3)
 	//s.Set(2, 1, 1, IS_BLOCK)
 	//DrawToFile(s, Blue, Vector{0, 0, 0}, "block.png")

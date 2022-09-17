@@ -5,9 +5,35 @@ import "fmt"
 // Vector represents a 3-dimensional int-vector
 type Vector [3]int
 
+type Vectorf [3]float64
+
 // Returns a String representation of a vector
 func (v Vector) String() string {
 	return fmt.Sprintf("(%d,%d,%d)", v[0], v[1], v[2])
+}
+
+func (v Vectorf) String() string {
+	return fmt.Sprintf("(%f,%f,%f)", v[0], v[1], v[2])
+}
+
+func (a Vector) Float64() Vectorf {
+	return Vectorf{float64(a[0]), float64(a[1]), float64(a[2])}
+}
+
+func (a Vectorf) Add(b Vectorf) Vectorf {
+	return Vectorf{a[0] + b[0], a[1] + b[1], a[2] + b[2]}
+}
+
+func (a Vectorf) Sub(b Vectorf) Vectorf {
+	return Vectorf{a[0] - b[0], a[1] - b[1], a[2] - b[2]}
+}
+
+func (a Vectorf) Div(b float64) Vectorf {
+	return Vectorf{a[0] / b, a[1] / b, a[2] / b}
+}
+
+func (a Vectorf) Mult(b float64) Vectorf {
+	return Vectorf{a[0] * b, a[1] * b, a[2] * b}
 }
 
 // GetShiftVectors returns all possible placements of the inner bounding box
