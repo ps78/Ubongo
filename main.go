@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 )
 
 func main() {
@@ -32,9 +36,22 @@ func main() {
 	sols := g.Solve()
 	fmt.Printf("Found %d solutions for Insane problem\n", len(sols))
 
-	DrawSolution(sols[0], "solution0.png")
+	img := GetSolutionImage(sols[0], 800, 600)
 
-	//s := NewArray3d(3, 3, 3)
-	//s.Set(2, 1, 1, IS_BLOCK)
-	//DrawToFile(s, Blue, Vector{0, 0, 0}, "block.png")
+	a := app.New()
+	w := a.NewWindow("Ubongo")
+	w.Resize(fyne.NewSize(800, 600))
+	w.SetContent(canvas.NewImageFromImage(img))
+
+	/*
+		hello := widget.NewLabel("Hello Fyne!")
+		w.SetContent(container.NewVBox(
+			hello,
+			widget.NewButton("Hi!", func() {
+				hello.SetText("Welcome :)")
+			}),
+		))
+	*/
+
+	w.ShowAndRun()
 }

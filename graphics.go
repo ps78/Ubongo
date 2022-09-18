@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/tidwall/pinhole"
@@ -146,7 +147,7 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, 
 	pn.End()
 }
 
-func DrawSolution(gs *GameSolution, filename string) {
+func GetSolutionImage(gs *GameSolution, width, height int) *image.RGBA {
 
 	pn := pinhole.New()
 
@@ -169,5 +170,5 @@ func DrawSolution(gs *GameSolution, filename string) {
 		LineWidth: 1.0,
 		Scale:     0.9}
 
-	pn.SavePNG(filename, 800, 600, &opt)
+	return pn.Image(width, height, &opt)
 }
