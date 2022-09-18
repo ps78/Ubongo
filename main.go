@@ -32,26 +32,23 @@ func main() {
 	p.Height = 3
 	p.Blocks = []*Block{bf.Blue_v, bf.Yellow_smallhook, bf.Red_flash, bf.Green_T, bf.Red_smallhook, bf.Yellow_gate}
 
-	g := NewGame(p)
-	sols := g.Solve()
-	fmt.Printf("Found %d solutions for Insane problem\n", len(sols))
+	imgWidth := 800
+	imgHeight := 600
 
-	img := GetSolutionImage(sols[0], 800, 600)
+	g := NewGame(p)
+	start := time.Now()
+	sols := g.Solve()
+	runtime := time.Since(start)
+	fmt.Printf("Found %d solutions for Insane problem in %s\n", len(sols), runtime)
+
+	start = time.Now()
+	img := GetSolutionImage(sols[0], imgWidth, imgHeight)
+	runtime = time.Since(start)
+	fmt.Printf("Rendered solution in %s\n", runtime)
 
 	a := app.New()
 	w := a.NewWindow("Ubongo")
-	w.Resize(fyne.NewSize(800, 600))
+	w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
 	w.SetContent(canvas.NewImageFromImage(img))
-
-	/*
-		hello := widget.NewLabel("Hello Fyne!")
-		w.SetContent(container.NewVBox(
-			hello,
-			widget.NewButton("Hi!", func() {
-				hello.SetText("Welcome :)")
-			}),
-		))
-	*/
-
 	w.ShowAndRun()
 }
