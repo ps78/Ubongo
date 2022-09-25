@@ -147,7 +147,7 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, 
 	pn.End()
 }
 
-func GetSolutionImage(gs *GameSolution, width, height int) *image.RGBA {
+func GetSolutionImage(gs *GameSolution, width, height int, rx, ry, rz float64) *image.RGBA {
 
 	pn := pinhole.New()
 
@@ -161,8 +161,7 @@ func GetSolutionImage(gs *GameSolution, width, height int) *image.RGBA {
 		drawBlock(pn, shape, block.Color, pos.Add(offset))
 	}
 
-	pn.Rotate(-2.5, 0, 0)
-	pn.Rotate(0, 0, 0.1)
+	pn.Rotate(-2.5+rx, 0+ry, 0.1+rz)
 	pn.Translate(0.2, -0.2, 0)
 
 	opt := pinhole.ImageOptions{

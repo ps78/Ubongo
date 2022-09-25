@@ -9,6 +9,11 @@ import (
 	"fyne.io/fyne/v2/canvas"
 )
 
+func updateImage(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float64) {
+	img := GetSolutionImage(sol, w, h, rx, ry, rz)
+	win.SetContent(canvas.NewImageFromImage(img))
+}
+
 func main() {
 	f := GetProblemFactory()
 
@@ -41,14 +46,29 @@ func main() {
 	runtime := time.Since(start)
 	fmt.Printf("Found %d solutions for Insane problem in %s\n", len(sols), runtime)
 
-	start = time.Now()
-	img := GetSolutionImage(sols[0], imgWidth, imgHeight)
-	runtime = time.Since(start)
-	fmt.Printf("Rendered solution in %s\n", runtime)
-
 	a := app.New()
 	w := a.NewWindow("Ubongo")
 	w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
-	w.SetContent(canvas.NewImageFromImage(img))
+	updateImage(w, sols[0], imgWidth, imgHeight, 0, 0, 0)
+
+	var RX, RY, RZ float64 = 0.0, 0.0, 0.0
+	go func() {
+		const minFrameTime = 1.0 / 60 // min time to show one frame in seconds
+		const speedRx = 0.0           // radians per second
+		const speedRy = 2.0           // radians per second
+		const speedRz = 0.0           // radians per second
+		lastFrame := time.Now()
+		for range time.Tick(time.Millisecond) {
+			timePassed := float64(time.Since(lastFrame).Seconds())
+			if timePassed >= minFrameTime {
+				updateImage(w, sols[0], imgWidth, imgHeight, RX, RY, RZ)
+				RX += speedRx * timePassed
+				RY += speedRy * timePassed
+				RZ += speedRz * timePassed
+				lastFrame = time.Now()
+			}
+		}
+	}()
+
 	w.ShowAndRun()
 }
