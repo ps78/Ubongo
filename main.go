@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
+	//"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 )
 
@@ -18,57 +18,61 @@ func main() {
 	f := GetProblemFactory()
 
 	for dice := 1; dice <= 10; dice++ {
-		p := f.Get(Difficult, 12, dice)
-		g := NewGame(p)
+		p := f.Get(Easy, 4, dice)
+		if p != nil {
+			g := NewGame(p)
 
-		start := time.Now()
-		solutions := g.Solve()
-		runtime := time.Since(start)
+			start := time.Now()
+			solutions := g.Solve()
+			runtime := time.Since(start)
 
-		//for _, sol := range solutions {
-		//	fmt.Println(sol.String())
-		//}
-		fmt.Printf("%s\tFound %d solutions in %s\n", p, len(solutions), runtime)
+			//for _, sol := range solutions {
+			//	fmt.Println(sol.String())
+			//}
+			fmt.Printf("%s\tFound %d solutions in %s\n", p, len(solutions), runtime)
+		}
 	}
 
-	bf := GetBlockFactory()
-	p := f.Get(Difficult, 12, 1).Clone()
-	p.Difficulty = Insane
-	p.Height = 3
-	p.Blocks = []*Block{bf.Blue_v, bf.Yellow_smallhook, bf.Red_flash, bf.Green_T, bf.Red_smallhook, bf.Yellow_gate}
+	/*
+		bf := GetBlockFactory()
+		p := f.Get(Difficult, 12, 1).Clone()
+		p.Difficulty = Insane
+		p.Height = 3
+		p.Blocks = []*Block{bf.Blue_v, bf.Yellow_smallhook, bf.Red_flash, bf.Green_T, bf.Red_smallhook, bf.Yellow_gate}
 
-	imgWidth := 800
-	imgHeight := 600
+		imgWidth := 800
+		imgHeight := 600
 
-	g := NewGame(p)
-	start := time.Now()
-	sols := g.Solve()
-	runtime := time.Since(start)
-	fmt.Printf("Found %d solutions for Insane problem in %s\n", len(sols), runtime)
+		g := NewGame(p)
+		start := time.Now()
+		sols := g.Solve()
+		runtime := time.Since(start)
+		fmt.Printf("Found %d solutions for Insane problem in %s\n", len(sols), runtime)
 
-	a := app.New()
-	w := a.NewWindow("Ubongo")
-	w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
-	updateImage(w, sols[0], imgWidth, imgHeight, 0, 0, 0)
+		a := app.New()
+		w := a.NewWindow("Ubongo")
+		w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
+		updateImage(w, sols[0], imgWidth, imgHeight, 0, 0, 0)
 
-	var RX, RY, RZ float64 = 0.0, 0.0, 0.0
-	go func() {
-		const minFrameTime = 1.0 / 60 // min time to show one frame in seconds
-		const speedRx = 0.0           // radians per second
-		const speedRy = 2.0           // radians per second
-		const speedRz = 0.0           // radians per second
-		lastFrame := time.Now()
-		for range time.Tick(time.Millisecond) {
-			timePassed := float64(time.Since(lastFrame).Seconds())
-			if timePassed >= minFrameTime {
-				updateImage(w, sols[0], imgWidth, imgHeight, RX, RY, RZ)
-				RX += speedRx * timePassed
-				RY += speedRy * timePassed
-				RZ += speedRz * timePassed
-				lastFrame = time.Now()
+		var RX, RY, RZ float64 = 0.0, 0.0, 0.0
+		go func() {
+			const minFrameTime = 1.0 / 60 // min time to show one frame in seconds
+			const speedRx = 0.0           // radians per second
+			const speedRy = 2.0           // radians per second
+			const speedRz = 0.0           // radians per second
+			lastFrame := time.Now()
+			for range time.Tick(time.Millisecond) {
+				timePassed := float64(time.Since(lastFrame).Seconds())
+				if timePassed >= minFrameTime {
+					updateImage(w, sols[0], imgWidth, imgHeight, RX, RY, RZ)
+					RX += speedRx * timePassed
+					RY += speedRy * timePassed
+					RZ += speedRz * timePassed
+					lastFrame = time.Now()
+				}
 			}
-		}
-	}()
+		}()
 
-	w.ShowAndRun()
+		w.ShowAndRun()
+	*/
 }

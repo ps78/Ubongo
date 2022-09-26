@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"image/color"
+	"math"
 
 	"github.com/tidwall/pinhole"
 )
@@ -161,8 +162,9 @@ func GetSolutionImage(gs *GameSolution, width, height int, rx, ry, rz float64) *
 		drawBlock(pn, shape, block.Color, pos.Add(offset))
 	}
 
-	pn.Rotate(-2.5+rx, 0+ry, 0.1+rz)
-	pn.Translate(0.2, -0.2, 0)
+	pn.Translate(0, 0, -0.2)
+	//pn.Rotate(-2.5+rx, 0+ry, 0.1+rz)
+	pn.Rotate(math.Pi/2+rx, 0.0+ry, 0.0+rz)
 
 	opt := pinhole.ImageOptions{
 		BGColor:   color.Black,
