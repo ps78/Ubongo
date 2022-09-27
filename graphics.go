@@ -157,14 +157,14 @@ func GetSolutionImage(gs *GameSolution, width, height int, rx, ry, rz float64) *
 	for i, block := range gs.Blocks {
 		shape := gs.Shapes[i]
 		pos := gs.Shifts[i].Float64()
-		offset := pos.Sub(gameCog).Mult(0.2)
+		offset := pos.Sub(gameCog).Mult(0.1)
 
 		drawBlock(pn, shape, block.Color, pos.Add(offset))
 	}
 
 	pn.Translate(0, 0, -0.2)
 	//pn.Rotate(-2.5+rx, 0+ry, 0.1+rz)
-	pn.Rotate(math.Pi/2+rx, 0.0+ry, 0.0+rz)
+	pn.Rotate(math.Pi/2-0.3+rx, ry, 0.0+rz)
 
 	opt := pinhole.ImageOptions{
 		BGColor:   color.Black,
