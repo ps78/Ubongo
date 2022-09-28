@@ -613,6 +613,54 @@ func createAllProblems(f *BlockFactory) []*Problem {
 		10: {f.Blue_bighook, f.Green_L, f.Blue_v, f.Yellow_smallhook}}
 	problems = append(problems, createProblems(8, Difficult, topShape, bottomShape, blockNums, f)...)
 
+	// B9
+	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Green_L, f.Blue_v, f.Green_T, f.Yellow_bighook},
+		2:  {f.Green_L, f.Blue_v, f.Red_smallhook, f.Blue_lighter},
+		3:  {f.Red_smallhook, f.Yellow_smallhook, f.Blue_lighter, f.Blue_v},
+		4:  {f.Yellow_bighook, f.Blue_v, f.Green_T, f.Red_flash},
+		5:  {f.Blue_lighter, f.Blue_v, f.Green_L, f.Yellow_smallhook},
+		6:  {f.Blue_lighter, f.Blue_v, f.Green_flash, f.Blue_bighook},
+		7:  {f.Red_bighook, f.Red_stool, f.Green_L, f.Yellow_smallhook},
+		8:  {f.Red_bighook, f.Blue_v, f.Green_bighook, f.Blue_lighter},
+		9:  {f.Blue_flash, f.Red_smallhook, f.Yellow_smallhook, f.Blue_lighter},
+		10: {f.Green_L, f.Blue_lighter, f.Blue_bighook, f.Yellow_smallhook}}
+	problems = append(problems, createProblems(9, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B10
+	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Yellow_smallhook, f.Blue_lighter, f.Blue_v, f.Green_L},
+		2:  {f.Red_flash, f.Blue_v, f.Red_smallhook, f.Blue_lighter},
+		3:  {f.Blue_v, f.Red_flash, f.Green_flash, f.Green_T},
+		4:  {f.Red_smallhook, f.Red_flash, f.Green_flash, f.Blue_v},
+		5:  {f.Blue_v, f.Yellow_smallhook, f.Green_L, f.Green_flash},
+		6:  {f.Green_L, f.Yellow_smallhook, f.Blue_flash, f.Yellow_bighook},
+		7:  {f.Red_stool, f.Blue_lighter, f.Green_flash, f.Blue_v},
+		8:  {f.Blue_flash, f.Blue_bighook, f.Green_L, f.Yellow_smallhook},
+		9:  {f.Red_flash, f.Green_L, f.Yellow_bighook, f.Blue_bighook},
+		10: {f.Blue_v, f.Green_flash, f.Red_bighook, f.Blue_lighter}}
+	problems = append(problems, createProblems(10, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B11
+	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, -1}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Green_L, f.Red_smallhook, f.Blue_v, f.Red_stool},
+		2:  {f.Blue_v, f.Green_L, f.Red_flash, f.Blue_bighook},
+		3:  {f.Green_L, f.Red_smallhook, f.Blue_v, f.Blue_lighter},
+		4:  {f.Yellow_smallhook, f.Green_bighook, f.Blue_v, f.Green_L},
+		5:  {f.Yellow_gate, f.Green_L, f.Blue_v, f.Red_smallhook},
+		6:  {f.Yellow_hello, f.Red_flash, f.Blue_lighter, f.Red_smallhook},
+		7:  {f.Yellow_hello, f.Yellow_gate, f.Red_flash, f.Red_smallhook},
+		8:  {f.Blue_bighook, f.Red_smallhook, f.Yellow_smallhook, f.Blue_lighter},
+		9:  {f.Green_L, f.Green_T, f.Yellow_gate, f.Blue_bighook},
+		10: {f.Red_smallhook, f.Green_L, f.Red_bighook, f.Green_flash}}
+	problems = append(problems, createProblems(11, Difficult, topShape, bottomShape, blockNums, f)...)
+
 	// B12
 	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
 	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
@@ -628,6 +676,134 @@ func createAllProblems(f *BlockFactory) []*Problem {
 		9:  {f.Red_stool, f.Red_flash, f.Yellow_bighook, f.Red_smallhook},
 		10: {f.Yellow_smallhook, f.Red_stool, f.Red_smallhook, f.Green_bighook}}
 	problems = append(problems, createProblems(12, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// 13
+	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{0, -1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Yellow_bighook, f.Red_smallhook, f.Blue_bighook, f.Yellow_smallhook},
+		2:  {f.Yellow_smallhook, f.Red_bighook, f.Red_flash, f.Yellow_gate},
+		3:  {f.Green_L, f.Green_flash, f.Yellow_smallhook, f.Blue_bighook},
+		4:  {f.Yellow_hello, f.Yellow_gate, f.Yellow_bighook, f.Blue_v},
+		5:  {f.Blue_v, f.Red_stool, f.Red_bighook, f.Yellow_hello},
+		6:  {f.Green_L, f.Blue_bighook, f.Red_bighook, f.Yellow_smallhook},
+		7:  {f.Red_stool, f.Red_smallhook, f.Green_T, f.Blue_bighook},
+		8:  {f.Red_smallhook, f.Blue_lighter, f.Blue_flash, f.Green_L},
+		9:  {f.Blue_v, f.Blue_bighook, f.Yellow_gate, f.Red_stool},
+		10: {f.Yellow_hello, f.Red_flash, f.Red_smallhook, f.Red_stool}}
+	problems = append(problems, createProblems(13, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B14
+	topShape = NewArray2dFromData([][]int8{{0, -1, -1, -1}, {0, 0, -1, -1}, {0, 0, 0, -1}, {-1, 0, 0, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Blue_lighter, f.Yellow_smallhook, f.Yellow_hello, f.Green_L},
+		2:  {f.Yellow_gate, f.Red_smallhook, f.Red_flash, f.Yellow_bighook},
+		3:  {f.Green_bighook, f.Blue_lighter, f.Green_T, f.Red_smallhook},
+		4:  {f.Red_flash, f.Green_L, f.Yellow_hello, f.Blue_lighter},
+		5:  {f.Green_flash, f.Green_L, f.Yellow_smallhook, f.Blue_flash},
+		6:  {f.Green_L, f.Green_bighook, f.Yellow_bighook, f.Red_smallhook},
+		7:  {f.Yellow_smallhook, f.Red_smallhook, f.Green_flash, f.Red_stool},
+		8:  {f.Blue_bighook, f.Red_smallhook, f.Blue_lighter, f.Yellow_smallhook},
+		9:  {f.Yellow_gate, f.Red_stool, f.Green_T, f.Yellow_smallhook},
+		10: {f.Green_flash, f.Red_smallhook, f.Red_flash, f.Yellow_hello}}
+	problems = append(problems, createProblems(14, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B15
+	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {0, 0, -1}})
+	blockNums = map[int][]*Block{
+		1:  {f.Yellow_hello, f.Green_bighook, f.Blue_lighter, f.Blue_v},
+		2:  {f.Yellow_smallhook, f.Blue_lighter, f.Red_smallhook, f.Yellow_hello},
+		3:  {f.Green_L, f.Red_smallhook, f.Yellow_gate, f.Blue_flash},
+		4:  {f.Blue_lighter, f.Green_L, f.Green_T, f.Blue_bighook},
+		5:  {f.Red_smallhook, f.Green_bighook, f.Yellow_smallhook, f.Red_stool},
+		6:  {f.Green_bighook, f.Red_smallhook, f.Red_stool, f.Green_L},
+		7:  {f.Green_L, f.Red_stool, f.Blue_lighter, f.Red_smallhook},
+		8:  {f.Blue_flash, f.Red_flash, f.Green_L, f.Red_stool},
+		9:  {f.Red_bighook, f.Green_bighook, f.Green_L, f.Red_smallhook},
+		10: {f.Green_L, f.Green_flash, f.Green_bighook, f.Red_smallhook}}
+	problems = append(problems, createProblems(15, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B16
+	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, -1}, {0, -1, -1}})
+	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {0, -1, -1}})
+	blockNums = map[int][]*Block{
+		1:  {f.Green_L, f.Blue_bighook, f.Red_stool, f.Yellow_smallhook},
+		2:  {f.Red_smallhook, f.Green_L, f.Blue_lighter, f.Red_stool},
+		3:  {f.Yellow_hello, f.Red_stool, f.Blue_v, f.Green_bighook},
+		4:  {f.Blue_lighter, f.Red_smallhook, f.Green_L, f.Blue_bighook},
+		5:  {f.Yellow_smallhook, f.Red_stool, f.Red_flash, f.Yellow_hello},
+		6:  {f.Green_flash, f.Yellow_smallhook, f.Green_L, f.Red_bighook},
+		7:  {f.Green_flash, f.Green_T, f.Blue_lighter, f.Green_L},
+		8:  {f.Green_bighook, f.Green_L, f.Yellow_smallhook, f.Green_flash},
+		9:  {f.Yellow_bighook, f.Blue_lighter, f.Red_smallhook, f.Green_L},
+		10: {f.Red_stool, f.Blue_v, f.Green_bighook, f.Blue_bighook}}
+	problems = append(problems, createProblems(16, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B17
+	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, -1}})
+	blockNums = map[int][]*Block{
+		1:  {f.Blue_lighter, f.Blue_bighook, f.Green_bighook, f.Blue_v},
+		2:  {f.Red_stool, f.Green_L, f.Green_bighook, f.Yellow_smallhook},
+		3:  {f.Green_T, f.Green_L, f.Red_stool, f.Green_bighook},
+		4:  {f.Yellow_gate, f.Green_flash, f.Blue_v, f.Green_bighook},
+		5:  {f.Yellow_smallhook, f.Green_L, f.Green_flash, f.Red_bighook},
+		6:  {f.Yellow_smallhook, f.Yellow_hello, f.Blue_lighter, f.Green_L},
+		7:  {f.Green_flash, f.Yellow_smallhook, f.Blue_bighook, f.Green_L},
+		8:  {f.Blue_lighter, f.Yellow_smallhook, f.Yellow_bighook, f.Green_T},
+		9:  {f.Blue_flash, f.Red_smallhook, f.Red_bighook, f.Green_L},
+		10: {f.Green_L, f.Blue_lighter, f.Yellow_smallhook, f.Green_flash}}
+	problems = append(problems, createProblems(17, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B18
+	topShape = NewArray2dFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, -1, 0, -1}})
+	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Red_stool, f.Red_smallhook, f.Yellow_smallhook, f.Blue_flash},
+		2:  {f.Yellow_smallhook, f.Blue_bighook, f.Blue_flash, f.Red_smallhook},
+		3:  {f.Yellow_hello, f.Red_bighook, f.Red_smallhook, f.Yellow_smallhook},
+		4:  {f.Red_stool, f.Red_bighook, f.Blue_v, f.Green_bighook},
+		5:  {f.Blue_flash, f.Red_stool, f.Blue_bighook, f.Blue_v},
+		6:  {f.Yellow_bighook, f.Red_smallhook, f.Green_L, f.Blue_flash},
+		7:  {f.Red_smallhook, f.Green_L, f.Yellow_bighook, f.Red_stool},
+		8:  {f.Blue_flash, f.Yellow_smallhook, f.Blue_lighter, f.Green_L},
+		9:  {f.Green_L, f.Blue_bighook, f.Yellow_smallhook, f.Green_flash},
+		10: {f.Green_L, f.Green_flash, f.Red_flash, f.Yellow_bighook}}
+	problems = append(problems, createProblems(18, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B19
+	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
+	blockNums = map[int][]*Block{
+		1:  {f.Red_stool, f.Green_bighook, f.Yellow_smallhook, f.Red_smallhook},
+		2:  {f.Blue_v, f.Green_flash, f.Red_stool, f.Blue_bighook},
+		3:  {f.Yellow_hello, f.Red_stool, f.Green_bighook, f.Blue_v},
+		4:  {f.Red_stool, f.Blue_bighook, f.Green_L, f.Red_smallhook},
+		5:  {f.Red_smallhook, f.Blue_flash, f.Red_stool, f.Red_flash},
+		6:  {f.Green_L, f.Blue_bighook, f.Green_flash, f.Green_T},
+		7:  {f.Green_L, f.Yellow_hello, f.Blue_lighter, f.Red_smallhook},
+		8:  {f.Blue_lighter, f.Green_bighook, f.Red_smallhook, f.Yellow_smallhook},
+		9:  {f.Blue_bighook, f.Blue_lighter, f.Green_L, f.Red_smallhook},
+		10: {f.Blue_bighook, f.Red_stool, f.Green_bighook, f.Blue_v}}
+	problems = append(problems, createProblems(19, Difficult, topShape, bottomShape, blockNums, f)...)
+
+	// B20
+	topShape = NewArray2dFromData([][]int8{{0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, -1, 0, 0}, {-1, -1, -1, 0}})
+	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {-1, 0, 0}})
+	blockNums = map[int][]*Block{
+		1:  {f.Green_L, f.Red_smallhook, f.Red_stool, f.Green_flash},
+		2:  {f.Yellow_bighook, f.Blue_flash, f.Red_smallhook, f.Yellow_smallhook},
+		3:  {f.Green_L, f.Yellow_smallhook, f.Blue_flash, f.Red_stool},
+		4:  {f.Red_smallhook, f.Green_L, f.Blue_lighter, f.Red_stool},
+		5:  {f.Blue_bighook, f.Green_flash, f.Blue_v, f.Red_stool},
+		6:  {f.Green_bighook, f.Blue_flash, f.Yellow_smallhook, f.Green_L},
+		7:  {f.Green_L, f.Red_stool, f.Red_flash, f.Blue_bighook},
+		8:  {f.Green_T, f.Green_bighook, f.Blue_flash, f.Red_smallhook},
+		9:  {f.Green_bighook, f.Yellow_smallhook, f.Green_L, f.Red_stool},
+		10: {f.Green_L, f.Blue_bighook, f.Blue_lighter, f.Yellow_smallhook}}
+	problems = append(problems, createProblems(20, Difficult, topShape, bottomShape, blockNums, f)...)
 
 	return problems
 }
