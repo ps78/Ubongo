@@ -17,7 +17,7 @@ func updateImage(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float6
 func main() {
 	f := GetProblemFactory()
 
-	for card := 17; card <= 20; card++ {
+	for card := 1; card <= 36; card++ {
 		for dice := 1; dice <= 10; dice++ {
 			p := f.Get(Difficult, card, dice)
 			if p != nil {
