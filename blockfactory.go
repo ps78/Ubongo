@@ -24,6 +24,7 @@ type BlockFactory struct {
 	Block          map[int]*Block // access block by number
 	MinBlockNumber int
 	MaxBlockNumber int
+	BlockByVolume  map[int]([]*Block) // access blocks by volume (3, 4 or 5)
 
 	// accessors for blocks by name, for convenience
 	Yellow_hello     *Block
@@ -83,6 +84,15 @@ func GetBlockFactory() *BlockFactory {
 		f.Green_bighook = f.Block[14]
 		f.Green_T = f.Block[15]
 		f.Green_L = f.Block[16]
+
+		// add the blocks to the volume-map
+		f.BlockByVolume = make(map[int]([]*Block), 0)
+		for _, b := range f.Block {
+			if _, ok := f.BlockByVolume[b.Volume]; !ok {
+				f.BlockByVolume[b.Volume] = make([]*Block, 0)
+			}
+			f.BlockByVolume[b.Volume] = append(f.BlockByVolume[b.Volume], b)
+		}
 
 		blockFactoryInstance = f
 	})

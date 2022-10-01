@@ -16,7 +16,7 @@ func TestUbongoDifficultyString(t *testing.T) {
 }
 
 func TestProblemString(t *testing.T) {
-	p := NewProblem(1, Easy, 2, NewArray2d(5, 3), []*Block{})
+	p := NewProblem(1, 2, Easy, 2, Elephant, NewArray2d(5, 3), []*Block{})
 	s := p.String()
 	assert.True(t, len(s) > 10)
 }
@@ -29,24 +29,26 @@ func TestNewProblem(t *testing.T) {
 		Difficult: []*Block{f.Get(2), f.Get(6), f.Get(10), f.Get(12)},
 		Insane:    []*Block{f.Get(3), f.Get(7), f.Get(12), f.Get(13), f.Get(16)}}
 
-	heights := map[UbongoDifficulty]int{
+	height := map[UbongoDifficulty]int{
 		Easy:      2,
 		Difficult: 2,
-		Insane:    3}
+		Insane:    3,
+	}
+	var animal UbongoAnimal = Zebra
 
 	shape := NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}})
 	for _, diff := range []UbongoDifficulty{Easy, Difficult, Insane} {
 		for cardNum := 1; cardNum <= 36; cardNum++ {
 			for probNum := 1; probNum <= 10; probNum++ {
-				p := NewProblem(cardNum, diff, probNum, shape, blocks[diff])
+				p := NewProblem(cardNum, probNum, diff, height[diff], animal, shape, blocks[diff])
 				assert.Equal(t, diff, p.Difficulty)
 				assert.Equal(t, cardNum, p.CardNumber)
 				assert.Equal(t, probNum, p.DiceNumber)
 				assert.True(t, shape.IsEqual(p.Shape))
-				assert.True(t, len(p.Animal) > 0)
-				assert.Equal(t, heights[diff], p.Height)
+				assert.Equal(t, animal, p.Animal)
+				assert.Equal(t, height[diff], p.Height)
 				assert.Equal(t, shape.Count(0), p.Area)
-				assert.Equal(t, Vector{2, 3, heights[diff]}, p.BoundingBox)
+				assert.Equal(t, Vector{2, 3, height[diff]}, p.BoundingBox)
 			}
 		}
 	}
