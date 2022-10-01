@@ -57,3 +57,24 @@ func TestFindArray3d(t *testing.T) {
 	assert.Equal(t, -1, idx)
 	assert.False(t, ok)
 }
+
+func TestCreatePartitions(t *testing.T) {
+	n := 21
+	parts := []int{3, 4, 5}
+	partLen := 5
+	maxCounts := map[int]int{3: 1, 4: 10, 5: 10}
+	partitions := CreateParitions(n, parts, maxCounts, partLen)
+
+	assert.Equal(t, 2, len(partitions))
+	for _, part := range partitions {
+		fmt.Println(part)
+		sum := 0
+		count := 0
+		for k, v := range part {
+			sum += k * v
+			count += v
+		}
+		assert.Equal(t, n, sum)
+		assert.Equal(t, partLen, count)
+	}
+}
