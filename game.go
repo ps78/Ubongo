@@ -2,32 +2,21 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 )
-
-type Blockset []*Block
-
-func (bs Blockset) String() string {
-	s := "["
-	for i := 0; i < len(bs); i++ {
-		if i != 0 {
-			s += ", "
-		}
-		s += fmt.Sprintf("%s %s", bs[i].Color, bs[i].Name)
-	}
-	return s + "]"
-}
 
 type Game struct {
 	Shape  *Array2d
 	Volume *Array3d
-	Blocks Blockset
+	Blocks *Blockset
 }
 
-// the following constants define the allowed values of the shape and volume array values of a game
+// value of an area or volume representing empty space (but part of shape/volume)
 const EMPTY int8 = 0
+
+// value of a volume representing a space in a volume occupied by a block
 const OCCUPIED int8 = 1
+
+// value of an area or volume representing a space outside the area/volume
 const OUTSIDE int8 = -1
 
 // The number of blocks of each type in the original Ubongo game
@@ -53,12 +42,10 @@ var UbongoBlockSet map[int]int = map[int]int{
 
 // Creates a new game, initialized with the given shape and height and an empty volume
 func NewGame(p *Problem) *Game {
-	blockCopy := make([]*Block, len(p.Blocks))
-	copy(blockCopy, p.Blocks)
 	return &Game{
 		Shape:  p.Shape.Clone(),
 		Volume: p.Shape.Extrude(p.Height),
-		Blocks: blockCopy}
+		Blocks: p.Blocks.Clone()}
 }
 
 // Returns a nicely formatted string representation of the game
@@ -80,12 +67,10 @@ func (g *Game) Clear() {
 
 // Creates a copy of the game
 func (g *Game) Clone() *Game {
-	blocksCopy := make([]*Block, len(g.Blocks))
-	copy(blocksCopy, g.Blocks)
 	return &Game{
 		Shape:  g.Shape.Clone(),
 		Volume: g.Volume.Clone(),
-		Blocks: blocksCopy}
+		Blocks: g.Blocks.Clone()}
 }
 
 // Tries to add the given block to the game volume
@@ -156,11 +141,7 @@ func (g *Game) RemoveBlock(block *Array3d, pos Vector) bool {
 // Finds all solutino for a given game using the set of blocks provided
 func (g *Game) Solve() []*GameSolution {
 	// check the sum of the block volumes, it must match the empty volume of the game to yield a solution
-	sum := 0
-	for _, b := range g.Blocks {
-		sum += b.Volume
-	}
-	if g.Volume.Count(EMPTY) != sum {
+	if g.Volume.Count(EMPTY) != g.Blocks.Volume() {
 		return []*GameSolution{}
 	}
 
@@ -178,7 +159,7 @@ func (g *Game) Solve() []*GameSolution {
 func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]*GameSolution) {
 	gameBox := g.Volume.GetBoundingBox()
 
-	block := g.Blocks[blockIdx]
+	block := g.Blocks.At(blockIdx)
 
 	for _, shape := range block.Shapes {
 		*shapes = append(*shapes, shape)
@@ -190,10 +171,10 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 				*shifts = append(*shifts, shift)
 
 				// if this was the last block, stop recursion
-				if blockIdx == len(g.Blocks)-1 {
+				if blockIdx == g.Blocks.Count-1 {
 					// check if we have a solution
 					if g.Volume.Count(0) == 0 {
-						*solutions = append(*solutions, NewGameSolution(g.Blocks, *shapes, *shifts))
+						*solutions = append(*solutions, NewGameSolution(g.Blocks.AsSlice(), *shapes, *shifts))
 					}
 					// if it wasn't the last block, continue recursion
 				} else {
@@ -209,46 +190,4 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 		*shapes = (*shapes)[:len(*shapes)-1]
 
 	} // end loop over shapes
-}
-
-// CreateBlockSets returns resultCount blocksets randomly generated
-// from all blocks such that:
-//   - the sum of the blockvolumes equals volume
-//   - the number of blocks in each set is equal to blockCount
-//   - every block type is only used once
-func CreateBlockSets(bf *BlockFactory, volume, blockCount, resultCount int) []Blockset {
-
-	// create a map that holds all blocks of the same volume in the same key
-	// where the key is the block volume
-	blockByVolume := make(map[int]Blockset)
-	for _, block := range bf.GetAll() {
-		if _, ok := blockByVolume[block.Volume]; !ok {
-			blockByVolume[block.Volume] = make(Blockset, 0)
-		}
-		blockByVolume[block.Volume] = append(blockByVolume[block.Volume], block)
-	}
-
-	// create all possible partitions that define how many blocks of a specific volume
-	// are used to fill the volume
-	partitions := CreateParitions(volume, []int{3, 4, 5}, map[int]int{3: 1, 4: 10, 5: 10}, blockCount)
-	partCount := len(partitions)
-
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-
-	results := make([]Blockset, resultCount)
-	for i := 0; i < resultCount; i++ {
-		curResult := make(Blockset, blockCount)
-		partition := partitions[r.Intn(partCount)]
-
-		curResultIdx := 0
-		for vol, count := range partition {
-			for j := 0; j < count; j++ {
-				bl := blockByVolume[vol][r.Intn(len(blockByVolume[vol]))]
-				curResult[curResultIdx] = bl
-				curResultIdx++
-			}
-		}
-		results[i] = curResult
-	}
-	return results
 }

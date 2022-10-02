@@ -16,12 +16,14 @@ func updateImage(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float6
 }
 
 func main() {
-	//fp := GetProblemFactory()
+	fp := GetCardFactory()
 	fb := GetBlockFactory()
 
-	blocksets := CreateBlockSets(fb, 21, 5, 10)
-	for _, bs := range blocksets {
-		fmt.Println(bs)
+	shape := fp.Get(Easy, 1).Problems[1].Shape
+	problems := GenerateProblems(fb, shape, 3, 5, 20)
+
+	for _, p := range problems {
+		fmt.Println(p.Blocks)
 	}
 
 	// solve all problems:

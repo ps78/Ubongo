@@ -112,7 +112,7 @@ func TestGetBoundingBox(t *testing.T) {
 	assert.True(t, box[0] == a.DimX && box[1] == a.DimY && box[2] == a.DimZ, "Bounding box dimensions are wrong")
 }
 
-func TestApply(t *testing.T) {
+func TestArray3dApply(t *testing.T) {
 	f := func(x, y, z int, currentValue int8) int8 {
 		return int8(x + y + z)
 	}
@@ -127,7 +127,7 @@ func TestApply(t *testing.T) {
 	}
 }
 
-func TestAllTrue(t *testing.T) {
+func TestArray3dAllTrue(t *testing.T) {
 	a := NewArray3dFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
 
 	assert.True(t, a.AllTrue(func(x, y, z int, v int8) bool {
@@ -139,7 +139,7 @@ func TestAllTrue(t *testing.T) {
 	}))
 }
 
-func TestRotateZ(t *testing.T) {
+func TestArray3dRotateZ(t *testing.T) {
 	orig := NewArray3dFromData([][][]int8{{{0}, {3}}, {{1}, {4}}, {{2}, {5}}})
 	exp := NewArray3dFromData([][][]int8{{{3}, {4}, {5}}, {{0}, {1}, {2}}})
 	r := orig.RotateZ()
@@ -157,7 +157,7 @@ func TestRotateZ(t *testing.T) {
 	assert.True(t, orig.IsEqual(orig.RotateZ().RotateZ().RotateZ().RotateZ()))
 }
 
-func TestRotateY(t *testing.T) {
+func TestArray3dRotateY(t *testing.T) {
 	orig := NewArray3dFromData([][][]int8{{{3, 0}}, {{4, 1}}, {{5, 2}}})
 	exp := NewArray3dFromData([][][]int8{{{5, 4, 3}}, {{2, 1, 0}}})
 	r := orig.RotateY()
@@ -175,7 +175,7 @@ func TestRotateY(t *testing.T) {
 	assert.True(t, orig.IsEqual(orig.RotateY().RotateY().RotateY().RotateY()))
 }
 
-func TestRotateX(t *testing.T) {
+func TestArray3dRotateX(t *testing.T) {
 	orig := NewArray3dFromData([][][]int8{{{0, 1, 2}, {3, 4, 5}}})
 	exp := NewArray3dFromData([][][]int8{{{3, 0}, {4, 1}, {5, 2}}})
 	r := orig.RotateX()
@@ -193,7 +193,7 @@ func TestRotateX(t *testing.T) {
 	assert.True(t, orig.IsEqual(orig.RotateX().RotateX().RotateX().RotateX()))
 }
 
-func TestGetCenterOfGravity(t *testing.T) {
+func TestArray3dGetCenterOfGravity(t *testing.T) {
 	a := NewArray3d(5, 5, 5)
 	a.Set(0, 2, 3, IS_BLOCK)
 	a.Set(1, 2, 4, IS_BLOCK)

@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewGame(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	g := NewGame(p)
 
 	assert.True(t, g.Shape.IsEqual(p.Shape), "Shape is wrong")
@@ -15,7 +15,7 @@ func TestNewGame(t *testing.T) {
 }
 
 func TestGameString(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	g := NewGame(p)
 	s := g.String()
 	assert.True(t, len(s) > 10)
@@ -23,14 +23,14 @@ func TestGameString(t *testing.T) {
 
 func TestGameSolution(t *testing.T) {
 	f := GetBlockFactory()
-	b := []*Block{f.Get(1), f.Get(2)}
+	b := []*Block{f.ByNumber(1), f.ByNumber(2)}
 	gs := NewGameSolution(b, []*Array3d{b[0].Shapes[0], b[1].Shapes[0]}, []Vector{{0, 0, 0}, {0, 0, 0}})
 	s := gs.String()
 	assert.True(t, len(s) > 10)
 }
 
 func TestClear(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	g := NewGame(p)
 
 	g.Volume.Set(0, 1, 0, OCCUPIED)
@@ -43,17 +43,17 @@ func TestClear(t *testing.T) {
 }
 
 func TestClone(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	g := NewGame(p)
 	c := g.Clone()
 
 	assert.True(t, g.Shape.IsEqual(c.Shape), "Shape does not match")
 	assert.True(t, g.Volume.IsEqual(c.Volume), "Volume does not match")
-	assert.Equal(t, len(g.Blocks), len(c.Blocks), "Block arrays do not match")
+	assert.True(t, g.Blocks.IsEqual(c.Blocks), "Block arrays do not match")
 }
 
 func TestTryAddBlock(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	p.Shape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
 	g := NewGame(p)
 	origVolume := g.Volume.Clone()
@@ -85,7 +85,7 @@ func TestRemoveBlock(t *testing.T) {
 	assert.True(t, g.Volume.IsEqual(origVolume), "The the volume changed after a failed RemoveBlock() call")
 
 	// test case where removal works
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	p.Shape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
 	exp := NewGame(p)
 	ok := g.RemoveBlock(blockShape, pos)
@@ -94,8 +94,8 @@ func TestRemoveBlock(t *testing.T) {
 }
 
 func TestSolveNoSolution(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1).Clone()
-	p.Blocks[3] = GetBlockFactory().Green_T
+	p := GetCardFactory().Get(Difficult, 12).Problems[1].Clone()
+	p.Blocks.RemoveAt(3)
 	g := NewGame(p)
 	solutions := g.Solve()
 
@@ -103,7 +103,7 @@ func TestSolveNoSolution(t *testing.T) {
 }
 
 func TestSolve(t *testing.T) {
-	p := GetProblemFactory().Get(Difficult, 12, 1)
+	p := GetCardFactory().Get(Difficult, 12).Problems[1]
 	g := NewGame(p)
 
 	solutions := g.Solve()

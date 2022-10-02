@@ -17,7 +17,7 @@ func TestBlockColorString(t *testing.T) {
 }
 
 func TestBlockString(t *testing.T) {
-	b := GetBlockFactory().Get(1)
+	b := GetBlockFactory().ByNumber(1)
 	assert.True(t, len(b.String()) > 0)
 }
 
@@ -25,15 +25,15 @@ func TestBlockFactoryGet(t *testing.T) {
 	f := GetBlockFactory()
 	var nilBlock *Block = nil
 
-	assert.Equal(t, nilBlock, f.Get(f.MinBlockNumber-1))
-	assert.Equal(t, nilBlock, f.Get(f.MaxBlockNumber+1))
+	assert.Equal(t, nilBlock, f.ByNumber(f.MinBlockNumber-1))
+	assert.Equal(t, nilBlock, f.ByNumber(f.MaxBlockNumber+1))
 	for n := f.MinBlockNumber; n <= f.MaxBlockNumber; n++ {
-		assert.True(t, f.Get(n) != nil)
+		assert.True(t, f.ByNumber(n) != nil)
 	}
 
 	// test that repeatedely returning the same block does not create a new instance
-	var a *Block = f.Get(1)
-	var b *Block = f.Get(1)
+	var a *Block = f.ByNumber(1)
+	var b *Block = f.ByNumber(1)
 	assert.True(t, a == b, "References to block are not identical after repeated BlockFactory.Get() calls")
 }
 

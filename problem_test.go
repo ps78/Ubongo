@@ -1,55 +1,68 @@
 package main
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUbongoDifficultyString(t *testing.T) {
+func TestNewProblem(t *testing.T) {
+	bf := GetBlockFactory()
+	shape := NewArray2dFromData([][]int8{{0, 0}, {-1, 0}})
+	bs := NewBlockset(bf.Green_L, bf.Blue_v)
+	p := NewProblem(shape, 2, bs)
 
-	assert.Equal(t, "unknown", strings.ToLower(UbongoDifficulty(99).String()))
-	assert.NotEqual(t, "unknown", strings.ToLower(Easy.String()))
-	assert.NotEqual(t, "unknown", strings.ToLower(Difficult.String()))
-	assert.NotEqual(t, "unknown", strings.ToLower(Insane.String()))
+	assert.True(t, shape.IsEqual(p.Shape))
+	assert.Equal(t, 2, p.Height)
+	assert.True(t, bs.IsEqual(p.Blocks))
 }
 
 func TestProblemString(t *testing.T) {
-	p := NewProblem(1, 2, Easy, 2, Elephant, NewArray2d(5, 3), []*Block{})
+	bf := GetBlockFactory()
+	p := NewProblem(NewArray2d(2, 2), 2, NewBlockset(bf.Blue_flash))
 	s := p.String()
 	assert.True(t, len(s) > 10)
 }
 
-func TestNewProblem(t *testing.T) {
-	f := GetBlockFactory()
+func TestProblemClone(t *testing.T) {
+	bf := GetBlockFactory()
+	shape := NewArray2dFromData([][]int8{{0, 0}, {-1, 0}})
+	bs := NewBlockset(bf.Green_L, bf.Blue_v)
+	p := NewProblem(shape, 2, bs)
+	c := p.Clone()
 
-	blocks := map[UbongoDifficulty]([]*Block){
-		Easy:      []*Block{f.Get(1), f.Get(5), f.Get(9)},
-		Difficult: []*Block{f.Get(2), f.Get(6), f.Get(10), f.Get(12)},
-		Insane:    []*Block{f.Get(3), f.Get(7), f.Get(12), f.Get(13), f.Get(16)}}
+	assert.Equal(t, p.Height, c.Height)
+	assert.True(t, shape.IsEqual(p.Shape))
+	assert.True(t, bs.IsEqual(c.Blocks))
+	assert.Equal(t, p.BoundingBox, c.BoundingBox)
+	assert.Equal(t, p.Area, c.Area)
+}
 
-	height := map[UbongoDifficulty]int{
-		Easy:      2,
-		Difficult: 2,
-		Insane:    3,
-	}
-	var animal UbongoAnimal = Zebra
+func TestProblemIsEqual(t *testing.T) {
+	bf := GetBlockFactory()
+	a := NewProblem(NewArray2d(2, 2), 2, NewBlockset(bf.Blue_flash))
+	b := NewProblem(NewArray2d(2, 2), 2, NewBlockset(bf.Blue_flash))
+	c := NewProblem(NewArray2d(3, 2), 3, NewBlockset(bf.Blue_flash))
+	d := NewProblem(NewArray2d(2, 2), 2, NewBlockset(bf.Red_flash))
+	assert.True(t, a.IsEqual(b))
+	assert.False(t, a.IsEqual(c))
+	assert.False(t, a.IsEqual(d))
+	assert.False(t, a.IsEqual(nil))
+}
 
-	shape := NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}})
-	for _, diff := range []UbongoDifficulty{Easy, Difficult, Insane} {
-		for cardNum := 1; cardNum <= 36; cardNum++ {
-			for probNum := 1; probNum <= 10; probNum++ {
-				p := NewProblem(cardNum, probNum, diff, height[diff], animal, shape, blocks[diff])
-				assert.Equal(t, diff, p.Difficulty)
-				assert.Equal(t, cardNum, p.CardNumber)
-				assert.Equal(t, probNum, p.DiceNumber)
-				assert.True(t, shape.IsEqual(p.Shape))
-				assert.Equal(t, animal, p.Animal)
-				assert.Equal(t, height[diff], p.Height)
-				assert.Equal(t, shape.Count(0), p.Area)
-				assert.Equal(t, Vector{2, 3, height[diff]}, p.BoundingBox)
-			}
-		}
+func TestGenerateProblems(t *testing.T) {
+	fp := GetCardFactory()
+	fb := GetBlockFactory()
+
+	shape := fp.Get(Easy, 1).Problems[1].Shape
+	problems := GenerateProblems(fb, shape, 3, 5, 10)
+
+	assert.Equal(t, 10, len(problems))
+
+	// check that each problem has a solution
+	for _, p := range problems {
+		g := NewGame(p)
+		solutions := g.Solve()
+		assert.Less(t, 0, len(solutions))
 	}
 }

@@ -54,7 +54,7 @@ func TestArray2dGetSet(t *testing.T) {
 	}
 }
 
-func TestExtrude(t *testing.T) {
+func TestArray2dExtrude(t *testing.T) {
 	a2d := NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
 	height := 2
 	a := a2d.Extrude(height)

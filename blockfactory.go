@@ -24,7 +24,7 @@ type BlockFactory struct {
 	Block          map[int]*Block // access block by number
 	MinBlockNumber int
 	MaxBlockNumber int
-	BlockByVolume  map[int]([]*Block) // access blocks by volume (3, 4 or 5)
+	BlockByVolume  map[int]*Blockset // access blocks by volume (3, 4 or 5)
 
 	// accessors for blocks by name, for convenience
 	Yellow_hello     *Block
@@ -86,12 +86,12 @@ func GetBlockFactory() *BlockFactory {
 		f.Green_L = f.Block[16]
 
 		// add the blocks to the volume-map
-		f.BlockByVolume = make(map[int]([]*Block), 0)
+		f.BlockByVolume = make(map[int]*Blockset)
 		for _, b := range f.Block {
 			if _, ok := f.BlockByVolume[b.Volume]; !ok {
-				f.BlockByVolume[b.Volume] = make([]*Block, 0)
+				f.BlockByVolume[b.Volume] = NewBlockset()
 			}
-			f.BlockByVolume[b.Volume] = append(f.BlockByVolume[b.Volume], b)
+			f.BlockByVolume[b.Volume].Add(b)
 		}
 
 		blockFactoryInstance = f
@@ -100,7 +100,7 @@ func GetBlockFactory() *BlockFactory {
 }
 
 // Returns the block with the given number, or nil of not found
-func (f *BlockFactory) Get(blockNumber int) *Block {
+func (f *BlockFactory) ByNumber(blockNumber int) *Block {
 	// get block from cache if possible
 	if block, ok := f.Block[blockNumber]; ok {
 		return block
@@ -112,7 +112,7 @@ func (f *BlockFactory) Get(blockNumber int) *Block {
 // Returns a block by it's color and name, or nil of not found
 func (f *BlockFactory) ByName(color BlockColor, name string) *Block {
 	for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
-		b := f.Get(i)
+		b := f.ByNumber(i)
 		if strings.EqualFold(b.Name, name) && b.Color == color {
 			return b
 		}
@@ -124,7 +124,7 @@ func (f *BlockFactory) ByName(color BlockColor, name string) *Block {
 func (f *BlockFactory) GetAll() []*Block {
 	a := make([]*Block, 0)
 	for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
-		if block := f.Get(i); block != nil {
+		if block := f.ByNumber(i); block != nil {
 			a = append(a, block)
 		}
 	}
