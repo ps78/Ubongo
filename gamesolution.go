@@ -38,6 +38,7 @@ func (gs *GameSolution) String() string {
 	return result
 }
 
+// GetCenterOfGravity calculates the center of gravity of the given solution
 func (gs *GameSolution) GetCenterOfGravity() Vectorf {
 	c := Vectorf{}
 	var totalVolume float64
