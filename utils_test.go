@@ -95,7 +95,7 @@ func TestFindArray3d(t *testing.T) {
 
 func TestCreatePartitions(t *testing.T) {
 	n := 21
-	parts := []int{3, 4, 5}
+	parts := []int{5, 4, 3}
 	partLen := 5
 	maxCounts := map[int]int{3: 1, 4: 10, 5: 10}
 	partitions := CreateParitions(n, parts, maxCounts, partLen)
