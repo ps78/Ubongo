@@ -6,15 +6,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetSolutionImage(t *testing.T) {
+func TestGameSolutionCreateImage(t *testing.T) {
 	cf := GetCardFactory()
 	p := cf.Get(Difficult, 3).Problems[7]
 	g := NewGame(p)
 	solutions := g.Solve()
 
-	img := GetSolutionImage(solutions[0], 400, 300, 0, 0, 0)
+	width := 400
+	height := 300
+
+	img := solutions[0].CreateImage(width, height, 0, 0, 0, 0.1)
 
 	assert.NotNil(t, img)
-	assert.Equal(t, 400, img.Bounds().Dx())
-	assert.Equal(t, 300, img.Bounds().Dy())
+	assert.Equal(t, width, img.Bounds().Dx())
+	assert.Equal(t, height, img.Bounds().Dy())
+}
+
+func TestSaveAsPng(t *testing.T) {
+	/*
+		f, _ := os.CreateTemp("", "*")
+		f.Name()
+
+		SaveAsPng()
+	*/
 }

@@ -51,6 +51,28 @@ func (f *CardFactory) Get(difficulty UbongoDifficulty, cardNumber int) *Card {
 	return nil
 }
 
+// Returns all cards as a slice
+func (f *CardFactory) GetByAnimal(difficulty UbongoDifficulty, animal UbongoAnimal) []*Card {
+	result := make([]*Card, 0)
+	for _, card := range f.Cards[difficulty] {
+		if card.Animal == animal {
+			result = append(result, card)
+		}
+	}
+	return result
+}
+
+// Returns all cards as a slice
+func (f *CardFactory) GetAll() []*Card {
+	result := make([]*Card, 0)
+	for _, diffV := range f.Cards {
+		for _, numV := range diffV {
+			result = append(result, numV)
+		}
+	}
+	return result
+}
+
 // ******************************************************************
 // Private elements
 // ******************************************************************

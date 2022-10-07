@@ -1,7 +1,12 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
+	"log"
+	"os"
+	"sort"
+	"strconv"
 )
 
 type Game struct {
@@ -190,4 +195,81 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 		*shapes = (*shapes)[:len(*shapes)-1]
 
 	} // end loop over shapes
+}
+
+// Solves all problems and stores the results in a CSV file
+func (f CardFactory) CreateSolutionStatistics(csvFile string) {
+	type solutionRecord struct {
+		Card       *Card
+		DiceNumber int
+		Problem    *Problem
+		Solutions  []*GameSolution
+	}
+
+	records := make([]solutionRecord, 0)
+	for _, c := range f.GetAll() {
+		for diceNumber, p := range c.Problems {
+			g := NewGame(p)
+			solutions := g.Solve()
+			records = append(records, solutionRecord{c, diceNumber, p, solutions})
+		}
+	}
+
+	// order the problems by difficulty, cardnumber, dicenumber
+	sortOrder := func(rec solutionRecord) int {
+		return int(rec.Card.Difficulty)*10000000 + rec.Card.CardNumber*1000 + rec.DiceNumber
+	}
+	sort.Slice(records, func(i, j int) bool {
+		return sortOrder(records[i]) < sortOrder(records[j])
+	})
+
+	file, err := os.Create(csvFile)
+	if err != nil {
+		log.Fatalln("failed to open file", err)
+	}
+	defer file.Close()
+
+	w := csv.NewWriter(file)
+	defer w.Flush()
+	w.Write([]string{"Difficulty,CardNumber,DiceNumber,Area,Height,SolutionCount,Blocks"})
+	for _, rec := range records {
+		err = w.Write([]string{
+			rec.Card.Difficulty.String(),
+			rec.Card.Animal.String(),
+			strconv.Itoa(rec.Card.CardNumber),
+			strconv.Itoa(rec.DiceNumber),
+			strconv.Itoa(rec.Problem.Area),
+			strconv.Itoa(rec.Problem.Height),
+			strconv.Itoa(len(rec.Solutions)),
+			rec.Problem.Blocks.String(),
+		})
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// verifies if the set of problems given can be used
+// as a set in the game. Condition is that the combined
+// blocks are available in the game
+func IsPossibleCardSet(problems []*Problem) bool {
+	blockStat := map[int]int{} // counts the blocks per blocknumber
+	for _, p := range problems {
+		for _, block := range p.Blocks.AsSlice() {
+			if _, ok := blockStat[block.Number]; !ok {
+				blockStat[block.Number] = 1
+			} else {
+				blockStat[block.Number] += 1
+			}
+		}
+	}
+
+	for blockNum, blockCount := range blockStat {
+		if blockCount > UbongoBlockSet[blockNum] {
+			return false
+		}
+	}
+
+	return true
 }

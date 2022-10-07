@@ -4,73 +4,55 @@ import (
 	//"fmt"
 	//"time"
 
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 )
 
 func updateImage(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float64) {
-	img := GetSolutionImage(sol, w, h, rx, ry, rz)
+	img := sol.CreateImage(w, h, rx, ry, rz, 0.1)
 	win.SetContent(canvas.NewImageFromImage(img))
 }
 
 func main() {
-	fp := GetCardFactory()
-	fb := GetBlockFactory()
+	// create block render images:
+	//GetBlockFactory().RenderAll("./images", 500, 500)
 
-	shape := fp.Get(Easy, 1).Problems[1].Shape
-	problems := GenerateProblems(fb, shape, 3, 5, 20)
+	// solve all problems and save stats:
+	//GetCardFactory().CreateSolutionStatistics("solutions.csv")
 
-	for _, p := range problems {
-		fmt.Println(p.Blocks)
+	//fc := GetCardFactory()
+	//fb := GetBlockFactory()
+
+	// Generate Insane problems
+	bf := GetBlockFactory()
+	bc := GetCardFactory()
+	type key struct {
+		Animal     UbongoAnimal
+		CardNumber int
+		DiceNumber int
 	}
-
-	// solve all problems:
-	/*
-		for card := 1; card <= 36; card++ {
-			for dice := 1; dice <= 10; dice++ {
-				p := fp.Get(Difficult, card, dice)
-				if p != nil {
-					g := NewGame(p)
-
-					start := time.Now()
-					solutions := g.Solve()
-					runtime := time.Since(start)
-
-					//for _, sol := range solutions {
-					//	fmt.Println(sol.String())
-					//}
-					fmt.Printf("%s\tFound %d solutions in %s\n", p, len(solutions), runtime)
-				}
+	problems := map[key][]*Problem{}
+	animal := Elephant
+	for _, card := range bc.GetByAnimal(Easy, animal) {
+		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
+			var shape *Array2d
+			if diceNumber <= 5 {
+				shape = card.Problems[1].Shape
+			} else {
+				shape = card.Problems[8].Shape
 			}
+			// generate problems
+			problems[key{animal, card.CardNumber, diceNumber}] = GenerateProblems(bf, shape, 3, 5, 3)
 		}
-	*/
+	}
+	// build groups of 4 problems
+	//for k, v := range problems {
 
-	// Known Insane level problems:
-	/*
-		p := NewProblem(1, 1, Insane, 3, Elephant,
-			fp.Get(Easy, 1, 1).Shape,
-			[]*Block{fb.Yellow_bighook, fb.Green_T, fb.Blue_lighter, fb.Blue_v, fb.Red_flash})
+	//}
 
-			p := NewProblem(1, 5, Insane, 3, Elephant,
-				fp.Get(Easy, 1, 5).Shape.Clone(),
-				[]*Block{fb.Red_flash, fb.Blue_lighter, fb.Yellow_gate, fb.Green_L, fb.Blue_v})
-	*/
-
-	// solve some problem
-	/*
-		g := NewGame(p)
-		start := time.Now()
-		sols := g.Solve()
-		runtime := time.Since(start)
-
-		fmt.Println(p)
-		fmt.Printf("%s\tFound %d solutions in %s\n", p, len(sols), runtime)
-		for _, sol := range sols {
-			fmt.Println(sol.String())
-		}
-	*/
+	// for each card-group (animal):
+	// choose 10 different sets of 4 problems - one on each card - such that
+	// the blocks on the four problems are available from the overall blockset
 
 	// Visualize a solution
 	/*

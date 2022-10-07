@@ -10,6 +10,9 @@ and can be access thread-safely
 package main
 
 import (
+	"fmt"
+	"math"
+	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -129,4 +132,13 @@ func (f *BlockFactory) GetAll() []*Block {
 		}
 	}
 	return a
+}
+
+// Renders all blocks to an image, storing it in the given path
+func (f *BlockFactory) RenderAll(path string, width, height int) {
+	for _, b := range f.GetAll() {
+		img := b.CreateImage(width, height, math.Pi/4, -math.Pi/8, 0)
+		filename := fmt.Sprintf("%s_%s.png", b.Color, b.Name)
+		SaveAsPng(img, filepath.Join(path, filename))
+	}
 }

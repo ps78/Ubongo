@@ -30,7 +30,7 @@ func TestNewGamesolution(t *testing.T) {
 
 func TestGameSolutionString(t *testing.T) {
 	f := GetBlockFactory()
-	gs := NewGameSolution([]*Block{f.Blue_v}, []*Array3d{f.Blue_v.Shapes[1]}, []Vector{Vector{0, 1, 0}})
+	gs := NewGameSolution([]*Block{f.Blue_v}, []*Array3d{f.Blue_v.Shapes[1]}, []Vector{{0, 1, 0}})
 	s := gs.String()
 	assert.True(t, len(s) > 10)
 }

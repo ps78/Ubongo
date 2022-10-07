@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 // Vector represents a 3-dimensional int-vector
 type Vector [3]int
 
 type Vectorf [3]float64
+
+func (v Vector) AsVectorf() Vectorf {
+	return Vectorf{float64(v[0]), float64(v[1]), float64(v[2])}
+}
 
 // Returns a String representation of a vector
 func (v Vector) String() string {
@@ -20,6 +25,10 @@ func (v Vectorf) String() string {
 
 func (a Vector) Float64() Vectorf {
 	return Vectorf{float64(a[0]), float64(a[1]), float64(a[2])}
+}
+
+func (a Vectorf) Max() float64 {
+	return math.Max(math.Max(a[0], a[1]), a[2])
 }
 
 func (a Vectorf) Add(b Vectorf) Vectorf {
@@ -36,6 +45,40 @@ func (a Vectorf) Div(b float64) Vectorf {
 
 func (a Vectorf) Mult(b float64) Vectorf {
 	return Vectorf{a[0] * b, a[1] * b, a[2] * b}
+}
+
+func (a Vectorf) Flip() Vectorf {
+	return Vectorf{-a[0], -a[1], -a[2]}
+}
+
+func (a Vector) Max() int {
+	if a[0] >= a[1] && a[0] >= a[2] {
+		return a[0]
+	} else if a[1] >= a[0] && a[1] >= a[2] {
+		return a[1]
+	} else {
+		return a[2]
+	}
+}
+
+func (a Vector) Add(b Vector) Vector {
+	return Vector{a[0] + b[0], a[1] + b[1], a[2] + b[2]}
+}
+
+func (a Vector) Sub(b Vector) Vector {
+	return Vector{a[0] - b[0], a[1] - b[1], a[2] - b[2]}
+}
+
+func (a Vector) Mult(b int) Vector {
+	return Vector{a[0] * b, a[1] * b, a[2] * b}
+}
+
+func (a Vector) Div(b float64) Vectorf {
+	return Vectorf{float64(a[0]) / b, float64(a[1]) / b, float64(a[2]) / b}
+}
+
+func (a Vector) Flip() Vector {
+	return Vector{-a[0], -a[1], -a[2]}
 }
 
 // GetShiftVectors returns all possible placements of the inner bounding box

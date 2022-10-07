@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type GameSolution struct {
 	Blocks []*Block
@@ -48,4 +50,17 @@ func (gs *GameSolution) GetCenterOfGravity() Vectorf {
 		c = c.Add(shape.GetCenterOfGravity().Add(gs.Shifts[i].Float64()).Mult(blockVolume))
 	}
 	return c.Div(totalVolume)
+}
+
+func (gs *GameSolution) GetBoundingBox() Vector {
+	bb := Vector{}
+	for i, s := range gs.Shapes {
+		dim := s.GetBoundingBox().Add(gs.Shifts[i])
+		for i := 0; i < 3; i++ {
+			if bb[i] > dim[i] {
+				bb[i] = dim[i]
+			}
+		}
+	}
+	return bb
 }

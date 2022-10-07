@@ -69,7 +69,7 @@ type Block struct {
 }
 
 // Returns a string representation of the block
-func (b Block) String() string {
+func (b *Block) String() string {
 	return fmt.Sprintf("Block %d: %s %s (volume %d, %d orientations)",
 		b.Number, b.Color, b.Name, b.Volume, len(b.Shapes))
 }
