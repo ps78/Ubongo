@@ -232,7 +232,7 @@ func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 
 	w := csv.NewWriter(file)
 	defer w.Flush()
-	w.Write([]string{"Difficulty", "CardNumber", "DiceNumber", "Area", "Height", "SolutionCount", "Blocks"})
+	w.Write([]string{"Difficulty", "Animal", "CardNumber", "DiceNumber", "Area", "Height", "SolutionCount", "Blocks"})
 	for _, rec := range records {
 		err = w.Write([]string{
 			rec.Card.Difficulty.String(),

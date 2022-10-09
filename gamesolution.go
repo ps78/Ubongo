@@ -57,7 +57,7 @@ func (gs *GameSolution) GetBoundingBox() Vector {
 	for i, s := range gs.Shapes {
 		dim := s.GetBoundingBox().Add(gs.Shifts[i])
 		for i := 0; i < 3; i++ {
-			if bb[i] > dim[i] {
+			if dim[i] > bb[i] {
 				bb[i] = dim[i]
 			}
 		}

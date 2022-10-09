@@ -4,8 +4,13 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math"
 	"os"
+	"time"
 
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"github.com/tidwall/pinhole"
 )
 
@@ -167,10 +172,11 @@ func (gs *GameSolution) CreateImage(width, height int, rx, ry, rz, explode float
 
 	for i, block := range gs.Blocks {
 		shape := gs.Shapes[i]
-		pos := gs.Shifts[i].Float64()
-		offset := pos.Sub(gameCog).Mult(explode)
 
-		drawBlock(pn, shape, block.Color, pos.Add(offset), maxDim)
+		pos := gs.Shifts[i].Float64().Sub(gameCog)
+		explodeOffset := pos.Sub(gameCog).Mult(explode)
+
+		drawBlock(pn, shape, block.Color, pos.Add(explodeOffset), maxDim)
 	}
 
 	pn.Translate(0, 0, 0)
@@ -215,4 +221,42 @@ func SaveAsPng(img image.Image, path string) error {
 	}
 	defer file.Close()
 	return png.Encode(file, img)
+}
+
+func (gs *GameSolution) Visualize() {
+
+	updateImage := func(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float64) {
+		img := sol.CreateImage(w, h, rx, ry, rz, 0.1)
+		win.SetContent(canvas.NewImageFromImage(img))
+	}
+
+	a := app.New()
+	w := a.NewWindow("Ubongo")
+	imgWidth := 800
+	imgHeight := 600
+
+	w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
+	updateImage(w, gs, imgWidth, imgHeight, 0, 0, 0)
+
+	var RX, RY, RZ float64 = math.Pi / 2, 0.0, 0.0
+	go func() {
+		const minFrameTime = 1.0 / 60 // min time to show one frame in seconds
+		const speedRx = 0.0           // radians per second
+		const speedRy = 0.2           // radians per second
+		const speedRz = 0.0           // radians per second
+		lastFrame := time.Now()
+		for range time.Tick(time.Millisecond) {
+			timePassed := float64(time.Since(lastFrame).Seconds())
+			if timePassed >= minFrameTime {
+				updateImage(w, gs, imgWidth, imgHeight, RX, RY, RZ)
+				RX += speedRx * timePassed
+				RY += speedRy * timePassed
+				RZ += speedRz * timePassed
+				lastFrame = time.Now()
+			}
+		}
+	}()
+
+	w.ShowAndRun()
+
 }

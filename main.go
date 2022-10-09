@@ -1,66 +1,25 @@
 package main
 
-import (
-	"fmt"
-
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/canvas"
-)
-
-func updateImage(win fyne.Window, sol *GameSolution, w, h int, rx, ry, rz float64) {
-	img := sol.CreateImage(w, h, rx, ry, rz, 0.1)
-	win.SetContent(canvas.NewImageFromImage(img))
-}
+import "fmt"
 
 func main() {
-	// create block render images:
-	//GetBlockFactory().RenderAll("./images", 500, 500)
+	var mode int = 1
 
-	// solve all problems and save stats:
-	//GetCardFactory().CreateSolutionStatistics("solutions.csv")
-
-	// Generate Insane problems
-	for _, animal := range []UbongoAnimal{Elephant, Gazelle, Snake, Gnu, Ostrich, Rhino, Giraffe, Zebra, Warthog} {
-		GenerateCardSet(GetCardFactory(), GetBlockFactory(), animal, Easy, Insane, 3, 5, fmt.Sprintf("cards/%s.txt", animal))
-	}
-
-	// parallel-run: 70s
-
-	// for each card-group (animal):
-	// choose 10 different sets of 4 problems - one on each card - such that
-	// the blocks on the four problems are available from the overall blockset
-
-	// Visualize a solution
-	/*
-		a := app.New()
-		w := a.NewWindow("Ubongo")
-		imgWidth := 800
-		imgHeight := 600
-		if len(sols) > 0 {
-			sol := sols[1]
-			w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
-			updateImage(w, sol, imgWidth, imgHeight, 0, 0, 0)
-
-			var RX, RY, RZ float64 = 0.0, 0.0, 0.0
-			go func() {
-				const minFrameTime = 1.0 / 60 // min time to show one frame in seconds
-				const speedRx = 0.0           // radians per second
-				const speedRy = 0.2           // radians per second
-				const speedRz = 0.0           // radians per second
-				lastFrame := time.Now()
-				for range time.Tick(time.Millisecond) {
-					timePassed := float64(time.Since(lastFrame).Seconds())
-					if timePassed >= minFrameTime {
-						updateImage(w, sol, imgWidth, imgHeight, RX, RY, RZ)
-						RX += speedRx * timePassed
-						RY += speedRy * timePassed
-						RZ += speedRz * timePassed
-						lastFrame = time.Now()
-					}
-				}
-			}()
-
-			w.ShowAndRun()
+	switch mode {
+	case 1:
+		// create block render images:
+		GetBlockFactory().RenderAll("./images", 500, 500)
+	case 2:
+		// solve all problems and save stats:
+		GetCardFactory().CreateSolutionStatistics("solutions.csv")
+	case 3:
+		// Generate Insane problems
+		for _, animal := range []UbongoAnimal{Elephant, Gazelle, Snake, Gnu, Ostrich, Rhino, Giraffe, Zebra, Warthog} {
+			GenerateCardSet(GetCardFactory(), GetBlockFactory(), animal, Easy, Insane, 3, 5, fmt.Sprintf("cards/%s.txt", animal))
 		}
-	*/
+	case 4:
+		// Visualize a solution
+		gs := NewGame(GetCardFactory().Get(Difficult, 1).Problems[1]).Solve()[0]
+		gs.Visualize()
+	}
 }
