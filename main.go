@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -21,13 +20,9 @@ func main() {
 	//GetCardFactory().CreateSolutionStatistics("solutions.csv")
 
 	// Generate Insane problems
-	start := time.Now()
-	bf := GetBlockFactory()
-	bc := GetCardFactory()
 	for _, animal := range []UbongoAnimal{Elephant, Gazelle, Snake, Gnu, Ostrich, Rhino, Giraffe, Zebra, Warthog} {
-		GenerateCardSet(bc, bf, animal, Easy, Insane, 3, 5, fmt.Sprintf("cards/%s.txt", animal))
+		GenerateCardSet(GetCardFactory(), GetBlockFactory(), animal, Easy, Insane, 3, 5, fmt.Sprintf("cards/%s.txt", animal))
 	}
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 
 	// parallel-run: 70s
 
