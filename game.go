@@ -256,7 +256,7 @@ func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 // blocks are available in the game
 // The map-key is the card-number
 func IsPossibleCardSet(problems map[int]*Problem) bool {
-	if problems == nil || len(problems) == 0 {
+	if len(problems) == 0 {
 		return false
 	}
 
@@ -289,16 +289,17 @@ func IsPossibleCardSet(problems map[int]*Problem) bool {
 // for every possible throw of the dice (and of course every problem has a solution)
 // Returns: map[diceNumber][cardNumber]*Problem
 func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
-	animal UbongoAnimal, sourceDifficulty, targetDifficulty UbongoDifficulty, height, blockCount int) []*Card {
+	animal UbongoAnimal, sourceDifficulty, targetDifficulty UbongoDifficulty, height, blockCount int, outputFile string) []*Card {
 
 	// ** Utility types / functions and constants ** //
 
-	maxTry := 50 // number of tries to build a consistent problem set
+	maxTry := 100               // number of tries to build a consistent problem set
+	numProblemsPerDiceNum := 10 // number of problems to generate per diceNumber and card
 
-	// this key is used in the 'problems' map
-	type key struct {
-		Animal     UbongoAnimal
-		DiceNumber int
+	// this Key is used in the 'problems' map
+	type Key struct {
+		animal     UbongoAnimal
+		diceNumber int
 	}
 	// this function selects a shape from a given card with a diceNumber
 	shapeSelector := func(card *Card, diceNumber int) *Array2d {
@@ -310,20 +311,34 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	}
 
 	// ** Generate problems ** //
-
-	problems := map[key]map[int][]*Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
-	numProblems := 10                        // number of problems to generate per diceNumber and card
+	problems := map[Key]map[int][]*Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
 	sourceCards := bc.GetByAnimal(sourceDifficulty, animal)
+
+	type Item struct {
+		key        Key
+		cardNumber int
+		problems   []*Problem
+	}
+	queueSize := 10 * len(sourceCards)
+	queue := make(chan Item, queueSize)
 	for _, card := range sourceCards {
 		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
 			shape := shapeSelector(card, diceNumber)
-			curKey := key{animal, diceNumber}
+			curKey := Key{animal, diceNumber}
 			// create new entry in map if necessary
 			if _, ok := problems[curKey]; !ok {
 				problems[curKey] = map[int][]*Problem{}
 			}
-			problems[curKey][card.CardNumber] = GenerateProblems(bf, shape, height, blockCount, numProblems)
+			go func(cardNum int) {
+				probs := GenerateProblems(bf, shape, height, blockCount, numProblemsPerDiceNum)
+				queue <- Item{curKey, cardNum, probs}
+			}(card.CardNumber)
 		}
+	}
+	// read results from channel
+	for i := 0; i < queueSize; i++ {
+		item := <-queue
+		problems[item.key][item.cardNumber] = item.problems
 	}
 
 	// ** Initialize set of cards to return ** //
@@ -336,7 +351,7 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	// ** try to build sets for each diceNumber ** //
 
 	for diceNumber := 1; diceNumber <= 10; diceNumber++ {
-		curKey := key{animal, diceNumber}
+		curKey := Key{animal, diceNumber}
 
 		for try := 0; try < maxTry; try++ {
 			// randomly choose one problem from each card/dicenum
@@ -368,23 +383,15 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	sort.Slice(result, func(i, j int) bool {
 		return result[i].CardNumber < result[j].CardNumber
 	})
-	return result
 
-	/*
-		// print results
-		fullSuccess := true
-		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
-			if problemSet, ok := result[diceNumber]; ok {
-				fmt.Printf("Found problem set for diceNumber %d:\n", diceNumber)
-				for cardNum, p := range problemSet {
-					fmt.Printf("\tCard %d: %s\n", cardNum, p.Blocks)
-				}
-				fmt.Println()
-			} else {
-				fmt.Printf("!! No solution found for diceNumber %d\n\n", diceNumber)
-				fullSuccess = false
-			}
+	// write to file
+	if outputFile != "" {
+		f, _ := os.Create(outputFile)
+		defer f.Close()
+		for _, c := range result {
+			f.WriteString(c.VerbousString())
 		}
-		fmt.Printf("Overall Success: %t\n", fullSuccess)
-	*/
+	}
+
+	return result
 }
