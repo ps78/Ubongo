@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"sort"
 	"strconv"
@@ -231,7 +232,7 @@ func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 
 	w := csv.NewWriter(file)
 	defer w.Flush()
-	w.Write([]string{"Difficulty,CardNumber,DiceNumber,Area,Height,SolutionCount,Blocks"})
+	w.Write([]string{"Difficulty", "CardNumber", "DiceNumber", "Area", "Height", "SolutionCount", "Blocks"})
 	for _, rec := range records {
 		err = w.Write([]string{
 			rec.Card.Difficulty.String(),
@@ -253,9 +254,17 @@ func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 // verifies if the set of problems given can be used
 // as a set in the game. Condition is that the combined
 // blocks are available in the game
-func IsPossibleCardSet(problems []*Problem) bool {
+// The map-key is the card-number
+func IsPossibleCardSet(problems map[int]*Problem) bool {
+	if problems == nil || len(problems) == 0 {
+		return false
+	}
+
 	blockStat := map[int]int{} // counts the blocks per blocknumber
 	for _, p := range problems {
+		if p == nil {
+			return false
+		}
 		for _, block := range p.Blocks.AsSlice() {
 			if _, ok := blockStat[block.Number]; !ok {
 				blockStat[block.Number] = 1
@@ -272,4 +281,110 @@ func IsPossibleCardSet(problems []*Problem) bool {
 	}
 
 	return true
+}
+
+// Creates 10 sets of problems for diceNumber=1..10 where each problem set
+// consists of the 4 cards assiciated with the given animal and the blocks are
+// chosen such that the game contains enough blocks to play a round with people
+// for every possible throw of the dice (and of course every problem has a solution)
+// Returns: map[diceNumber][cardNumber]*Problem
+func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
+	animal UbongoAnimal, sourceDifficulty, targetDifficulty UbongoDifficulty, height, blockCount int) []*Card {
+
+	// ** Utility types / functions and constants ** //
+
+	maxTry := 50 // number of tries to build a consistent problem set
+
+	// this key is used in the 'problems' map
+	type key struct {
+		Animal     UbongoAnimal
+		DiceNumber int
+	}
+	// this function selects a shape from a given card with a diceNumber
+	shapeSelector := func(card *Card, diceNumber int) *Array2d {
+		if diceNumber <= 5 {
+			return card.Problems[1].Shape // top shape
+		} else {
+			return card.Problems[8].Shape // bottom shape
+		}
+	}
+
+	// ** Generate problems ** //
+
+	problems := map[key]map[int][]*Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
+	numProblems := 10                        // number of problems to generate per diceNumber and card
+	sourceCards := bc.GetByAnimal(sourceDifficulty, animal)
+	for _, card := range sourceCards {
+		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
+			shape := shapeSelector(card, diceNumber)
+			curKey := key{animal, diceNumber}
+			// create new entry in map if necessary
+			if _, ok := problems[curKey]; !ok {
+				problems[curKey] = map[int][]*Problem{}
+			}
+			problems[curKey][card.CardNumber] = GenerateProblems(bf, shape, height, blockCount, numProblems)
+		}
+	}
+
+	// ** Initialize set of cards to return ** //
+
+	cardSet := make(map[int]*Card) // key = CardNumber
+	for _, crd := range sourceCards {
+		cardSet[crd.CardNumber] = NewCard(crd.CardNumber, targetDifficulty, animal, make(map[int]*Problem))
+	}
+
+	// ** try to build sets for each diceNumber ** //
+
+	for diceNumber := 1; diceNumber <= 10; diceNumber++ {
+		curKey := key{animal, diceNumber}
+
+		for try := 0; try < maxTry; try++ {
+			// randomly choose one problem from each card/dicenum
+			problemSet := make(map[int]*Problem) // key=CardNumber
+			for cardNum, probs := range problems[curKey] {
+				if len(probs) == 0 {
+					problemSet = nil
+					break
+				}
+				problemSet[cardNum] = probs[rand.Intn(len(probs))]
+			}
+			if problemSet == nil {
+				break
+			}
+			if IsPossibleCardSet(problemSet) {
+				for cardNum, prob := range problemSet {
+					cardSet[cardNum].Problems[diceNumber] = prob
+				}
+				break
+			}
+		}
+	}
+
+	// flatten and sort map to array
+	result := make([]*Card, 0)
+	for _, crd := range cardSet {
+		result = append(result, crd)
+	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].CardNumber < result[j].CardNumber
+	})
+	return result
+
+	/*
+		// print results
+		fullSuccess := true
+		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
+			if problemSet, ok := result[diceNumber]; ok {
+				fmt.Printf("Found problem set for diceNumber %d:\n", diceNumber)
+				for cardNum, p := range problemSet {
+					fmt.Printf("\tCard %d: %s\n", cardNum, p.Blocks)
+				}
+				fmt.Println()
+			} else {
+				fmt.Printf("!! No solution found for diceNumber %d\n\n", diceNumber)
+				fullSuccess = false
+			}
+		}
+		fmt.Printf("Overall Success: %t\n", fullSuccess)
+	*/
 }

@@ -1,0 +1,24 @@
+Card 33 Warthog, Insane
+	 6: Vol=21, [Yellow hello, Yellow big hook, Blue v, Red small hook, Green L]
+	 7: Vol=21, [Yellow big hook, Yellow gate, Blue v, Red small hook, Green T]
+	 8: Vol=21, [Yellow hello, Blue flash, Blue v, Green T, Green L]
+	 9: Vol=21, [Blue lighter, Red small hook, Red flash, Green T, Green L]
+	10: Vol=21, [Yellow hello, Red small hook, Red flash, Green T, Green L]
+Card 34 Warthog, Insane
+	 6: Vol=21, [Blue big hook, Blue v, Red stool, Red small hook, Red flash]
+	 7: Vol=21, [Yellow hello, Blue v, Red stool, Red small hook, Red flash]
+	 8: Vol=21, [Yellow small hook, Red small hook, Red flash, Green flash, Green L]
+	 9: Vol=21, [Yellow big hook, Yellow small hook, Blue lighter, Blue v, Red small hook]
+	10: Vol=21, [Yellow small hook, Blue flash, Blue lighter, Blue v, Green L]
+Card 35 Warthog, Insane
+	 6: Vol=21, [Yellow hello, Yellow small hook, Blue v, Red stool, Green L]
+	 7: Vol=21, [Yellow big hook, Yellow small hook, Blue flash, Blue v, Red flash]
+	 8: Vol=21, [Yellow small hook, Blue big hook, Blue lighter, Blue v, Green L]
+	 9: Vol=21, [Yellow gate, Blue v, Green big hook, Green T, Green L]
+	10: Vol=21, [Yellow small hook, Red small hook, Red flash, Green big hook, Green L]
+Card 36 Warthog, Insane
+	 6: Vol=21, [Yellow small hook, Red flash, Green big hook, Green T, Green L]
+	 7: Vol=21, [Yellow hello, Yellow small hook, Yellow gate, Blue v, Green L]
+	 8: Vol=21, [Yellow small hook, Red small hook, Red flash, Green big hook, Green T]
+	 9: Vol=21, [Yellow small hook, Blue lighter, Red small hook, Red flash, Green L]
+	10: Vol=21, [Yellow small hook, Red small hook, Green flash, Green T, Green L]

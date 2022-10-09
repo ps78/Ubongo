@@ -1,8 +1,8 @@
 package main
 
 import (
-	//"fmt"
-	//"time"
+	"fmt"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -20,35 +20,18 @@ func main() {
 	// solve all problems and save stats:
 	//GetCardFactory().CreateSolutionStatistics("solutions.csv")
 
-	//fc := GetCardFactory()
-	//fb := GetBlockFactory()
-
 	// Generate Insane problems
 	bf := GetBlockFactory()
 	bc := GetCardFactory()
-	type key struct {
-		Animal     UbongoAnimal
-		CardNumber int
-		DiceNumber int
-	}
-	problems := map[key][]*Problem{}
-	animal := Elephant
-	for _, card := range bc.GetByAnimal(Easy, animal) {
-		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
-			var shape *Array2d
-			if diceNumber <= 5 {
-				shape = card.Problems[1].Shape
-			} else {
-				shape = card.Problems[8].Shape
-			}
-			// generate problems
-			problems[key{animal, card.CardNumber, diceNumber}] = GenerateProblems(bf, shape, 3, 5, 3)
+	for _, animal := range []UbongoAnimal{Elephant, Gazelle, Snake, Gnu, Ostrich, Rhino, Giraffe, Zebra, Warthog} {
+		//for _, animal := range []UbongoAnimal{Giraffe} {
+		cards := GenerateCardSet(bc, bf, animal, Easy, Insane, 3, 5)
+		f, _ := os.Create(fmt.Sprintf("cards/%s.txt", animal))
+		defer f.Close()
+		for _, c := range cards {
+			f.WriteString(c.VerbousString())
 		}
 	}
-	// build groups of 4 problems
-	//for k, v := range problems {
-
-	//}
 
 	// for each card-group (animal):
 	// choose 10 different sets of 4 problems - one on each card - such that

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 )
 
 // UbongoDifficulty is an enum representing the difficulty in the game
@@ -84,9 +85,31 @@ type Card struct {
 }
 
 // Returns a string representation of the card
-func (c Card) String() string {
+func (c *Card) String() string {
 	return fmt.Sprintf("Card %d (%s-%s) %d problems)",
 		c.CardNumber, c.Animal, c.Difficulty, len(c.Problems))
+}
+
+// Returns a string representation including all problems for a card
+func (c *Card) VerbousString() string {
+	s := fmt.Sprintf("Card %02d %s, %s\n",
+		c.CardNumber, c.Animal, c.Difficulty)
+
+	type item struct {
+		diceNum int
+		p       *Problem
+	}
+	probs := make([]*item, 0)
+	for diceNumber, p := range c.Problems {
+		probs = append(probs, &item{diceNumber, p})
+	}
+	sort.Slice(probs, func(i, j int) bool {
+		return probs[i].diceNum < probs[j].diceNum
+	})
+	for _, p := range probs {
+		s += fmt.Sprintf("\t%2d: Vol=%2d, %s\n", p.diceNum, p.p.Blocks.Volume(), p.p.Blocks)
+	}
+	return s
 }
 
 // NewCard creates a card instance

@@ -67,11 +67,14 @@ func (p *Problem) Clone() *Problem {
 	return n
 }
 
+// GenerateProblems creates numProblems new problems based on the given
+// parameters (height, shape, blockCount)
 func GenerateProblems(bf *BlockFactory, shape *Array2d, height, blockCount, numProblems int) []*Problem {
+	multiplier := 5 // we generate more problems than requested, as some might not have a solution
 	results := make([]*Problem, 0)
 
 	// generate random blocksets, more than we need, as not all might be solvable
-	sets := GenerateBlocksets(bf, shape.Count(EMPTY)*height, blockCount, 5*numProblems)
+	sets := GenerateBlocksets(bf, shape.Count(EMPTY)*height, blockCount, multiplier*numProblems)
 
 	for i := range sets {
 		p := NewProblem(shape, height, sets[i])

@@ -175,6 +175,11 @@ func GenerateBlocksets(bf *BlockFactory, volume, blockCount, resultCount int) []
 	partitions := CreateParitions(volume, []int{3, 4, 5}, map[int]int{3: max3, 4: max4, 5: max5}, blockCount)
 	partCount := len(partitions)
 
+	// abort if there are no partitions fulfilling the given criteria
+	if partCount == 0 {
+		return []*Blockset{}
+	}
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// generate resultCount results as requested

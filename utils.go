@@ -165,7 +165,7 @@ func createPartitionsRecurisve(nRemainder int, parts *[]int, partIdx int, maxCou
 				for _, v := range *curSolution {
 					c += v
 				}
-				if c <= partLen {
+				if c == partLen {
 					newSolution := make(map[int]int)
 					for k, v := range *curSolution {
 						newSolution[k] = v
