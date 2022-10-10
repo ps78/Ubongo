@@ -198,7 +198,7 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 	} // end loop over shapes
 }
 
-// Solves all problems and stores the results in a CSV file
+// Solves all Easy & Difficult problems and stores the results in a CSV file
 func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 	type solutionRecord struct {
 		Card       *Card
@@ -208,11 +208,13 @@ func (f CardFactory) CreateSolutionStatistics(csvFile string) {
 	}
 
 	records := make([]solutionRecord, 0)
-	for _, c := range f.GetAll() {
-		for diceNumber, p := range c.Problems {
-			g := NewGame(p)
-			solutions := g.Solve()
-			records = append(records, solutionRecord{c, diceNumber, p, solutions})
+	for _, difficulty := range []UbongoDifficulty{Easy, Difficult} {
+		for _, c := range f.GetAll(difficulty) {
+			for diceNumber, p := range c.Problems {
+				g := NewGame(p)
+				solutions := g.Solve()
+				records = append(records, solutionRecord{c, diceNumber, p, solutions})
+			}
 		}
 	}
 

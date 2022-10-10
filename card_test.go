@@ -34,6 +34,12 @@ func TestCardString(t *testing.T) {
 	assert.True(t, len(s) > 10)
 }
 
+func TestCardVerbousString(t *testing.T) {
+	c := GetCardFactory().Get(Difficult, 1)
+	s := c.VerbousString()
+	assert.True(t, len(s) > 100)
+}
+
 func TestNewCard(t *testing.T) {
 	f := GetBlockFactory()
 

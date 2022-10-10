@@ -21,48 +21,6 @@ func TestBlockString(t *testing.T) {
 	assert.True(t, len(b.String()) > 0)
 }
 
-func TestBlockFactoryGet(t *testing.T) {
-	f := GetBlockFactory()
-	var nilBlock *Block = nil
-
-	assert.Equal(t, nilBlock, f.ByNumber(f.MinBlockNumber-1))
-	assert.Equal(t, nilBlock, f.ByNumber(f.MaxBlockNumber+1))
-	for n := f.MinBlockNumber; n <= f.MaxBlockNumber; n++ {
-		assert.True(t, f.ByNumber(n) != nil)
-	}
-
-	// test that repeatedely returning the same block does not create a new instance
-	var a *Block = f.ByNumber(1)
-	var b *Block = f.ByNumber(1)
-	assert.True(t, a == b, "References to block are not identical after repeated BlockFactory.Get() calls")
-}
-
-func TestBlockFactoryGetByName(t *testing.T) {
-	f := GetBlockFactory()
-
-	assert.NotNil(t, f.ByName(Yellow, "hello"))
-	assert.NotNil(t, f.ByName(Yellow, "big hook"))
-	assert.NotNil(t, f.ByName(Yellow, "small hook"))
-	assert.NotNil(t, f.ByName(Yellow, "gate"))
-
-	assert.NotNil(t, f.ByName(Blue, "big hook"))
-	assert.NotNil(t, f.ByName(Blue, "flash"))
-	assert.NotNil(t, f.ByName(Blue, "lighter"))
-	assert.NotNil(t, f.ByName(Blue, "v"))
-
-	assert.NotNil(t, f.ByName(Red, "stool"))
-	assert.NotNil(t, f.ByName(Red, "small hook"))
-	assert.NotNil(t, f.ByName(Red, "big hook"))
-	assert.NotNil(t, f.ByName(Red, "flash"))
-
-	assert.NotNil(t, f.ByName(Green, "flash"))
-	assert.NotNil(t, f.ByName(Green, "big hook"))
-	assert.NotNil(t, f.ByName(Green, "T"))
-	assert.NotNil(t, f.ByName(Green, "L"))
-
-	assert.Nil(t, f.ByName(Blue, "Superman"))
-}
-
 // Runs all block-factory functions and tests the blocks for
 // consistency
 func TestBlocks(t *testing.T) {

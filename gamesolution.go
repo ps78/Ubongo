@@ -47,7 +47,7 @@ func (gs *GameSolution) GetCenterOfGravity() Vectorf {
 	for i, shape := range gs.Shapes {
 		blockVolume := float64(gs.Blocks[i].Volume)
 		totalVolume += blockVolume
-		c = c.Add(shape.GetCenterOfGravity().Add(gs.Shifts[i].Float64()).Mult(blockVolume))
+		c = c.Add(shape.GetCenterOfGravity().Add(gs.Shifts[i].AsVectorf()).Mult(blockVolume))
 	}
 	return c.Div(totalVolume)
 }

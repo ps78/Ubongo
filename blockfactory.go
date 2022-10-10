@@ -12,7 +12,7 @@ package main
 import (
 	"fmt"
 	"math"
-	"path/filepath"
+	"path"
 	"strings"
 	"sync"
 )
@@ -135,10 +135,17 @@ func (f *BlockFactory) GetAll() []*Block {
 }
 
 // Renders all blocks to an image, storing it in the given path
-func (f *BlockFactory) RenderAll(path string, width, height int) {
+// returns a list of filenames
+func (f *BlockFactory) RenderAll(dir string, width, height int) []string {
+	files := make([]string, 0)
 	for _, b := range f.GetAll() {
 		img := b.CreateImage(width, height, math.Pi/4, -math.Pi/8, 0)
 		filename := fmt.Sprintf("%s_%s.png", b.Color, b.Name)
-		SaveAsPng(img, filepath.Join(path, filename))
+		fullpath := path.Join(dir, filename)
+		err := SaveAsPng(img, fullpath)
+		if err == nil {
+			files = append(files, fullpath)
+		}
 	}
+	return files
 }

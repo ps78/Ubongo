@@ -63,12 +63,10 @@ func (f *CardFactory) GetByAnimal(difficulty UbongoDifficulty, animal UbongoAnim
 }
 
 // Returns all cards as a slice
-func (f *CardFactory) GetAll() []*Card {
+func (f *CardFactory) GetAll(difficulty UbongoDifficulty) []*Card {
 	result := make([]*Card, 0)
-	for _, diffV := range f.Cards {
-		for _, numV := range diffV {
-			result = append(result, numV)
-		}
+	for _, numV := range f.Cards[difficulty] {
+		result = append(result, numV)
 	}
 	return result
 }

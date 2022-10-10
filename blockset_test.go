@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,6 +13,13 @@ func TestNewBlockset(t *testing.T) {
 	assert.Equal(t, 2, bs.At(0).Number)
 	assert.Equal(t, 4, bs.At(1).Number)
 	assert.Equal(t, 10, bs.At(2).Number)
+}
+
+func TestBlocksetString(t *testing.T) {
+	f := GetBlockFactory()
+	bs := NewBlockset(f.ByNumber(10), f.ByNumber(2), f.ByNumber(4))
+	s := bs.String()
+	assert.True(t, len(s) > 10)
 }
 
 func TestBlocksetAdd(t *testing.T) {
@@ -145,12 +151,20 @@ func TestGenerateBlocksets(t *testing.T) {
 	for _, s := range blocksets {
 		assert.Equal(t, blockCount, s.Count)
 		assert.Equal(t, vol, s.Volume())
-		fmt.Println(s)
 	}
 
 	// this test should return exactly 3 results
 	blocksets = GenerateBlocksets(f, vol, blockCount, 3)
 	assert.LessOrEqual(t, len(blocksets), 3)
+}
+
+func TestGenerateBlocksetsEmpty(t *testing.T) {
+	f := GetBlockFactory()
+	vol := 18
+	blockCount := 5
+	blocksets := GenerateBlocksets(f, vol, blockCount, 100)
+
+	assert.Equal(t, 0, len(blocksets))
 }
 
 func TestContainsBlockset(t *testing.T) {

@@ -110,3 +110,15 @@ func TestSolve(t *testing.T) {
 
 	assert.Equal(t, 6, len(solutions), "Expected 6 solutions, but found %d", len(solutions))
 }
+
+func TestCreateSolutionStatistics(t *testing.T) {
+	// TODO
+}
+
+func TestIsPossibleCardSet(t *testing.T) {
+	// TODO
+}
+
+func TestGenerateCardSet(t *testing.T) {
+	// TODO
+}
