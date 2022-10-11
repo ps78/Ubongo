@@ -1,7 +1,11 @@
 package main
 
 import (
+	"math/rand"
+	"os"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -112,13 +116,52 @@ func TestSolve(t *testing.T) {
 }
 
 func TestCreateSolutionStatistics(t *testing.T) {
-	// TODO
+	f := GetCardFactory()
+	rand.Seed(time.Now().Unix())
+	csvFile := "solution_stats_test_" + strconv.Itoa(rand.Int()) + ".csv"
+	defer os.Remove(csvFile)
+
+	stats := f.CreateSolutionStatistics(csvFile)
+
+	countAllProblems := len(f.GetAllProblems(Easy)) + len(f.GetAllProblems(Difficult))
+
+	assert.Equal(t, countAllProblems, len(stats))
+	_, err := os.Stat(csvFile)
+	assert.Nil(t, err)
 }
 
 func TestIsPossibleCardSet(t *testing.T) {
-	// TODO
+	f := GetBlockFactory()
+	shape := NewArray2d(3, 3)
+	okProblemsSet := map[int]*Problem{
+		1: NewProblem(shape, 2, NewBlockset(f.Blue_bighook, f.Blue_flash)),
+		2: NewProblem(shape, 2, NewBlockset(f.Red_smallhook, f.Blue_flash)),
+		3: NewProblem(shape, 2, NewBlockset(f.Yellow_gate, f.Blue_bighook)),
+		4: NewProblem(shape, 2, NewBlockset(f.Blue_lighter, f.Yellow_hello)),
+	}
+
+	assert.True(t, IsPossibleCardSet(okProblemsSet))
+
+	nokProblemsSet := map[int]*Problem{
+		1: NewProblem(shape, 2, NewBlockset(f.Blue_bighook, f.Blue_flash)),
+		2: NewProblem(shape, 2, NewBlockset(f.Blue_bighook, f.Blue_flash)),
+		3: NewProblem(shape, 2, NewBlockset(f.Blue_bighook, f.Blue_bighook)),
+		4: NewProblem(shape, 2, NewBlockset(f.Blue_lighter, f.Blue_bighook)),
+	}
+
+	assert.False(t, IsPossibleCardSet(nokProblemsSet))
 }
 
 func TestGenerateCardSet(t *testing.T) {
-	// TODO
+	bf := GetBlockFactory()
+	cf := GetCardFactory()
+
+	rand.Seed(time.Now().Unix())
+	file := "cardset_test_" + strconv.Itoa(rand.Int()) + ".txt"
+	defer os.Remove(file)
+
+	cards := GenerateCardSet(cf, bf, Elephant, Easy, Easy, 2, 3, file)
+	assert.Equal(t, 4, len(cards))
+	_, err := os.Stat(file)
+	assert.Nil(t, err)
 }

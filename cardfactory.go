@@ -71,6 +71,17 @@ func (f *CardFactory) GetAll(difficulty UbongoDifficulty) []*Card {
 	return result
 }
 
+// Returns all problems for all cards of a given difficulty
+func (f *CardFactory) GetAllProblems(difficulty UbongoDifficulty) []*Problem {
+	result := make([]*Problem, 0)
+	for _, c := range f.GetAll(difficulty) {
+		for _, p := range c.Problems {
+			result = append(result, p)
+		}
+	}
+	return result
+}
+
 // ******************************************************************
 // Private elements
 // ******************************************************************

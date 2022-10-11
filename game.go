@@ -198,59 +198,73 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 	} // end loop over shapes
 }
 
-// Solves all Easy & Difficult problems and stores the results in a CSV file
-func (f CardFactory) CreateSolutionStatistics(csvFile string) {
-	type solutionRecord struct {
-		Card       *Card
-		DiceNumber int
-		Problem    *Problem
-		Solutions  []*GameSolution
-	}
+type SolutionStatisticsRecord struct {
+	Difficulty    UbongoDifficulty
+	Animal        UbongoAnimal
+	CardNumber    int
+	DiceNumber    int
+	Area          int
+	Height        int
+	SolutionCount int
+	Blocks        *Blockset
+}
 
-	records := make([]solutionRecord, 0)
+// Solves all Easy & Difficult problems and returns the statistics
+// If the csvFile parameter is provided (and not empty), the data is also
+// written to a csv file
+func (f CardFactory) CreateSolutionStatistics(csvFile string) []SolutionStatisticsRecord {
+
+	// create the dataset to return / write
+	records := make([]SolutionStatisticsRecord, 0)
 	for _, difficulty := range []UbongoDifficulty{Easy, Difficult} {
 		for _, c := range f.GetAll(difficulty) {
 			for diceNumber, p := range c.Problems {
 				g := NewGame(p)
 				solutions := g.Solve()
-				records = append(records, solutionRecord{c, diceNumber, p, solutions})
+				records = append(records, SolutionStatisticsRecord{
+					c.Difficulty, c.Animal, c.CardNumber, diceNumber, p.Area, p.Height,
+					len(solutions), p.Blocks})
 			}
 		}
 	}
 
 	// order the problems by difficulty, cardnumber, dicenumber
-	sortOrder := func(rec solutionRecord) int {
-		return int(rec.Card.Difficulty)*10000000 + rec.Card.CardNumber*1000 + rec.DiceNumber
+	sortOrder := func(rec SolutionStatisticsRecord) int {
+		return int(rec.Difficulty)*10000000 + rec.CardNumber*1000 + rec.DiceNumber
 	}
 	sort.Slice(records, func(i, j int) bool {
 		return sortOrder(records[i]) < sortOrder(records[j])
 	})
 
-	file, err := os.Create(csvFile)
-	if err != nil {
-		log.Fatalln("failed to open file", err)
-	}
-	defer file.Close()
+	// optionally write csv file
+	if csvFile != "" {
+		file, err := os.Create(csvFile)
+		if err != nil {
+			log.Fatalln("failed to open file", err)
+		}
+		defer file.Close()
 
-	w := csv.NewWriter(file)
-	defer w.Flush()
-	w.Write([]string{"Difficulty", "Animal", "CardNumber", "DiceNumber", "Area", "Height", "SolutionCount", "Blocks"})
-	for _, rec := range records {
-		err = w.Write([]string{
-			rec.Card.Difficulty.String(),
-			rec.Card.Animal.String(),
-			strconv.Itoa(rec.Card.CardNumber),
-			strconv.Itoa(rec.DiceNumber),
-			strconv.Itoa(rec.Problem.Area),
-			strconv.Itoa(rec.Problem.Height),
-			strconv.Itoa(len(rec.Solutions)),
-			rec.Problem.Blocks.String(),
-		})
+		w := csv.NewWriter(file)
+		defer w.Flush()
+		w.Write([]string{"Difficulty", "Animal", "CardNumber", "DiceNumber", "Area", "Height", "SolutionCount", "Blocks"})
+		for _, rec := range records {
+			err = w.Write([]string{
+				rec.Difficulty.String(),
+				rec.Animal.String(),
+				strconv.Itoa(rec.CardNumber),
+				strconv.Itoa(rec.DiceNumber),
+				strconv.Itoa(rec.Area),
+				strconv.Itoa(rec.Height),
+				strconv.Itoa(rec.SolutionCount),
+				rec.Blocks.String(),
+			})
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	return records
 }
 
 // verifies if the set of problems given can be used
@@ -290,6 +304,7 @@ func IsPossibleCardSet(problems map[int]*Problem) bool {
 // chosen such that the game contains enough blocks to play a round with people
 // for every possible throw of the dice (and of course every problem has a solution)
 // Returns: map[diceNumber][cardNumber]*Problem
+// Optionally write the result to the given file, if not empty
 func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	animal UbongoAnimal, sourceDifficulty, targetDifficulty UbongoDifficulty, height, blockCount int, outputFile string) []*Card {
 

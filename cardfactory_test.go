@@ -65,3 +65,13 @@ func TestCardFactoryGetAll(t *testing.T) {
 		assert.Equal(t, Difficult, c.Difficulty)
 	}
 }
+
+func TestCardFactoryGetAllProblems(t *testing.T) {
+	f := GetCardFactory()
+
+	easyProbs := f.GetAllProblems(Easy)
+	assert.Equal(t, 144, len(easyProbs))
+
+	diffProbs := f.GetAllProblems(Difficult)
+	assert.Equal(t, 360, len(diffProbs))
+}
