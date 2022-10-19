@@ -150,6 +150,12 @@ func TestIsPossibleCardSet(t *testing.T) {
 	}
 
 	assert.False(t, IsPossibleCardSet(nokProblemsSet))
+
+	emptyProblemSet := map[int]*Problem{}
+	assert.False(t, IsPossibleCardSet(emptyProblemSet))
+
+	nilProblemSet := map[int]*Problem{1: nil}
+	assert.False(t, IsPossibleCardSet(nilProblemSet))
 }
 
 func TestGenerateCardSet(t *testing.T) {
