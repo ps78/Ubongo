@@ -28,7 +28,7 @@ func TestGameString(t *testing.T) {
 func TestGameSolution(t *testing.T) {
 	f := GetBlockFactory()
 	b := []*Block{f.ByNumber(1), f.ByNumber(2)}
-	gs := NewGameSolution(b, []*Array3d{b[0].Shapes[0], b[1].Shapes[0]}, []Vector{{0, 0, 0}, {0, 0, 0}})
+	gs := NewGameSolution(b, []int{0, 0}, []Vector{{0, 0, 0}, {0, 0, 0}})
 	s := gs.String()
 	assert.True(t, len(s) > 10)
 }

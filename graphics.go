@@ -171,7 +171,8 @@ func (gs *GameSolution) CreateImage(width, height int, rx, ry, rz, explode float
 	maxDim := float64(bb.Max())
 
 	for i, block := range gs.Blocks {
-		shape := gs.Shapes[i]
+		shapeIdx := gs.ShapeIndex[i]
+		shape := block.Shapes[shapeIdx]
 
 		pos := gs.Shifts[i].AsVectorf().Sub(gameCog)
 		explodeOffset := pos.Sub(gameCog).Mult(explode)

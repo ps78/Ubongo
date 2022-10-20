@@ -153,22 +153,22 @@ func (g *Game) Solve() []*GameSolution {
 
 	// working arrays for the recursive solver:
 	solutions := make([]*GameSolution, 0)
-	shapes := make([]*Array3d, 0)
+	shapeIdx := make([]int, 0)
 	shifts := make([]Vector, 0)
 
-	g.recursiveSolver(0, &shapes, &shifts, &solutions)
+	g.recursiveSolver(0, &shapeIdx, &shifts, &solutions)
 
 	return solutions
 }
 
 // Recursive function called by Solve, don't call directly
-func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vector, solutions *[]*GameSolution) {
+func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]Vector, solutions *[]*GameSolution) {
 	gameBox := g.Volume.GetBoundingBox()
 
 	block := g.Blocks.At(blockIdx)
 
-	for _, shape := range block.Shapes {
-		*shapes = append(*shapes, shape)
+	for shapeIdx, shape := range block.Shapes {
+		*shapeIndices = append(*shapeIndices, shapeIdx)
 
 		shiftVectors := gameBox.GetShiftVectors(shape.GetBoundingBox())
 		for _, shift := range shiftVectors {
@@ -180,11 +180,11 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 				if blockIdx == g.Blocks.Count-1 {
 					// check if we have a solution
 					if g.Volume.Count(0) == 0 {
-						*solutions = append(*solutions, NewGameSolution(g.Blocks.AsSlice(), *shapes, *shifts))
+						*solutions = append(*solutions, NewGameSolution(g.Blocks.AsSlice(), *shapeIndices, *shifts))
 					}
 					// if it wasn't the last block, continue recursion
 				} else {
-					g.recursiveSolver(blockIdx+1, shapes, shifts, solutions)
+					g.recursiveSolver(blockIdx+1, shapeIndices, shifts, solutions)
 				}
 
 				*shifts = (*shifts)[:len(*shifts)-1]
@@ -193,7 +193,7 @@ func (g *Game) recursiveSolver(blockIdx int, shapes *[]*Array3d, shifts *[]Vecto
 			}
 		} // end loop over shifts
 
-		*shapes = (*shapes)[:len(*shapes)-1]
+		*shapeIndices = (*shapeIndices)[:len(*shapeIndices)-1]
 
 	} // end loop over shapes
 }
