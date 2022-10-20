@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"ubongo/utils"
 )
 
 // GameSolution represents one solution to a specific game
@@ -15,11 +16,11 @@ type GameSolution struct {
 
 	// Shifts defines the translation of the Shape with the identical index
 	// relative to the origin, in 'array-units', i.e. 1 equals one mini-cube
-	Shifts []Vector
+	Shifts []utils.Vector
 }
 
 // Creates an instance of GameSolution
-func NewGameSolution(blocks []*Block, shapeIndex []int, shifts []Vector) *GameSolution {
+func NewGameSolution(blocks []*Block, shapeIndex []int, shifts []utils.Vector) *GameSolution {
 	sol := GameSolution{}
 
 	sol.Blocks = make([]*Block, len(blocks))
@@ -28,7 +29,7 @@ func NewGameSolution(blocks []*Block, shapeIndex []int, shifts []Vector) *GameSo
 	sol.ShapeIndex = make([]int, len(shapeIndex))
 	copy(sol.ShapeIndex, shapeIndex)
 
-	sol.Shifts = make([]Vector, len(shifts))
+	sol.Shifts = make([]utils.Vector, len(shifts))
 	copy(sol.Shifts, shifts)
 
 	return &sol
@@ -48,8 +49,8 @@ func (gs *GameSolution) String() string {
 }
 
 // GetCenterOfGravity calculates the center of gravity of the given solution
-func (gs *GameSolution) GetCenterOfGravity() Vectorf {
-	c := Vectorf{}
+func (gs *GameSolution) GetCenterOfGravity() utils.Vectorf {
+	c := utils.Vectorf{}
 	var totalVolume float64
 	for i, shapeIdx := range gs.ShapeIndex {
 		block := gs.Blocks[i]
@@ -61,8 +62,8 @@ func (gs *GameSolution) GetCenterOfGravity() Vectorf {
 }
 
 // Returns the bounding box of the whole game solution
-func (gs *GameSolution) GetBoundingBox() Vector {
-	bb := Vector{}
+func (gs *GameSolution) GetBoundingBox() utils.Vector {
+	bb := utils.Vector{}
 	for i, sIdx := range gs.ShapeIndex {
 		shape := gs.Blocks[i].Shapes[sIdx]
 		dim := shape.GetBoundingBox().Add(gs.Shifts[i])

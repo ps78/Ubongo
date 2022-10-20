@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"ubongo/utils/array2d"
 )
 
 // ******************************************************************
@@ -133,11 +134,11 @@ var animalByCardNum = map[int]UbongoAnimal{
 }
 
 // Creates all easy cards of a specific card (as many as there are keys in the blocks-map)
-func createEasyCard(cardNum int, topShape, bottomShape *Array2d, blocks map[int]*Blockset, f *BlockFactory) *Card {
+func createEasyCard(cardNum int, topShape, bottomShape *array2d.A, blocks map[int]*Blockset, f *BlockFactory) *Card {
 	problems := make(map[int]*Problem)
 
 	for dice, blockset := range blocks {
-		var shape *Array2d
+		var shape *array2d.A
 		if dice <= 4 {
 			shape = topShape
 		} else {
@@ -150,11 +151,11 @@ func createEasyCard(cardNum int, topShape, bottomShape *Array2d, blocks map[int]
 }
 
 // Creates all difficult cards of a specific card (as many as there are keys in the blocks-map)
-func createDifficultCard(cardNum int, topShape, bottomShape *Array2d, blocks map[int]*Blockset, f *BlockFactory) *Card {
+func createDifficultCard(cardNum int, topShape, bottomShape *array2d.A, blocks map[int]*Blockset, f *BlockFactory) *Card {
 	problems := make(map[int]*Problem)
 
 	for dice, blockset := range blocks {
-		var shape *Array2d
+		var shape *array2d.A
 		if dice <= 5 {
 			shape = topShape
 		} else {
@@ -172,8 +173,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards := make([]*Card, 0)
 
 	// A1
-	topShape := NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}})
-	bottomShape := NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, -1}})
+	topShape := array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}})
+	bottomShape := array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, -1}})
 	blockNums := map[int]*Blockset{
 		1: NewBlockset(f.Red_bighook, f.Green_L, f.Blue_lighter),
 		3: NewBlockset(f.Blue_lighter, f.Green_bighook, f.Red_smallhook),
@@ -206,8 +207,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(4, topShape, bottomShape, blockNums, f))
 
 	// A5
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, -1, 0}, {0, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, -1}, {0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, -1, 0}, {0, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, -1}, {0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Yellow_bighook, f.Red_stool, f.Green_L),
 		3: NewBlockset(f.Yellow_smallhook, f.Blue_bighook, f.Red_bighook),
@@ -240,8 +241,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(8, topShape, bottomShape, blockNums, f))
 
 	// A9
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Red_stool, f.Red_bighook, f.Red_flash),
 		3: NewBlockset(f.Green_L, f.Green_flash, f.Blue_lighter),
@@ -274,8 +275,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(12, topShape, bottomShape, blockNums, f))
 
 	// A13
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Blue_bighook, f.Yellow_hello, f.Yellow_smallhook),
 		3: NewBlockset(f.Blue_lighter, f.Red_smallhook, f.Blue_flash),
@@ -308,8 +309,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(16, topShape, bottomShape, blockNums, f))
 
 	// A17
-	topShape = NewArray2dFromData([][]int8{{-1, 0}, {0, 0}, {0, 0}, {0, -1}, {0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0}, {0, 0}, {0, 0}, {0, -1}, {0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Yellow_gate, f.Blue_bighook, f.Green_L),
 		3: NewBlockset(f.Yellow_hello, f.Green_L, f.Blue_lighter),
@@ -326,8 +327,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(18, topShape, bottomShape, blockNums, f))
 
 	// A19
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Red_smallhook, f.Green_flash, f.Red_stool),
 		3: NewBlockset(f.Blue_bighook, f.Green_L, f.Red_stool),
@@ -344,8 +345,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(20, topShape, bottomShape, blockNums, f))
 
 	// A21
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {-1, 0, -1}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {-1, 0, -1}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Blue_lighter, f.Yellow_bighook, f.Yellow_smallhook),
 		3: NewBlockset(f.Blue_lighter, f.Red_stool, f.Green_L),
@@ -378,8 +379,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(24, topShape, bottomShape, blockNums, f))
 
 	// A25
-	topShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Red_smallhook, f.Yellow_bighook, f.Blue_v),
 		3: NewBlockset(f.Blue_v, f.Red_smallhook, f.Yellow_hello),
@@ -412,8 +413,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(28, topShape, bottomShape, blockNums, f))
 
 	// A29
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Blue_bighook, f.Red_smallhook, f.Blue_v),
 		3: NewBlockset(f.Blue_lighter, f.Yellow_smallhook, f.Blue_v),
@@ -422,8 +423,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(29, topShape, bottomShape, blockNums, f))
 
 	// A30
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Green_flash, f.Red_stool, f.Red_flash),
 		3: NewBlockset(f.Green_flash, f.Red_stool, f.Green_L),
@@ -432,8 +433,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(30, topShape, bottomShape, blockNums, f))
 
 	// A31
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Red_stool, f.Yellow_smallhook, f.Blue_v),
 		3: NewBlockset(f.Green_bighook, f.Blue_v, f.Green_L),
@@ -442,8 +443,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(31, topShape, bottomShape, blockNums, f))
 
 	// A32
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0}, {0, 0}, {0, 0}, {-1, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Red_stool, f.Green_flash, f.Red_flash),
 		3: NewBlockset(f.Blue_bighook, f.Red_smallhook, f.Red_stool),
@@ -452,8 +453,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(32, topShape, bottomShape, blockNums, f))
 
 	// A33
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, -1}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, -1}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Blue_v, f.Green_bighook, f.Yellow_smallhook),
 		3: NewBlockset(f.Blue_v, f.Green_L, f.Green_flash),
@@ -470,8 +471,8 @@ func createAllEasyCards(f *BlockFactory) []*Card {
 	cards = append(cards, createEasyCard(34, topShape, bottomShape, blockNums, f))
 
 	// A35
-	topShape = NewArray2dFromData([][]int8{{-1, 0}, {-1, 0}, {0, 0}, {0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0}, {-1, 0}, {0, 0}, {0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1: NewBlockset(f.Yellow_bighook, f.Blue_v, f.Green_L),
 		3: NewBlockset(f.Red_flash, f.Green_L, f.Red_smallhook),
@@ -496,8 +497,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards := make([]*Card, 0)
 
 	// B1
-	topShape := NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
-	bottomShape := NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	topShape := array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	bottomShape := array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums := map[int]*Blockset{
 		1:  NewBlockset(f.Red_smallhook, f.Blue_lighter, f.Green_L, f.Blue_v),
 		2:  NewBlockset(f.Red_bighook, f.Red_smallhook, f.Blue_v, f.Red_flash),
@@ -512,8 +513,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(1, topShape, bottomShape, blockNums, f))
 
 	// B2
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, 0}, {-1, 0, 0, -1}, {0, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, 0}, {-1, 0, 0, -1}, {0, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_bighook, f.Yellow_smallhook, f.Green_flash, f.Red_smallhook),
 		2:  NewBlockset(f.Red_stool, f.Blue_flash, f.Green_flash, f.Blue_v),
@@ -528,8 +529,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(2, topShape, bottomShape, blockNums, f))
 
 	// B3
-	topShape = NewArray2dFromData([][]int8{{0, -1}, {0, 0}, {0, 0}, {0, 0}, {-1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1}, {0, 0}, {0, 0}, {0, 0}, {-1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_flash, f.Blue_v, f.Green_L, f.Blue_flash),
 		2:  NewBlockset(f.Green_T, f.Red_smallhook, f.Green_flash, f.Blue_v),
@@ -544,8 +545,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(3, topShape, bottomShape, blockNums, f))
 
 	// B4
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Blue_v, f.Green_bighook, f.Red_smallhook),
 		2:  NewBlockset(f.Red_smallhook, f.Blue_bighook, f.Red_flash, f.Blue_v),
@@ -560,8 +561,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(4, topShape, bottomShape, blockNums, f))
 
 	// B5
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_v, f.Red_smallhook, f.Yellow_hello, f.Green_L),
 		2:  NewBlockset(f.Blue_v, f.Red_smallhook, f.Yellow_hello, f.Red_flash),
@@ -576,8 +577,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(5, topShape, bottomShape, blockNums, f))
 
 	// B6
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_v, f.Red_smallhook, f.Red_stool, f.Red_flash),
 		2:  NewBlockset(f.Red_flash, f.Green_bighook, f.Yellow_smallhook, f.Blue_v),
@@ -592,8 +593,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(6, topShape, bottomShape, blockNums, f))
 
 	// B7
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_smallhook, f.Green_T, f.Blue_v, f.Green_flash),
 		2:  NewBlockset(f.Blue_v, f.Red_smallhook, f.Blue_bighook, f.Green_L),
@@ -608,8 +609,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(7, topShape, bottomShape, blockNums, f))
 
 	// B8
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, 0}, {-1, 0, 0, -1}, {0, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, 0}, {-1, 0, 0, -1}, {0, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Green_L, f.Yellow_smallhook, f.Blue_v),
 		2:  NewBlockset(f.Green_L, f.Yellow_smallhook, f.Blue_v, f.Blue_flash),
@@ -624,8 +625,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(8, topShape, bottomShape, blockNums, f))
 
 	// B9
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Blue_v, f.Green_T, f.Yellow_bighook),
 		2:  NewBlockset(f.Green_L, f.Blue_v, f.Red_smallhook, f.Blue_lighter),
@@ -640,8 +641,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(9, topShape, bottomShape, blockNums, f))
 
 	// B10
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_smallhook, f.Blue_lighter, f.Blue_v, f.Green_L),
 		2:  NewBlockset(f.Red_flash, f.Blue_v, f.Red_smallhook, f.Blue_lighter),
@@ -656,8 +657,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(10, topShape, bottomShape, blockNums, f))
 
 	// B11
-	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Red_smallhook, f.Blue_v, f.Red_stool),
 		2:  NewBlockset(f.Blue_v, f.Green_L, f.Red_flash, f.Blue_bighook),
@@ -672,8 +673,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(11, topShape, bottomShape, blockNums, f))
 
 	// B12
-	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Green_L, f.Blue_v, f.Red_flash),
 		2:  NewBlockset(f.Red_stool, f.Yellow_smallhook, f.Green_T, f.Blue_v),
@@ -688,8 +689,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(12, topShape, bottomShape, blockNums, f))
 
 	// 13
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, 0}, {0, 0, 0}, {0, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1}, {0, 0}, {0, 0}, {0, 0}, {0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_bighook, f.Red_smallhook, f.Blue_bighook, f.Yellow_smallhook),
 		2:  NewBlockset(f.Yellow_smallhook, f.Red_bighook, f.Red_flash, f.Yellow_gate),
@@ -704,8 +705,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(13, topShape, bottomShape, blockNums, f))
 
 	// B14
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1, -1}, {0, 0, -1, -1}, {0, 0, 0, -1}, {-1, 0, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1, -1}, {0, 0, -1, -1}, {0, 0, 0, -1}, {-1, 0, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_lighter, f.Yellow_smallhook, f.Yellow_hello, f.Green_L),
 		2:  NewBlockset(f.Yellow_gate, f.Red_smallhook, f.Red_flash, f.Yellow_bighook),
@@ -720,8 +721,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(14, topShape, bottomShape, blockNums, f))
 
 	// B15
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_hello, f.Green_bighook, f.Blue_lighter, f.Blue_v),
 		2:  NewBlockset(f.Yellow_smallhook, f.Blue_lighter, f.Red_smallhook, f.Yellow_hello),
@@ -736,8 +737,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(15, topShape, bottomShape, blockNums, f))
 
 	// B16
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, -1}, {0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, -1}, {0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Blue_bighook, f.Red_stool, f.Yellow_smallhook),
 		2:  NewBlockset(f.Red_smallhook, f.Green_L, f.Blue_lighter, f.Red_stool),
@@ -752,8 +753,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(16, topShape, bottomShape, blockNums, f))
 
 	// B17
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {-1, 0, 0}, {0, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_lighter, f.Blue_bighook, f.Green_bighook, f.Blue_v),
 		2:  NewBlockset(f.Red_stool, f.Green_L, f.Green_bighook, f.Yellow_smallhook),
@@ -768,8 +769,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(17, topShape, bottomShape, blockNums, f))
 
 	// B18
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, -1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0, 0}, {-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, -1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Red_smallhook, f.Yellow_smallhook, f.Blue_flash),
 		2:  NewBlockset(f.Yellow_smallhook, f.Blue_bighook, f.Blue_flash, f.Red_smallhook),
@@ -784,8 +785,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(18, topShape, bottomShape, blockNums, f))
 
 	// B19
-	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, -1}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Green_bighook, f.Yellow_smallhook, f.Red_smallhook),
 		2:  NewBlockset(f.Blue_v, f.Green_flash, f.Red_stool, f.Blue_bighook),
@@ -800,8 +801,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(19, topShape, bottomShape, blockNums, f))
 
 	// B20
-	topShape = NewArray2dFromData([][]int8{{0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, -1, 0, 0}, {-1, -1, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {-1, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, -1, 0, 0}, {-1, -1, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {-1, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Red_smallhook, f.Red_stool, f.Green_flash),
 		2:  NewBlockset(f.Yellow_bighook, f.Blue_flash, f.Red_smallhook, f.Yellow_smallhook),
@@ -816,8 +817,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(20, topShape, bottomShape, blockNums, f))
 
 	// B21
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {-1, 0, 0}, {0, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {-1, 0, 0}, {0, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_flash, f.Green_bighook, f.Red_smallhook, f.Green_L),
 		2:  NewBlockset(f.Red_stool, f.Red_smallhook, f.Red_flash, f.Green_bighook),
@@ -832,8 +833,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(21, topShape, bottomShape, blockNums, f))
 
 	// B22
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, -1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, -1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Blue_bighook, f.Blue_v, f.Blue_flash),
 		2:  NewBlockset(f.Yellow_smallhook, f.Red_stool, f.Green_L, f.Red_bighook),
@@ -848,8 +849,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(22, topShape, bottomShape, blockNums, f))
 
 	// B23
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, -1, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Green_L, f.Green_bighook, f.Red_flash),
 		2:  NewBlockset(f.Red_stool, f.Yellow_gate, f.Yellow_smallhook, f.Green_L),
@@ -864,8 +865,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(23, topShape, bottomShape, blockNums, f))
 
 	// B24
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, 0}, {0, 0, 0, -1}, {-1, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, 0, -1}, {-1, -1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_bighook, f.Green_L, f.Red_stool, f.Red_smallhook),
 		2:  NewBlockset(f.Yellow_smallhook, f.Blue_flash, f.Green_L, f.Red_bighook),
@@ -880,8 +881,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(24, topShape, bottomShape, blockNums, f))
 
 	// B25
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0, 0}, {-1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_v, f.Red_bighook, f.Red_stool, f.Blue_lighter),
 		2:  NewBlockset(f.Blue_bighook, f.Red_stool, f.Green_T, f.Yellow_smallhook),
@@ -896,8 +897,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(25, topShape, bottomShape, blockNums, f))
 
 	// B26
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, -1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, -1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_smallhook, f.Yellow_hello, f.Green_L, f.Yellow_bighook),
 		2:  NewBlockset(f.Yellow_bighook, f.Blue_v, f.Red_stool, f.Yellow_hello),
@@ -912,8 +913,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(26, topShape, bottomShape, blockNums, f))
 
 	// B27
-	topShape = NewArray2dFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, 0}, {-1, -1, 0, 0}, {-1, -1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, 0}, {-1, -1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, 0}, {-1, -1, 0, 0}, {-1, -1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, 0}, {-1, -1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_smallhook, f.Green_flash, f.Red_stool, f.Green_T),
 		2:  NewBlockset(f.Blue_lighter, f.Green_L, f.Blue_bighook, f.Yellow_smallhook),
@@ -928,8 +929,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(27, topShape, bottomShape, blockNums, f))
 
 	// B28
-	topShape = NewArray2dFromData([][]int8{{0, 0, -1, -1}, {0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {-1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, -1, -1}, {0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, -1}, {0, 0, -1}, {-1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_T, f.Red_stool, f.Red_smallhook, f.Green_flash),
 		2:  NewBlockset(f.Blue_v, f.Yellow_hello, f.Red_stool, f.Blue_lighter),
@@ -944,8 +945,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(28, topShape, bottomShape, blockNums, f))
 
 	// B29
-	topShape = NewArray2dFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, 0}, {-1, 0, 0, -1}, {-1, 0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_smallhook, f.Blue_lighter, f.Blue_bighook, f.Red_flash),
 		2:  NewBlockset(f.Red_stool, f.Blue_flash, f.Green_T, f.Yellow_smallhook),
@@ -960,8 +961,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(29, topShape, bottomShape, blockNums, f))
 
 	// B30
-	topShape = NewArray2dFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, -1, 0, 0}, {-1, -1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, 0}, {-1, 0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, -1, 0, 0}, {-1, -1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, 0, -1}, {-1, 0, 0, -1}, {-1, 0, 0, 0}, {-1, 0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_smallhook, f.Green_L, f.Red_stool, f.Blue_bighook),
 		2:  NewBlockset(f.Blue_bighook, f.Red_stool, f.Red_smallhook, f.Green_L),
@@ -976,8 +977,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(30, topShape, bottomShape, blockNums, f))
 
 	// B31
-	topShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, -1, 0, 0}, {0, 0, 0, -1}, {0, 0, 0, -1}, {0, -1, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, -1}, {0, 0, -1}, {-1, 0, 0}, {-1, 0, 0}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, -1, 0, 0}, {0, 0, 0, -1}, {0, 0, 0, -1}, {0, -1, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_bighook, f.Blue_lighter, f.Red_stool, f.Blue_v),
 		2:  NewBlockset(f.Red_stool, f.Green_L, f.Yellow_hello, f.Red_flash),
@@ -992,8 +993,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(31, topShape, bottomShape, blockNums, f))
 
 	// B32
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, 0, 0, 0}, {-1, 0, -1, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, 0, -1}, {0, 0, 0, -1}, {-1, 0, 0, 0}, {-1, 0, -1, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Green_L, f.Yellow_smallhook, f.Blue_v, f.Green_bighook),
 		2:  NewBlockset(f.Blue_v, f.Green_T, f.Blue_bighook, f.Green_L),
@@ -1008,8 +1009,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(32, topShape, bottomShape, blockNums, f))
 
 	// B33
-	topShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, 0}})
+	topShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, -1, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{-1, 0, -1}, {0, 0, -1}, {0, 0, 0}, {0, 0, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_stool, f.Red_bighook, f.Blue_lighter, f.Green_bighook),
 		2:  NewBlockset(f.Yellow_hello, f.Yellow_gate, f.Blue_lighter, f.Green_bighook),
@@ -1024,8 +1025,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(33, topShape, bottomShape, blockNums, f))
 
 	// B34
-	topShape = NewArray2dFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, 0}, {0, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{-1, -1, 0}, {0, 0, 0}, {0, 0, 0}, {-1, 0, 0}, {-1, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, -1, -1}, {0, 0, 0}, {0, 0, 0}, {0, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Red_bighook, f.Yellow_hello, f.Yellow_bighook, f.Green_flash),
 		2:  NewBlockset(f.Red_bighook, f.Green_bighook, f.Red_stool, f.Green_flash),
@@ -1040,8 +1041,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(34, topShape, bottomShape, blockNums, f))
 
 	// B35
-	topShape = NewArray2dFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {0, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
+	topShape = array2d.NewFromData([][]int8{{0, 0, 0}, {-1, 0, 0}, {0, 0, 0}, {0, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, -1, 0}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Blue_bighook, f.Red_stool, f.Green_flash, f.Green_bighook),
 		2:  NewBlockset(f.Yellow_hello, f.Green_flash, f.Red_stool, f.Yellow_bighook),
@@ -1056,8 +1057,8 @@ func createAllDifficultCards(f *BlockFactory) []*Card {
 	cards = append(cards, createDifficultCard(35, topShape, bottomShape, blockNums, f))
 
 	// B36
-	topShape = NewArray2dFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, -1}})
-	bottomShape = NewArray2dFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
+	topShape = array2d.NewFromData([][]int8{{0, -1, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, -1}})
+	bottomShape = array2d.NewFromData([][]int8{{0, 0, -1}, {0, 0, 0}, {0, 0, 0}, {-1, 0, -1}})
 	blockNums = map[int]*Blockset{
 		1:  NewBlockset(f.Yellow_bighook, f.Yellow_gate, f.Yellow_hello, f.Red_stool),
 		2:  NewBlockset(f.Blue_bighook, f.Red_stool, f.Yellow_gate, f.Blue_flash),

@@ -1,8 +1,10 @@
-package utils
+package array3d_test
 
 import (
 	"math"
 	"testing"
+
+	"ubongo/utils/array3d"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +14,7 @@ func TestNewArray3d(t *testing.T) {
 	dimY := 3
 	dimZ := 1
 
-	a := NewArray3d(dimX, dimY, dimZ)
+	a := array3d.New(dimX, dimY, dimZ)
 
 	assert.Equal(t, dimX, a.DimX, "Wrong x-dimension")
 	assert.Equal(t, dimY, a.DimY, "Wrong y-dimension")
@@ -29,7 +31,7 @@ func TestNewArray3d(t *testing.T) {
 
 func TestNewArray3dFromData(t *testing.T) {
 	data := [][][]int8{{{0, 1}, {1, 2}, {2, 3}}, {{1, 2}, {2, 3}, {3, 4}}, {{2, 3}, {3, 4}, {4, 5}}}
-	a := NewArray3dFromData(data)
+	a := array3d.NewFromData(data)
 
 	assert.Equal(t, len(data), a.DimX, "Wrong x-dimension")
 	assert.Equal(t, len(data[0]), a.DimY, "Wrong y-dimension")
@@ -46,14 +48,14 @@ func TestNewArray3dFromData(t *testing.T) {
 }
 
 func TestArray3dString(t *testing.T) {
-	a := NewArray3dFromData([][][]int8{{{0}, {1}, {0}}, {{1}, {0}, {1}}})
+	a := array3d.NewFromData([][][]int8{{{0}, {1}, {0}}, {{1}, {0}, {1}}})
 	exp := "<2-3-1>[[[0] [1] [0]] [[1] [0] [1]]]"
 	act := a.String()
 	assert.Equal(t, exp, act)
 }
 
 func TestArray3dGetSet(t *testing.T) {
-	a := NewArray3d(7, 9, 3)
+	a := array3d.New(7, 9, 3)
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
 			for z := 0; z < a.DimZ; z++ {
@@ -65,11 +67,11 @@ func TestArray3dGetSet(t *testing.T) {
 }
 
 func TestArray3dIsEqual(t *testing.T) {
-	a := NewArray3dFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}})
-	b := NewArray3dFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}}) // == a
-	c := NewArray3dFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 0}}}) // != a
-	d := NewArray3dFromData([][][]int8{{{2}, {3}}})
-	var e *Array3d = nil
+	a := array3d.NewFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}})
+	b := array3d.NewFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 5}}}) // == a
+	c := array3d.NewFromData([][][]int8{{{2, 3}, {5, 6}, {7, 8}}, {{6, 2}, {1, 0}, {-1, 0}}}) // != a
+	d := array3d.NewFromData([][][]int8{{{2}, {3}}})
+	var e *array3d.A = nil
 
 	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal3DArray reports they are not")
 	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal3DArray reports they are")
@@ -80,7 +82,7 @@ func TestArray3dIsEqual(t *testing.T) {
 }
 
 func TestArray3dClone(t *testing.T) {
-	orig := NewArray3dFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
+	orig := array3d.NewFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
 	copy := orig.Clone()
 	orig.Set(0, 0, 0, 42) // this should not affect the copy
 
@@ -97,7 +99,7 @@ func TestArray3dClone(t *testing.T) {
 }
 
 func TestArray3dCount(t *testing.T) {
-	a := NewArray3dFromData([][][]int8{{{1, 3}, {6, 1}}, {{3, 3}, {0, 9}}, {{1, 1}, {9, 0}}})
+	a := array3d.NewFromData([][][]int8{{{1, 3}, {6, 1}}, {{3, 3}, {0, 9}}, {{1, 1}, {9, 0}}})
 	assert.Equal(t, 2, a.Count(0))
 	assert.Equal(t, 4, a.Count(1))
 	assert.Equal(t, 3, a.Count(3))
@@ -107,7 +109,7 @@ func TestArray3dCount(t *testing.T) {
 }
 
 func TestGetBoundingBox(t *testing.T) {
-	a := NewArray3d(7, 8, 9)
+	a := array3d.New(7, 8, 9)
 	box := a.GetBoundingBox()
 	assert.True(t, box[0] == a.DimX && box[1] == a.DimY && box[2] == a.DimZ, "Bounding box dimensions are wrong")
 }
@@ -116,7 +118,7 @@ func TestArray3dApply(t *testing.T) {
 	f := func(x, y, z int, currentValue int8) int8 {
 		return int8(x + y + z)
 	}
-	a := NewArray3d(2, 3, 4).Apply(f)
+	a := array3d.New(2, 3, 4).Apply(f)
 
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
@@ -128,7 +130,7 @@ func TestArray3dApply(t *testing.T) {
 }
 
 func TestArray3dAllTrue(t *testing.T) {
-	a := NewArray3dFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
+	a := array3d.NewFromData([][][]int8{{{0, 1}, {1, 2}}, {{1, 2}, {2, 3}}, {{2, 3}, {3, 4}}})
 
 	assert.True(t, a.AllTrue(func(x, y, z int, v int8) bool {
 		return int8(x+y+z) == v
@@ -140,8 +142,8 @@ func TestArray3dAllTrue(t *testing.T) {
 }
 
 func TestArray3dRotateZ(t *testing.T) {
-	orig := NewArray3dFromData([][][]int8{{{0}, {3}}, {{1}, {4}}, {{2}, {5}}})
-	exp := NewArray3dFromData([][][]int8{{{3}, {4}, {5}}, {{0}, {1}, {2}}})
+	orig := array3d.NewFromData([][][]int8{{{0}, {3}}, {{1}, {4}}, {{2}, {5}}})
+	exp := array3d.NewFromData([][][]int8{{{3}, {4}, {5}}, {{0}, {1}, {2}}})
 	r := orig.RotateZ()
 
 	// rotate once
@@ -158,8 +160,8 @@ func TestArray3dRotateZ(t *testing.T) {
 }
 
 func TestArray3dRotateY(t *testing.T) {
-	orig := NewArray3dFromData([][][]int8{{{3, 0}}, {{4, 1}}, {{5, 2}}})
-	exp := NewArray3dFromData([][][]int8{{{5, 4, 3}}, {{2, 1, 0}}})
+	orig := array3d.NewFromData([][][]int8{{{3, 0}}, {{4, 1}}, {{5, 2}}})
+	exp := array3d.NewFromData([][][]int8{{{5, 4, 3}}, {{2, 1, 0}}})
 	r := orig.RotateY()
 
 	// rotate once
@@ -176,8 +178,8 @@ func TestArray3dRotateY(t *testing.T) {
 }
 
 func TestArray3dRotateX(t *testing.T) {
-	orig := NewArray3dFromData([][][]int8{{{0, 1, 2}, {3, 4, 5}}})
-	exp := NewArray3dFromData([][][]int8{{{3, 0}, {4, 1}, {5, 2}}})
+	orig := array3d.NewFromData([][][]int8{{{0, 1, 2}, {3, 4, 5}}})
+	exp := array3d.NewFromData([][][]int8{{{3, 0}, {4, 1}, {5, 2}}})
 	r := orig.RotateX()
 
 	// rotate once
@@ -194,7 +196,7 @@ func TestArray3dRotateX(t *testing.T) {
 }
 
 func TestArray3dGetCenterOfGravity(t *testing.T) {
-	a := NewArray3d(5, 5, 5)
+	a := array3d.New(5, 5, 5)
 	a.Set(0, 2, 3, 1)
 	a.Set(1, 2, 4, 1)
 	a.Set(4, 0, 1, 1)
@@ -206,21 +208,21 @@ func TestArray3dGetCenterOfGravity(t *testing.T) {
 }
 
 func TestFindArray3d(t *testing.T) {
-	lst := []*Array3d{
-		NewArray3dFromData([][][]int8{{{0, -1, -1}, {0, 0, 0}}, {{0, -1, 0}, {0, -1, -1}}}),
-		NewArray3dFromData([][][]int8{{{0, -1}, {0, 0}}, {{0, 0}, {-1, -1}}}),
-		NewArray3dFromData([][][]int8{{{-1}, {-1}}, {{0}, {0}}, {{-1}, {0}}}),
-		NewArray3dFromData([][][]int8{{{0, -1, -1}}, {{0, -1, 0}}}),
+	lst := []*array3d.A{
+		array3d.NewFromData([][][]int8{{{0, -1, -1}, {0, 0, 0}}, {{0, -1, 0}, {0, -1, -1}}}),
+		array3d.NewFromData([][][]int8{{{0, -1}, {0, 0}}, {{0, 0}, {-1, -1}}}),
+		array3d.NewFromData([][][]int8{{{-1}, {-1}}, {{0}, {0}}, {{-1}, {0}}}),
+		array3d.NewFromData([][][]int8{{{0, -1, -1}}, {{0, -1, 0}}}),
 	}
 
-	inList := NewArray3dFromData([][][]int8{{{0, -1}, {0, 0}}, {{0, 0}, {-1, -1}}})
-	notInList := NewArray3dFromData([][][]int8{{{-1}, {0}}, {{0}, {-1}}, {{0}, {-1}}})
+	inList := array3d.NewFromData([][][]int8{{{0, -1}, {0, 0}}, {{0, 0}, {-1, -1}}})
+	notInList := array3d.NewFromData([][][]int8{{{-1}, {0}}, {{0}, {-1}}, {{0}, {-1}}})
 
-	found, idx := FindArray3d(lst, inList)
+	found, idx := array3d.Find(lst, inList)
 	assert.True(t, found)
 	assert.Equal(t, 1, idx)
 
-	found, idx = FindArray3d(lst, notInList)
+	found, idx = array3d.Find(lst, notInList)
 	assert.False(t, found)
 	assert.Equal(t, -1, idx)
 }

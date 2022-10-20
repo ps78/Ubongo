@@ -12,6 +12,9 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"github.com/tidwall/pinhole"
+
+	"ubongo/utils"
+	"ubongo/utils/array3d"
 )
 
 func (c BlockColor) ToRGBA() color.RGBA {
@@ -33,7 +36,7 @@ func (c BlockColor) ToRGBA() color.RGBA {
 // x, y, z are expected to be integer-array coordinates ranging from 0..maxDim-1
 // The coordinates will be scaled such that maxDim equals 1 and everything will be
 // moved by offset (before scaling)
-func convertCoords(x1, y1, z1, x2, y2, z2 int, offset Vectorf, maxDim float64) (xf1, yf1, zf1, xf2, yf2, zf2 float64) {
+func convertCoords(x1, y1, z1, x2, y2, z2 int, offset utils.Vectorf, maxDim float64) (xf1, yf1, zf1, xf2, yf2, zf2 float64) {
 	xf1 = (float64(x1) + offset[0]) / maxDim
 	yf1 = (float64(y1) + offset[1]) / maxDim
 	zf1 = (-float64(z1) - offset[2]) / maxDim
@@ -45,7 +48,7 @@ func convertCoords(x1, y1, z1, x2, y2, z2 int, offset Vectorf, maxDim float64) (
 }
 
 // draws the given block at the given position to the pinhole object
-func drawBlock(pn *pinhole.Pinhole, blockShape *Array3d, blockColor BlockColor, pos Vectorf, maxDim float64) {
+func drawBlock(pn *pinhole.Pinhole, blockShape *array3d.A, blockColor BlockColor, pos utils.Vectorf, maxDim float64) {
 
 	// implements the logical function that decides if an edge should be
 	// shown based on the presence of a block at the two adjacient and the

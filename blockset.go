@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 	"time"
+	"ubongo/utils"
 )
 
 // Blockset is a (unordered) set of blocks
@@ -172,7 +173,7 @@ func GenerateBlocksets(bf *BlockFactory, volume, blockCount, resultCount int) []
 	max3 := bf.BlockByVolume[3].Count
 	max4 := bf.BlockByVolume[4].Count
 	max5 := bf.BlockByVolume[5].Count
-	partitions := CreateParitions(volume, []int{3, 4, 5}, map[int]int{3: max3, 4: max4, 5: max5}, blockCount)
+	partitions := utils.CreateParitions(volume, []int{3, 4, 5}, map[int]int{3: max3, 4: max4, 5: max5}, blockCount)
 	partCount := len(partitions)
 
 	// abort if there are no partitions fulfilling the given criteria

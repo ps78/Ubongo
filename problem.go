@@ -2,13 +2,15 @@ package main
 
 import (
 	"fmt"
+	"ubongo/utils"
+	"ubongo/utils/array2d"
 )
 
 // Problem represents a single Ubongo problem to solve
 type Problem struct {
 	// Shape is the 2D shape of the puzzle, first is the index X-direction (horizontal, to the right),
 	// the second index is the Y-direction (up)
-	Shape *Array2d // -1=not part of volume, 0=empty, 1=occupied by a block
+	Shape *array2d.A // -1=not part of volume, 0=empty, 1=occupied by a block
 
 	// Height of the volume to fill with the blocks. This is always 2 for the original game
 	Height int
@@ -17,7 +19,7 @@ type Problem struct {
 	Area int
 
 	// Bounding box of the problem volume
-	BoundingBox Vector
+	BoundingBox utils.Vector
 
 	// Blocks is an array of the blocks to be used to fill the volume
 	Blocks *Blockset
@@ -29,14 +31,14 @@ func (p Problem) String() string {
 }
 
 // Creates a problem instance
-func NewProblem(shape *Array2d, height int, blocks *Blockset) *Problem {
+func NewProblem(shape *array2d.A, height int, blocks *Blockset) *Problem {
 	var p *Problem = new(Problem)
 
 	p.Shape = shape.Clone()
 	p.Blocks = blocks.Clone()
 	p.Height = height
 	p.Area = p.Shape.Count(0)
-	p.BoundingBox = Vector{p.Shape.DimX, p.Shape.DimY, p.Height}
+	p.BoundingBox = utils.Vector{p.Shape.DimX, p.Shape.DimY, p.Height}
 
 	return p
 }
@@ -69,7 +71,7 @@ func (p *Problem) Clone() *Problem {
 
 // GenerateProblems creates numProblems new problems based on the given
 // parameters (height, shape, blockCount)
-func GenerateProblems(bf *BlockFactory, shape *Array2d, height, blockCount, numProblems int) []*Problem {
+func GenerateProblems(bf *BlockFactory, shape *array2d.A, height, blockCount, numProblems int) []*Problem {
 	multiplier := 5 // we generate more problems than requested, as some might not have a solution
 	results := make([]*Problem, 0)
 

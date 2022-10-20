@@ -12,6 +12,7 @@ package main
 
 import (
 	"fmt"
+	"ubongo/utils/array3d"
 )
 
 // BlockColor is the color of a block in the original game
@@ -56,7 +57,7 @@ type Block struct {
 	Name string
 
 	// Shapes is an array of all rotations of the block
-	Shapes []*Array3d
+	Shapes []*array3d.A
 
 	// Volume is the number of unit cubes the block consists of.
 	// All blocks of the original game consist of 3, 4 or 5 unit cubes
@@ -72,11 +73,11 @@ func (b *Block) String() string {
 // Creates all 90° rotations of the base 3d array along the x, y and z axis
 // A maximum of 24 arrays are returned, but identical rotations are removed,
 // hence the number can be smaller (depending on symmetries of the base array)
-func (base *Array3d) createRotations() []*Array3d {
-	arr := make([]*Array3d, 0)
+func createRotations(base *array3d.A) []*array3d.A {
+	arr := make([]*array3d.A, 0)
 
 	// helper function that adds el to lst if it is not already in lst
-	addIfNotInList := func(lst []*Array3d, el *Array3d) []*Array3d {
+	addIfNotInList := func(lst []*array3d.A, el *array3d.A) []*array3d.A {
 		for _, a := range lst {
 			if a.IsEqual(el) {
 				return lst
@@ -126,161 +127,161 @@ func (base *Array3d) createRotations() []*Array3d {
  *******************************************************************************/
 
 func NewBlock1() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {1, 0}, {0, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {1, 0}, {0, 0}}})
 	return &Block{
 		Number: 1,
 		Name:   "hello",
 		Color:  Yellow,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock2() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 0}, {1, 0}, {1, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 0}, {1, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
 	return &Block{
 		Number: 2,
 		Name:   "big hook",
 		Color:  Yellow,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock3() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 0}, {0, 0}}, {{1, 1}, {0, 1}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {0, 0}}, {{1, 1}, {0, 1}}})
 	return &Block{
 		Number: 3,
 		Name:   "small hook",
 		Color:  Yellow,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock4() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}, {1, 1}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 1}}})
 	return &Block{
 		Number: 4,
 		Name:   "gate",
 		Color:  Yellow,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock5() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {0, 0}, {0, 0}}, {{1, 0}, {1, 0}, {1, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {0, 0}, {0, 0}}, {{1, 0}, {1, 0}, {1, 0}}})
 	return &Block{
 		Number: 5,
 		Name:   "big hook",
 		Color:  Blue,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock6() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 0}, {1, 1}, {0, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 1}, {0, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
 	return &Block{
 		Number: 6,
 		Name:   "flash",
 		Color:  Blue,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock7() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {1}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {1}}})
 	return &Block{
 		Number: 7,
 		Name:   "lighter",
 		Color:  Blue,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock8() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{0, 1}, {1, 1}}})
+	baseShape := array3d.NewFromData([][][]int8{{{0, 1}, {1, 1}}})
 	return &Block{
 		Number: 8,
 		Name:   "v",
 		Color:  Blue,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock9() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}}, {{1, 0}, {1, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}}, {{1, 0}, {1, 0}}})
 	return &Block{
 		Number: 9,
 		Name:   "stool",
 		Color:  Red,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock10() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}}, {{0, 0}, {1, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}}, {{0, 0}, {1, 0}}})
 	return &Block{
 		Number: 10,
 		Name:   "small hook",
 		Color:  Red,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock11() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {0, 0}, {1, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {0, 0}, {1, 0}}})
 	return &Block{
 		Number: 11,
 		Name:   "big hook",
 		Color:  Red,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock12() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1}, {1}, {0}}, {{0}, {1}, {1}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {0}}, {{0}, {1}, {1}}})
 	return &Block{
 		Number: 12,
 		Name:   "flash",
 		Color:  Red,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock13() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 1}, {1, 0}, {0, 0}}, {{0, 0}, {1, 0}, {1, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {0, 0}}, {{0, 0}, {1, 0}, {1, 0}}})
 	return &Block{
 		Number: 13,
 		Name:   "flash",
 		Color:  Green,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock14() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1, 0}, {1, 0}, {1, 0}}, {{1, 1}, {0, 0}, {0, 0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 0}, {1, 0}}, {{1, 1}, {0, 0}, {0, 0}}})
 	return &Block{
 		Number: 14,
 		Name:   "big hook",
 		Color:  Green,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock15() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {0}}})
 	return &Block{
 		Number: 15,
 		Name:   "T",
 		Color:  Green,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }
 
 func NewBlock16() *Block {
-	baseShape := NewArray3dFromData([][][]int8{{{1}, {1}, {1}}, {{1}, {0}, {0}}})
+	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{1}, {0}, {0}}})
 	return &Block{
 		Number: 16,
 		Name:   "L",
 		Color:  Green,
-		Shapes: baseShape.createRotations(),
+		Shapes: createRotations(baseShape),
 		Volume: baseShape.Count(1)}
 }

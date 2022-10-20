@@ -1,28 +1,29 @@
-package utils
+package array3d
 
 import (
 	"fmt"
+	"ubongo/utils"
 )
 
-// Array3d is a 3-dimensional array of int8 representing the shape of a block or the
+// A is a 3-dimensional array of int8 representing the shape of a block or the
 // volume of a game, where 1 inidicates the presence of a unit cube and 0 absence of one
 // the value -1 is used to define a cube that is outside of the game-volume
-type Array3d struct {
+type A struct {
 	data [][][]int8
 	DimX int
 	DimY int
 	DimZ int
 }
 
-func (a *Array3d) String() string {
+func (a *A) String() string {
 	return fmt.Sprintf("<%d-%d-%d>%v", a.DimX, a.DimY, a.DimZ, a.data)
 }
 
 // A function that can be applied to an Array3d
-type Array3dFunc func(x, y, z int, currentValue int8) int8
+type ApplyFunc func(x, y, z int, currentValue int8) int8
 
 // Creates a new zeroed 3D array
-func NewArray3d(dimX, dimY, dimZ int) *Array3d {
+func New(dimX, dimY, dimZ int) *A {
 	a := make([][][]int8, dimX)
 	for i := 0; i < dimX; i++ {
 		a[i] = make([][]int8, dimY)
@@ -30,11 +31,11 @@ func NewArray3d(dimX, dimY, dimZ int) *Array3d {
 			a[i][j] = make([]int8, dimZ)
 		}
 	}
-	return &Array3d{data: a, DimX: dimX, DimY: dimY, DimZ: dimZ}
+	return &A{data: a, DimX: dimX, DimY: dimY, DimZ: dimZ}
 }
 
 // Creates a new 3D array from data
-func NewArray3dFromData(data [][][]int8) *Array3d {
+func NewFromData(data [][][]int8) *A {
 	dimX := len(data)
 	dimY := len(data[0])
 	dimZ := len(data[0][0])
@@ -46,21 +47,21 @@ func NewArray3dFromData(data [][][]int8) *Array3d {
 			copy(a[i][j], data[i][j])
 		}
 	}
-	return &Array3d{data: a, DimX: dimX, DimY: dimY, DimZ: dimZ}
+	return &A{data: a, DimX: dimX, DimY: dimY, DimZ: dimZ}
 }
 
 // Returns element [x][y][z] of the 3D array
-func (a *Array3d) Get(x, y, z int) int8 {
+func (a *A) Get(x, y, z int) int8 {
 	return a.data[x][y][z]
 }
 
 // Sets the element [x][y][z] of the 3D array
-func (a *Array3d) Set(x, y, z int, value int8) {
+func (a *A) Set(x, y, z int, value int8) {
 	a.data[x][y][z] = value
 }
 
 // Tests if the 3D array a and b contain the same elements
-func (a *Array3d) IsEqual(b *Array3d) bool {
+func (a *A) IsEqual(b *A) bool {
 	if a == nil && b == nil {
 		return true
 	} else if a == nil || b == nil {
@@ -82,8 +83,8 @@ func (a *Array3d) IsEqual(b *Array3d) bool {
 }
 
 // Creates a copy of the given 3D array
-func (src *Array3d) Clone() *Array3d {
-	cp := NewArray3d(src.DimX, src.DimY, src.DimZ)
+func (src *A) Clone() *A {
+	cp := New(src.DimX, src.DimY, src.DimZ)
 	for x := 0; x < src.DimX; x++ {
 		for y := 0; y < src.DimY; y++ {
 			for z := 0; z < src.DimZ; z++ {
@@ -95,7 +96,7 @@ func (src *Array3d) Clone() *Array3d {
 }
 
 // Counts the elements in arr that equal lookFor
-func (a *Array3d) Count(lookFor int8) int {
+func (a *A) Count(lookFor int8) int {
 	count := 0
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
@@ -111,13 +112,13 @@ func (a *Array3d) Count(lookFor int8) int {
 
 // GetBoundBoxSize returns the dimensions of the given volume
 // which correspond to the size of the bounding box
-func (a *Array3d) GetBoundingBox() Vector {
-	return Vector{a.DimX, a.DimY, a.DimZ}
+func (a *A) GetBoundingBox() utils.Vector {
+	return utils.Vector{a.DimX, a.DimY, a.DimZ}
 }
 
 // Applies the function f to each element of the array
-func (a *Array3d) Apply(f Array3dFunc) *Array3d {
-	r := NewArray3d(a.DimX, a.DimY, a.DimZ)
+func (a *A) Apply(f ApplyFunc) *A {
+	r := New(a.DimX, a.DimY, a.DimZ)
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
 			for z := 0; z < a.DimZ; z++ {
@@ -129,7 +130,7 @@ func (a *Array3d) Apply(f Array3dFunc) *Array3d {
 }
 
 // Applies f to all elements and returns true if all return true
-func (a *Array3d) AllTrue(f func(x, y, z int, currentValue int8) bool) bool {
+func (a *A) AllTrue(f func(x, y, z int, currentValue int8) bool) bool {
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
 			for z := 0; z < a.DimZ; z++ {
@@ -143,8 +144,8 @@ func (a *Array3d) AllTrue(f func(x, y, z int, currentValue int8) bool) bool {
 }
 
 // Rotates the array around the z-axis counter-clockwise by 90°
-func (a *Array3d) RotateZ() *Array3d {
-	r := NewArray3d(a.DimY, a.DimX, a.DimZ)
+func (a *A) RotateZ() *A {
+	r := New(a.DimY, a.DimX, a.DimZ)
 	for x := 0; x < r.DimX; x++ {
 		for y := 0; y < r.DimY; y++ {
 			for z := 0; z < r.DimZ; z++ {
@@ -155,17 +156,17 @@ func (a *Array3d) RotateZ() *Array3d {
 	return r
 }
 
-func (a *Array3d) RotateZ2() *Array3d {
+func (a *A) RotateZ2() *A {
 	return a.RotateZ().RotateZ()
 }
 
-func (a *Array3d) RotateZ3() *Array3d {
+func (a *A) RotateZ3() *A {
 	return a.RotateZ().RotateZ().RotateZ()
 }
 
 // Rotates the array around the y-axis counter-clockwise by 90°
-func (a *Array3d) RotateY() *Array3d {
-	r := NewArray3d(a.DimZ, a.DimY, a.DimX)
+func (a *A) RotateY() *A {
+	r := New(a.DimZ, a.DimY, a.DimX)
 	for x := 0; x < r.DimX; x++ {
 		for y := 0; y < r.DimY; y++ {
 			for z := 0; z < r.DimZ; z++ {
@@ -176,17 +177,17 @@ func (a *Array3d) RotateY() *Array3d {
 	return r
 }
 
-func (a *Array3d) RotateY2() *Array3d {
+func (a *A) RotateY2() *A {
 	return a.RotateY().RotateY()
 }
 
-func (a *Array3d) RotateY3() *Array3d {
+func (a *A) RotateY3() *A {
 	return a.RotateY().RotateY().RotateY()
 }
 
 // Rotates the array around the x-axis counter-clockwise by 90°
-func (a *Array3d) RotateX() *Array3d {
-	r := NewArray3d(a.DimX, a.DimZ, a.DimY)
+func (a *A) RotateX() *A {
+	r := New(a.DimX, a.DimZ, a.DimY)
 	for x := 0; x < r.DimX; x++ {
 		for y := 0; y < r.DimY; y++ {
 			for z := 0; z < r.DimZ; z++ {
@@ -197,18 +198,18 @@ func (a *Array3d) RotateX() *Array3d {
 	return r
 }
 
-func (a *Array3d) RotateX2() *Array3d {
+func (a *A) RotateX2() *A {
 	return a.RotateX().RotateX()
 }
 
-func (a *Array3d) RotateX3() *Array3d {
+func (a *A) RotateX3() *A {
 	return a.RotateX().RotateX().RotateX()
 }
 
 // calculates the center of gravity of the given array
 // relative to the origin which is in the corner of the array
 // element [0,0,0]
-func (a *Array3d) GetCenterOfGravity() Vectorf {
+func (a *A) GetCenterOfGravity() utils.Vectorf {
 	var x, y, z, n float64
 	for i := 0; i < a.DimX; i++ {
 		for j := 0; j < a.DimY; j++ {
@@ -222,11 +223,11 @@ func (a *Array3d) GetCenterOfGravity() Vectorf {
 			}
 		}
 	}
-	return Vectorf{x / n, y / n, z / n}
+	return utils.Vectorf{x / n, y / n, z / n}
 }
 
 // Looks for a in lst (comparing the values)
-func FindArray3d(lst []*Array3d, a *Array3d) (bool, int) {
+func Find(lst []*A, a *A) (bool, int) {
 	if lst != nil && a != nil {
 		for i, arr := range lst {
 			if a.IsEqual(arr) {

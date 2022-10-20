@@ -1,32 +1,33 @@
-package utils
+package array2d
 
 import (
 	"fmt"
-	"github.com/ps17/ubongo/utils"
+	"ubongo/utils/array3d"
+)
 
-// Array2d is a 2-dimensional array representing the area of a problem,
+// A is a 2-dimensional array representing the area of a problem,
 // where 0 indicates that the unit square is part of the shape, and -1 is not
-type Array2d struct {
+type A struct {
 	data [][]int8
 	DimX int
 	DimY int
 }
 
-func (a *Array2d) String() string {
+func (a *A) String() string {
 	return fmt.Sprintf("<%d-%d>%v", a.DimX, a.DimY, a.data)
 }
 
 // Creates a new zeroed 2D array
-func NewArray2d(dimX, dimY int) *Array2d {
+func New(dimX, dimY int) *A {
 	a := make([][]int8, dimX)
 	for i := 0; i < dimX; i++ {
 		a[i] = make([]int8, dimY)
 	}
-	return &Array2d{data: a, DimX: dimX, DimY: dimY}
+	return &A{data: a, DimX: dimX, DimY: dimY}
 }
 
 // Creates a new 2D array from data
-func NewArray2dFromData(data [][]int8) *Array2d {
+func NewFromData(data [][]int8) *A {
 	dimX := len(data)
 	dimY := len(data[0])
 	a := make([][]int8, dimX)
@@ -34,23 +35,23 @@ func NewArray2dFromData(data [][]int8) *Array2d {
 		a[i] = make([]int8, dimY)
 		copy(a[i], data[i])
 	}
-	return &Array2d{data: a, DimX: dimX, DimY: dimY}
+	return &A{data: a, DimX: dimX, DimY: dimY}
 }
 
 // Returns element [x][y] of the 2D array
-func (a *Array2d) Get(x, y int) int8 {
+func (a *A) Get(x, y int) int8 {
 	return a.data[x][y]
 }
 
 // Sets the element [x][y] of the 2D array
-func (a *Array2d) Set(x, y int, value int8) {
+func (a *A) Set(x, y int, value int8) {
 	a.data[x][y] = value
 }
 
 // Extrudes the given 2D array by height-steps into the 3rd dimension,
 // copying the values to each level
-func (arr *Array2d) Extrude(height int) *Array3d {
-	a := NewArray3d(arr.DimX, arr.DimY, height)
+func (arr *A) Extrude(height int) *array3d.A {
+	a := array3d.New(arr.DimX, arr.DimY, height)
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
 			for z := 0; z < height; z++ {
@@ -62,7 +63,7 @@ func (arr *Array2d) Extrude(height int) *Array3d {
 }
 
 // Tests if the 2D arrays a and b contain the same elements
-func (a *Array2d) IsEqual(b *Array2d) bool {
+func (a *A) IsEqual(b *A) bool {
 	if a == nil && b == nil {
 		return true
 	} else if a == nil || b == nil {
@@ -82,8 +83,8 @@ func (a *Array2d) IsEqual(b *Array2d) bool {
 }
 
 // Creates a copy of the given 2D array
-func (src *Array2d) Clone() *Array2d {
-	cp := NewArray2d(src.DimX, src.DimY)
+func (src *A) Clone() *A {
+	cp := New(src.DimX, src.DimY)
 	for x := 0; x < src.DimX; x++ {
 		for y := 0; y < src.DimY; y++ {
 			cp.Set(x, y, src.Get(x, y))
@@ -93,7 +94,7 @@ func (src *Array2d) Clone() *Array2d {
 }
 
 // Counts the elements in arr that equal lookFor
-func (a *Array2d) Count(lookFor int8) int {
+func (a *A) Count(lookFor int8) int {
 	count := 0
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {

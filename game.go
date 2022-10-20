@@ -8,11 +8,15 @@ import (
 	"os"
 	"sort"
 	"strconv"
+
+	"ubongo/utils"
+	"ubongo/utils/array2d"
+	"ubongo/utils/array3d"
 )
 
 type Game struct {
-	Shape  *Array2d
-	Volume *Array3d
+	Shape  *array2d.A
+	Volume *array3d.A
 	Blocks *Blockset
 }
 
@@ -81,7 +85,7 @@ func (g *Game) Clone() *Game {
 
 // Tries to add the given block to the game volume
 // returns true if successful, false if not
-func (g *Game) TryAddBlock(block *Array3d, pos Vector) bool {
+func (g *Game) TryAddBlock(block *array3d.A, pos utils.Vector) bool {
 	// check overall dimensions
 	if pos[0]+block.DimX > g.Volume.DimX ||
 		pos[1]+block.DimY > g.Volume.DimY ||
@@ -120,7 +124,7 @@ func (g *Game) TryAddBlock(block *Array3d, pos Vector) bool {
 // Removes the block at the given position from the volume
 // This does not check if the block is actually present and
 // simply sets all values from 1 to 0
-func (g *Game) RemoveBlock(block *Array3d, pos Vector) bool {
+func (g *Game) RemoveBlock(block *array3d.A, pos utils.Vector) bool {
 	// check overall dimensions
 	if pos[0]+block.DimX > g.Volume.DimX ||
 		pos[1]+block.DimY > g.Volume.DimY ||
@@ -154,7 +158,7 @@ func (g *Game) Solve() []*GameSolution {
 	// working arrays for the recursive solver:
 	solutions := make([]*GameSolution, 0)
 	shapeIdx := make([]int, 0)
-	shifts := make([]Vector, 0)
+	shifts := make([]utils.Vector, 0)
 
 	g.recursiveSolver(0, &shapeIdx, &shifts, &solutions)
 
@@ -162,7 +166,7 @@ func (g *Game) Solve() []*GameSolution {
 }
 
 // Recursive function called by Solve, don't call directly
-func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]Vector, solutions *[]*GameSolution) {
+func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]utils.Vector, solutions *[]*GameSolution) {
 	gameBox := g.Volume.GetBoundingBox()
 
 	block := g.Blocks.At(blockIdx)
@@ -320,7 +324,7 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 		diceNumber int
 	}
 	// this function selects a shape from a given card with a diceNumber
-	shapeSelector := func(card *Card, diceNumber int) *Array2d {
+	shapeSelector := func(card *Card, diceNumber int) *array2d.A {
 		if diceNumber <= 5 {
 			return card.Problems[1].Shape // top shape
 		} else {

@@ -4,6 +4,9 @@ import (
 	"strings"
 	"testing"
 
+	"ubongo/utils"
+	"ubongo/utils/array2d"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,7 +47,7 @@ func TestNewCard(t *testing.T) {
 	f := GetBlockFactory()
 
 	animal := Zebra
-	shape := NewArray2dFromData([][]int8{{-1, 0, 0}, {0, 0, 0}})
+	shape := array2d.NewFromData([][]int8{{-1, 0, 0}, {0, 0, 0}})
 	height := 3
 	cardNum := 42
 	diceNum := 7
@@ -63,7 +66,7 @@ func TestNewCard(t *testing.T) {
 	assert.True(t, shape.IsEqual(c.Problems[diceNum].Shape))
 	assert.Equal(t, height, c.Problems[diceNum].Height)
 	assert.Equal(t, shape.Count(0), c.Problems[diceNum].Area)
-	assert.Equal(t, Vector{shape.DimX, shape.DimY, height}, c.Problems[diceNum].BoundingBox)
+	assert.Equal(t, utils.Vector{shape.DimX, shape.DimY, height}, c.Problems[diceNum].BoundingBox)
 }
 
 func TestCardClone(t *testing.T) {
