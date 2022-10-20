@@ -55,12 +55,7 @@ type Block struct {
 	// Easily recognizable name of the block, unique together with the color
 	Name string
 
-	// Shapes is an array of all rotations of the block.
-	// Dimensions mean:
-	// - 1st index: shape enumeration, base shape is the first, the rest are rotations
-	// - 2nd index: x-dimension (horizontal to the right)
-	// - 3rd index: y-dimension (up in the 2D-base plane)
-	// - 4th index: z-dimension (up into the 3rd dimension)
+	// Shapes is an array of all rotations of the block
 	Shapes []*Array3d
 
 	// Volume is the number of unit cubes the block consists of.

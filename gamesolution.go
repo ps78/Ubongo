@@ -39,7 +39,7 @@ func (gs *GameSolution) String() string {
 	result := "GameSolution\n\t"
 	for i := 0; i < len(gs.Blocks); i++ {
 		result += fmt.Sprintf("<#%s %s (v%d) Shape #%d %s Shift %s>",
-			gs.Blocks[i].Color, gs.Blocks[i].Name, gs.Blocks[i].Volume, gs.ShapeIndex[i], gs.ShapeIndex[i], gs.Shifts[i])
+			gs.Blocks[i].Color, gs.Blocks[i].Name, gs.Blocks[i].Volume, gs.ShapeIndex[i], gs.Blocks[i].Shapes[gs.ShapeIndex[i]], gs.Shifts[i])
 		if i < len(gs.Blocks)-1 {
 			result += "\n\t"
 		}
