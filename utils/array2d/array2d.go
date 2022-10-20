@@ -1,6 +1,8 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/ps17/ubongo/utils"
 
 // Array2d is a 2-dimensional array representing the area of a problem,
 // where 0 indicates that the unit square is part of the shape, and -1 is not
