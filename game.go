@@ -198,6 +198,7 @@ func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]Vect
 	} // end loop over shapes
 }
 
+// Represents a single entry of the output of CreateSolutionStatistics()
 type SolutionStatisticsRecord struct {
 	Difficulty    UbongoDifficulty
 	Animal        UbongoAnimal
@@ -313,8 +314,8 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	maxTry := 100               // number of tries to build a consistent problem set
 	numProblemsPerDiceNum := 10 // number of problems to generate per diceNumber and card
 
-	// this Key is used in the 'problems' map
-	type Key struct {
+	// this key is used in the 'problems' map
+	type key struct {
 		animal     UbongoAnimal
 		diceNumber int
 	}
@@ -328,34 +329,34 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	}
 
 	// ** Generate problems ** //
-	problems := map[Key]map[int][]*Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
+	problems := map[key]map[int][]*Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
 	sourceCards := bc.GetByAnimal(sourceDifficulty, animal)
 
-	type Item struct {
-		key        Key
+	type item struct {
+		key        key
 		cardNumber int
 		problems   []*Problem
 	}
 	queueSize := 10 * len(sourceCards)
-	queue := make(chan Item, queueSize)
+	queue := make(chan item, queueSize)
 	for _, card := range sourceCards {
 		for diceNumber := 1; diceNumber <= 10; diceNumber++ {
 			shape := shapeSelector(card, diceNumber)
-			curKey := Key{animal, diceNumber}
+			curKey := key{animal, diceNumber}
 			// create new entry in map if necessary
 			if _, ok := problems[curKey]; !ok {
 				problems[curKey] = map[int][]*Problem{}
 			}
 			go func(cardNum int) {
 				probs := GenerateProblems(bf, shape, height, blockCount, numProblemsPerDiceNum)
-				queue <- Item{curKey, cardNum, probs}
+				queue <- item{curKey, cardNum, probs}
 			}(card.CardNumber)
 		}
 	}
 	// read results from channel
 	for i := 0; i < queueSize; i++ {
-		item := <-queue
-		problems[item.key][item.cardNumber] = item.problems
+		el := <-queue
+		problems[el.key][el.cardNumber] = el.problems
 	}
 
 	// ** Initialize set of cards to return ** //
@@ -368,7 +369,7 @@ func GenerateCardSet(bc *CardFactory, bf *BlockFactory,
 	// ** try to build sets for each diceNumber ** //
 
 	for diceNumber := 1; diceNumber <= 10; diceNumber++ {
-		curKey := Key{animal, diceNumber}
+		curKey := key{animal, diceNumber}
 
 		for try := 0; try < maxTry; try++ {
 			// randomly choose one problem from each card/dicenum
