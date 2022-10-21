@@ -1,3 +1,5 @@
+// Package gamesolution implements the type gamesolution.S which
+// represents a solution to a game (plus related methods)
 package gamesolution
 
 import (
@@ -21,7 +23,7 @@ type S struct {
 	Shifts []vector.V
 }
 
-// Creates an instance of GameSolution
+// New creates an instance of a GameSolution
 func New(blocks []*block.B, shapeIndex []int, shifts []vector.V) *S {
 	sol := S{}
 
@@ -37,43 +39,55 @@ func New(blocks []*block.B, shapeIndex []int, shifts []vector.V) *S {
 	return &sol
 }
 
-// Returns a multi-line string representing the GameSolution
+// String returns a multi-line string representing the GameSolution
 func (gs *S) String() string {
-	result := "GameSolution\n\t"
-	for i := 0; i < len(gs.Blocks); i++ {
-		result += fmt.Sprintf("<#%s %s (v%d) Shape #%d %s Shift %s>",
-			gs.Blocks[i].Color, gs.Blocks[i].Name, gs.Blocks[i].Volume, gs.ShapeIndex[i], gs.Blocks[i].Shapes[gs.ShapeIndex[i]], gs.Shifts[i])
-		if i < len(gs.Blocks)-1 {
-			result += "\n\t"
+	if gs == nil {
+		return "(nil)"
+	} else {
+		result := "GameSolution\n\t"
+		for i := 0; i < len(gs.Blocks); i++ {
+			result += fmt.Sprintf("<#%s %s (v%d) Shape #%d %s Shift %s>",
+				gs.Blocks[i].Color, gs.Blocks[i].Name, gs.Blocks[i].Volume, gs.ShapeIndex[i], gs.Blocks[i].Shapes[gs.ShapeIndex[i]], gs.Shifts[i])
+			if i < len(gs.Blocks)-1 {
+				result += "\n\t"
+			}
 		}
+		return result
 	}
-	return result
 }
 
 // GetCenterOfGravity calculates the center of gravity of the given solution
 func (gs *S) GetCenterOfGravity() vectorf.V {
-	c := vectorf.V{}
-	var totalVolume float64
-	for i, shapeIdx := range gs.ShapeIndex {
-		block := gs.Blocks[i]
-		blockVolume := float64(block.Volume)
-		totalVolume += blockVolume
-		c = c.Add(block.Shapes[shapeIdx].GetCenterOfGravity().Add(gs.Shifts[i].AsVectorf()).Mult(blockVolume))
+	if gs == nil {
+		return vectorf.Zero
+	} else {
+		c := vectorf.V{}
+		var totalVolume float64
+		for i, shapeIdx := range gs.ShapeIndex {
+			block := gs.Blocks[i]
+			blockVolume := float64(block.Volume)
+			totalVolume += blockVolume
+			c = c.Add(block.Shapes[shapeIdx].GetCenterOfGravity().Add(gs.Shifts[i].AsVectorf()).Mult(blockVolume))
+		}
+		return c.Div(totalVolume)
 	}
-	return c.Div(totalVolume)
 }
 
-// Returns the bounding box of the whole game solution
+// GetBoundingBox returns the bounding box of the whole game solution
 func (gs *S) GetBoundingBox() vector.V {
-	bb := vector.V{}
-	for i, sIdx := range gs.ShapeIndex {
-		shape := gs.Blocks[i].Shapes[sIdx]
-		dim := shape.GetBoundingBox().Add(gs.Shifts[i])
-		for i := 0; i < 3; i++ {
-			if dim[i] > bb[i] {
-				bb[i] = dim[i]
+	if gs == nil {
+		return vector.Zero
+	} else {
+		bb := vector.V{}
+		for i, sIdx := range gs.ShapeIndex {
+			shape := gs.Blocks[i].Shapes[sIdx]
+			dim := shape.GetBoundingBox().Add(gs.Shifts[i])
+			for i := 0; i < 3; i++ {
+				if dim[i] > bb[i] {
+					bb[i] = dim[i]
+				}
 			}
 		}
+		return bb
 	}
-	return bb
 }

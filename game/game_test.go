@@ -139,6 +139,8 @@ func TestCreateSolutionStatistics(t *testing.T) {
 	assert.Equal(t, countAllProblems, len(stats))
 	_, err := os.Stat(csvFile)
 	assert.Nil(t, err)
+
+	assert.Panics(t, func() { CreateSolutionStatistics(f, "><?.txt") })
 }
 
 func TestIsPossibleCardSet(t *testing.T) {

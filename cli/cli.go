@@ -139,6 +139,8 @@ func menuOptionGenerateInsaneProblems(cli *Cli) {
 	height := 3
 	blockCount := 5
 
+	fmt.Printf("Generating problems with height %d and %d blocks based on layouts of %s cards\n", height, blockCount, sourceDifficulty)
+
 	t := time.Now()
 	resultFile := fmt.Sprintf("./results/cards/%s_%s-%02d%02d%02d.txt", targetDifficulty, t.Format("20060102"), t.Hour(), t.Minute(), t.Second())
 
@@ -148,7 +150,13 @@ func menuOptionGenerateInsaneProblems(cli *Cli) {
 	// generate card-set for each animal
 	cards := make([]*card.C, 0)
 	for _, animal := range card.AllAnimals() {
-		cards = append(cards, game.GenerateCardSet(cf, bf, animal, sourceDifficulty, targetDifficulty, height, blockCount, "")...)
+		newCards := game.GenerateCardSet(cf, bf, animal, sourceDifficulty, targetDifficulty, height, blockCount, "")
+		cards = append(cards, newCards...)
+		newProbCount := 0
+		for _, c := range newCards {
+			newProbCount += len(c.Problems)
+		}
+		fmt.Printf("Created %d cards with %d problems for animal %s\n", len(newCards), newProbCount, animal)
 	}
 
 	// write all to one file
@@ -164,12 +172,21 @@ func menuOptionGenerateInsaneProblems(cli *Cli) {
 		}
 	}
 
-	fmt.Printf("Generated %d cards with %d problems and saved to %s", len(cards), totalProblems, resultFile)
+	fmt.Printf("Generated %d cards with %d problems and saved to %s\n", len(cards), totalProblems, resultFile)
 }
 
 func menuOptionVisualizeSolution(cli *Cli) {
+	difficulty := card.Difficult
+	cardNumber := 1
+	diceNumber := 1
+	solutionNumber := 0
+
 	cf := cardfactory.Get()
-	gs := game.New(cf.Get(card.Difficult, 1).Problems[1]).Solve()[0]
+	sols := game.New(cf.Get(difficulty, cardNumber).Problems[diceNumber]).Solve()
+	gs := sols[solutionNumber]
+
+	fmt.Printf("Showing solution of %s problem on card %d, dice %d (solution %d out of %d)", difficulty, cardNumber, diceNumber, solutionNumber+1, len(sols))
+
 	graphics.Visualize(gs)
 }
 

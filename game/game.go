@@ -3,7 +3,6 @@ package game
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"sort"
@@ -242,7 +241,7 @@ func CreateSolutionStatistics(f *cardfactory.F, csvFile string) []SolutionStatis
 	if csvFile != "" {
 		file, err := os.Create(csvFile)
 		if err != nil {
-			log.Fatalln("failed to open file", err)
+			panic(fmt.Sprintf("Failed to open file %s with error %v", csvFile, err))
 		}
 		defer file.Close()
 
@@ -261,7 +260,7 @@ func CreateSolutionStatistics(f *cardfactory.F, csvFile string) []SolutionStatis
 				rec.Blocks.String(),
 			})
 			if err != nil {
-				log.Fatal(err)
+				panic(fmt.Sprintf("Error writing solution statistics file: %v", err))
 			}
 		}
 	}
@@ -312,8 +311,8 @@ func GenerateCardSet(bc *cardfactory.F, bf *blockfactory.F,
 
 	// ** Utility types / functions and constants ** //
 
-	maxTry := 100               // number of tries to build a consistent problem set
-	numProblemsPerDiceNum := 10 // number of problems to generate per diceNumber and card
+	maxTry := 200               // number of tries to build a consistent problem set
+	numProblemsPerDiceNum := 20 // number of problems to generate per diceNumber and card
 
 	// this key is used in the 'problems' map
 	type key struct {
