@@ -1,9 +1,10 @@
 run coverage tests as follows:
 
-go test -coverprofile=coverage
+go test ./... -coverprofile=coverage
 go tool cover -html=coverage
 
-create dependency graph:
+
+create struct-dependency graph:
 
 embedded-struct-visualizer -out dependencies.dot
 

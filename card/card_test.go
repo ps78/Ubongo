@@ -35,21 +35,32 @@ func TestUbongoAnimalString(t *testing.T) {
 	assert.NotEqual(t, "(n/a)", strings.ToLower(Warthog.String()))
 }
 
-func TestCardString(t *testing.T) {
-	probs := map[int]*problem.Problem{}
-	p := NewCard(1, Easy, Elephant, probs)
+func TestUbongoAnimalAll(t *testing.T) {
+	a := AllAnimals()
+	assert.Equal(t, 9, len(a))
+}
+
+func TestString(t *testing.T) {
+	probs := map[int]*problem.P{}
+	p := New(1, Easy, Elephant, probs)
 	s := p.String()
 	assert.True(t, len(s) > 10)
+
+	var nilCard *C = nil
+	assert.Equal(t, "(nil)", nilCard.String())
 }
 
-func TestCardVerbousString(t *testing.T) {
-	c := cardfactory.GetCardFactory().Get(Difficult, 1)
+func TestVerbousString(t *testing.T) {
+	c := cardfactory.Get().Get(Difficult, 1)
 	s := c.VerbousString()
 	assert.True(t, len(s) > 100)
+
+	var nilCard *C = nil
+	assert.Equal(t, "(nil)", nilCard.VerbousString())
 }
 
-func TestNewCard(t *testing.T) {
-	f := blockfactory.GetBlockFactory()
+func TestNew(t *testing.T) {
+	f := blockfactory.Get()
 
 	animal := Zebra
 	shape := array2d.NewFromData([][]int8{{-1, 0, 0}, {0, 0, 0}})
@@ -57,12 +68,12 @@ func TestNewCard(t *testing.T) {
 	cardNum := 42
 	diceNum := 7
 	diff := Insane
-	bs := blockset.NewBlockset(f.ByNumber(3), f.ByNumber(7), f.ByNumber(12), f.ByNumber(13), f.ByNumber(16))
+	bs := blockset.New(f.ByNumber(3), f.ByNumber(7), f.ByNumber(12), f.ByNumber(13), f.ByNumber(16))
 
-	var problems map[int]*problem.Problem = map[int]*problem.Problem{
-		diceNum: problem.NewProblem(shape, height, bs)}
+	var problems map[int]*problem.P = map[int]*problem.P{
+		diceNum: problem.New(shape, height, bs)}
 
-	c := NewCard(cardNum, diff, animal, problems)
+	c := New(cardNum, diff, animal, problems)
 
 	assert.Equal(t, cardNum, c.CardNumber)
 	assert.Equal(t, diff, c.Difficulty)
@@ -74,8 +85,8 @@ func TestNewCard(t *testing.T) {
 	assert.Equal(t, vector.V{shape.DimX, shape.DimY, height}, c.Problems[diceNum].BoundingBox)
 }
 
-func TestCardClone(t *testing.T) {
-	o := cardfactory.GetCardFactory().Get(Difficult, 13)
+func TestClone(t *testing.T) {
+	o := cardfactory.Get().Get(Difficult, 13)
 	c := o.Clone()
 
 	assert.Equal(t, o.Animal, c.Animal)
@@ -85,4 +96,7 @@ func TestCardClone(t *testing.T) {
 	for k, v := range o.Problems {
 		assert.True(t, v.IsEqual(c.Problems[k]))
 	}
+
+	var nilCard *C = nil
+	assert.Nil(t, nilCard.Clone())
 }

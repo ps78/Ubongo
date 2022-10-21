@@ -1,12 +1,4 @@
-/*
-*******************************************************************
-
-This file contains the singleton BlockFactory, which is used
-to ensure that the blocks of the game are only created once
-and can be access thread-safely
-
-*******************************************************************
-*/
+// Package blockfactory contains the BlockFactory singleton type and related methods
 package blockfactory
 
 import (
@@ -20,43 +12,69 @@ import (
 	"ubongo/extmath"
 )
 
-// used to create a thread-safe singleton instance of BlockFactory
+// onceBlockFactorySingleton is used to create a thread-safe singleton instance of BlockFactory
 var onceBlockFactorySingleton sync.Once
 
-// the singleton
-var blockFactoryInstance *BlockFactory
+// blockFactoryInstance the singleton instance of the BlockFactory
+var blockFactoryInstance *F
 
-type BlockFactory struct {
-	Block          map[int]*block.Block // access block by number
+// F represents a type that allow accessing the game's various blocks
+type F struct {
+	// block is a map where each of the game's 16 block types can be accessed by their number 1..16
+	block map[int]*block.B // access block by number
+
+	// MinBlockNumber can be used to iterate over Block, it is equal to 1
 	MinBlockNumber int
-	MaxBlockNumber int
-	BlockByVolume  map[int]*blockset.Blockset // access blocks by volume (3, 4 or 5)
 
-	// accessors for blocks by name, for convenience
-	Yellow_hello     *block.Block
-	Yellow_bighook   *block.Block
-	Yellow_smallhook *block.Block
-	Yellow_gate      *block.Block
-	Blue_bighook     *block.Block
-	Blue_flash       *block.Block
-	Blue_lighter     *block.Block
-	Blue_v           *block.Block
-	Red_stool        *block.Block
-	Red_smallhook    *block.Block
-	Red_bighook      *block.Block
-	Red_flash        *block.Block
-	Green_flash      *block.Block
-	Green_bighook    *block.Block
-	Green_T          *block.Block
-	Green_L          *block.Block
+	// MaxBlockNumber can be used to iterate over Block, it is equal to 16
+	MaxBlockNumber int
+
+	// byVolume is an map to access blocks based on their volume (which is the key)
+	byVolume map[int]*blockset.S
+
+	// The following are accessors for the 16 blocks by human readable name, for convenience
+
+	// Block number 1
+	Yellow_hello *block.B
+	// Block number 2
+	Yellow_bighook *block.B
+	// Block number 3
+	Yellow_smallhook *block.B
+	// Block number 4
+	Yellow_gate *block.B
+	// Block number 5
+	Blue_bighook *block.B
+	// Block number 6
+	Blue_flash *block.B
+	// Block number 7
+	Blue_lighter *block.B
+	// Block number 8
+	Blue_v *block.B
+	// Block number 9
+	Red_stool *block.B
+	// Block number 10
+	Red_smallhook *block.B
+	// Block number 11
+	Red_bighook *block.B
+	// Block number 12
+	Red_flash *block.B
+	// Block number 13
+	Green_flash *block.B
+	// Block number 14
+	Green_bighook *block.B
+	// Block number 15
+	Green_T *block.B
+	// Block number 16
+	Green_L *block.B
 }
 
-func GetBlockFactory() *BlockFactory {
+// Get returns the singleton instance of the BlockFactory
+func Get() *F {
 	onceBlockFactorySingleton.Do(func() {
-		f := new(BlockFactory)
+		f := new(F)
 		f.MinBlockNumber = 1
 		f.MaxBlockNumber = 16
-		f.Block = map[int]*block.Block{
+		f.block = map[int]*block.B{
 			1:  newBlock1(),
 			2:  newBlock2(),
 			3:  newBlock3(),
@@ -74,30 +92,30 @@ func GetBlockFactory() *BlockFactory {
 			15: newBlock15(),
 			16: newBlock16()}
 
-		f.Yellow_hello = f.Block[1]
-		f.Yellow_bighook = f.Block[2]
-		f.Yellow_smallhook = f.Block[3]
-		f.Yellow_gate = f.Block[4]
-		f.Blue_bighook = f.Block[5]
-		f.Blue_flash = f.Block[6]
-		f.Blue_lighter = f.Block[7]
-		f.Blue_v = f.Block[8]
-		f.Red_stool = f.Block[9]
-		f.Red_smallhook = f.Block[10]
-		f.Red_bighook = f.Block[11]
-		f.Red_flash = f.Block[12]
-		f.Green_flash = f.Block[13]
-		f.Green_bighook = f.Block[14]
-		f.Green_T = f.Block[15]
-		f.Green_L = f.Block[16]
+		f.Yellow_hello = f.block[1]
+		f.Yellow_bighook = f.block[2]
+		f.Yellow_smallhook = f.block[3]
+		f.Yellow_gate = f.block[4]
+		f.Blue_bighook = f.block[5]
+		f.Blue_flash = f.block[6]
+		f.Blue_lighter = f.block[7]
+		f.Blue_v = f.block[8]
+		f.Red_stool = f.block[9]
+		f.Red_smallhook = f.block[10]
+		f.Red_bighook = f.block[11]
+		f.Red_flash = f.block[12]
+		f.Green_flash = f.block[13]
+		f.Green_bighook = f.block[14]
+		f.Green_T = f.block[15]
+		f.Green_L = f.block[16]
 
 		// add the blocks to the volume-map
-		f.BlockByVolume = make(map[int]*blockset.Blockset)
-		for _, b := range f.Block {
-			if _, ok := f.BlockByVolume[b.Volume]; !ok {
-				f.BlockByVolume[b.Volume] = blockset.NewBlockset()
+		f.byVolume = make(map[int]*blockset.S)
+		for _, b := range f.block {
+			if _, ok := f.byVolume[b.Volume]; !ok {
+				f.byVolume[b.Volume] = blockset.New()
 			}
-			f.BlockByVolume[b.Volume].Add(b)
+			f.byVolume[b.Volume].Add(b)
 		}
 
 		blockFactoryInstance = f
@@ -105,18 +123,24 @@ func GetBlockFactory() *BlockFactory {
 	return blockFactoryInstance
 }
 
-// Returns the block with the given number, or nil of not found
-func (f *BlockFactory) ByNumber(blockNumber int) *block.Block {
+// ByNumber returns the block with the given number, or nil of not found
+func (f *F) ByNumber(blockNumber int) *block.B {
+	if f == nil {
+		return nil
+	}
 	// get block from cache if possible
-	if block, ok := f.Block[blockNumber]; ok {
+	if block, ok := f.block[blockNumber]; ok {
 		return block
 	} else {
 		return nil
 	}
 }
 
-// Returns a block by it's color and name, or nil of not found
-func (f *BlockFactory) ByName(color block.BlockColor, name string) *block.Block {
+// ByName returns a block by it's color and name, or nil of not found
+func (f *F) ByName(color block.BlockColor, name string) *block.B {
+	if f == nil {
+		return nil
+	}
 	for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
 		b := f.ByNumber(i)
 		if strings.EqualFold(b.Name, name) && b.Color == color {
@@ -126,12 +150,27 @@ func (f *BlockFactory) ByName(color block.BlockColor, name string) *block.Block 
 	return nil
 }
 
-// Returns an array with all blocks
-func (f *BlockFactory) GetAll() []*block.Block {
-	a := make([]*block.Block, 0)
-	for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
-		if block := f.ByNumber(i); block != nil {
-			a = append(a, block)
+// ByVolume returns a blockset containing all blocks with the given volume
+// returns nil if no such block exists
+func (f *F) ByVolume(volume int) *blockset.S {
+	if f == nil {
+		return blockset.New()
+	}
+	if bs, ok := f.byVolume[volume]; ok {
+		return bs
+	} else {
+		return blockset.New()
+	}
+}
+
+// GetAll returns an array with all blocks
+func (f *F) GetAll() []*block.B {
+	a := make([]*block.B, 0)
+	if f != nil {
+		for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
+			if block := f.ByNumber(i); block != nil {
+				a = append(a, block)
+			}
 		}
 	}
 	return a
@@ -146,7 +185,11 @@ func (f *BlockFactory) GetAll() []*block.Block {
 // NOTE: the returned slice can be smaller than resultCount, as no duplicate
 // results are generated and the algormithms stops if it fails to generate new
 // results
-func (bf *BlockFactory) GenerateBlocksets(volume, blockCount, resultCount int) []*blockset.Blockset {
+func (bf *F) GenerateBlocksets(volume, blockCount, resultCount int) []*blockset.S {
+	if bf == nil {
+		return []*blockset.S{}
+	}
+
 	// maximum number of tries to create a random blockset that is not already in
 	// the result
 	const maxTry = 10
@@ -154,25 +197,25 @@ func (bf *BlockFactory) GenerateBlocksets(volume, blockCount, resultCount int) [
 	// create all possible partitions that define how many blocks of a specific volume
 	// are used to fill the volume
 	// limit the 3-volume
-	max3 := bf.BlockByVolume[3].Count
-	max4 := bf.BlockByVolume[4].Count
-	max5 := bf.BlockByVolume[5].Count
+	max3 := bf.byVolume[3].Count
+	max4 := bf.byVolume[4].Count
+	max5 := bf.byVolume[5].Count
 	partitions := extmath.CreateParitions(volume, []int{3, 4, 5}, map[int]int{3: max3, 4: max4, 5: max5}, blockCount)
 	partCount := len(partitions)
 
 	// abort if there are no partitions fulfilling the given criteria
 	if partCount == 0 {
-		return []*blockset.Blockset{}
+		return []*blockset.S{}
 	}
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// generate resultCount results as requested
-	results := make([]*blockset.Blockset, resultCount)
+	results := make([]*blockset.S, resultCount)
 	for i := 0; i < resultCount; i++ {
 		for try := 0; try < maxTry; try++ {
 			// initialize new result
-			curResult := blockset.NewBlockset()
+			curResult := blockset.New()
 
 			// randomly choose a partition
 			partition := partitions[r.Intn(partCount)]
@@ -183,12 +226,12 @@ func (bf *BlockFactory) GenerateBlocksets(volume, blockCount, resultCount int) [
 				for j := 0; j < count; j++ {
 					randIdx := -1
 					for {
-						randIdx = r.Intn(bf.BlockByVolume[vol].Count)
-						if !curResult.Contains(bf.BlockByVolume[vol].At(randIdx).Number) {
+						randIdx = r.Intn(bf.byVolume[vol].Count)
+						if !curResult.Contains(bf.byVolume[vol].Get(randIdx).Number) {
 							break
 						}
 					}
-					bl := bf.BlockByVolume[vol].At(randIdx)
+					bl := bf.byVolume[vol].Get(randIdx)
 					curResult.Add(bl)
 				}
 			}
@@ -208,9 +251,9 @@ func (bf *BlockFactory) GenerateBlocksets(volume, blockCount, resultCount int) [
 /*******************************************************************************
  * Block-creator functions for the 16 blocks of the game
  *******************************************************************************/
-func newBlock1() *block.Block {
+func newBlock1() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {1, 0}, {0, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 1,
 		Name:   "hello",
 		Color:  block.Yellow,
@@ -218,9 +261,9 @@ func newBlock1() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock2() *block.Block {
+func newBlock2() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 0}, {1, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 2,
 		Name:   "big hook",
 		Color:  block.Yellow,
@@ -228,9 +271,9 @@ func newBlock2() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock3() *block.Block {
+func newBlock3() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {0, 0}}, {{1, 1}, {0, 1}}})
-	return &block.Block{
+	return &block.B{
 		Number: 3,
 		Name:   "small hook",
 		Color:  block.Yellow,
@@ -238,9 +281,9 @@ func newBlock3() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock4() *block.Block {
+func newBlock4() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 1}}})
-	return &block.Block{
+	return &block.B{
 		Number: 4,
 		Name:   "gate",
 		Color:  block.Yellow,
@@ -248,9 +291,9 @@ func newBlock4() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock5() *block.Block {
+func newBlock5() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {0, 0}, {0, 0}}, {{1, 0}, {1, 0}, {1, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 5,
 		Name:   "big hook",
 		Color:  block.Blue,
@@ -258,9 +301,9 @@ func newBlock5() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock6() *block.Block {
+func newBlock6() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 1}, {0, 1}}, {{1, 0}, {0, 0}, {0, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 6,
 		Name:   "flash",
 		Color:  block.Blue,
@@ -268,9 +311,9 @@ func newBlock6() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock7() *block.Block {
+func newBlock7() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {1}}})
-	return &block.Block{
+	return &block.B{
 		Number: 7,
 		Name:   "lighter",
 		Color:  block.Blue,
@@ -278,9 +321,9 @@ func newBlock7() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock8() *block.Block {
+func newBlock8() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{0, 1}, {1, 1}}})
-	return &block.Block{
+	return &block.B{
 		Number: 8,
 		Name:   "v",
 		Color:  block.Blue,
@@ -288,9 +331,9 @@ func newBlock8() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock9() *block.Block {
+func newBlock9() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}}, {{1, 0}, {1, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 9,
 		Name:   "stool",
 		Color:  block.Red,
@@ -298,9 +341,9 @@ func newBlock9() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock10() *block.Block {
+func newBlock10() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}}, {{0, 0}, {1, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 10,
 		Name:   "small hook",
 		Color:  block.Red,
@@ -308,9 +351,9 @@ func newBlock10() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock11() *block.Block {
+func newBlock11() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {0, 0}, {1, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 11,
 		Name:   "big hook",
 		Color:  block.Red,
@@ -318,9 +361,9 @@ func newBlock11() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock12() *block.Block {
+func newBlock12() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {0}}, {{0}, {1}, {1}}})
-	return &block.Block{
+	return &block.B{
 		Number: 12,
 		Name:   "flash",
 		Color:  block.Red,
@@ -328,9 +371,9 @@ func newBlock12() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock13() *block.Block {
+func newBlock13() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {0, 0}}, {{0, 0}, {1, 0}, {1, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 13,
 		Name:   "flash",
 		Color:  block.Green,
@@ -338,9 +381,9 @@ func newBlock13() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock14() *block.Block {
+func newBlock14() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 0}, {1, 0}, {1, 0}}, {{1, 1}, {0, 0}, {0, 0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 14,
 		Name:   "big hook",
 		Color:  block.Green,
@@ -348,9 +391,9 @@ func newBlock14() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock15() *block.Block {
+func newBlock15() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{0}, {1}, {0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 15,
 		Name:   "T",
 		Color:  block.Green,
@@ -358,9 +401,9 @@ func newBlock15() *block.Block {
 		Volume: baseShape.Count(1)}
 }
 
-func newBlock16() *block.Block {
+func newBlock16() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1}, {1}, {1}}, {{1}, {0}, {0}}})
-	return &block.Block{
+	return &block.B{
 		Number: 16,
 		Name:   "L",
 		Color:  block.Green,

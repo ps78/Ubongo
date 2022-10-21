@@ -9,24 +9,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestVectorAsVectorf(t *testing.T) {
+func TestZero(t *testing.T) {
+	assert.Equal(t, V{0, 0, 0}, Zero)
+}
+
+func TestAsVectorf(t *testing.T) {
 	v := V{1, 2, 3}
 	vf := v.AsVectorf()
 	assert.Equal(t, vectorf.V{1, 2, 3}, vf)
 }
 
-func TestVectorString(t *testing.T) {
+func TestString(t *testing.T) {
 	v := V{1, 2, 3}
 	assert.Equal(t, "(1,2,3)", fmt.Sprint(v))
 }
 
-func TestVectorMax(t *testing.T) {
-	a := V{-10, 3, 77}
-	m := a.Max()
-	assert.Equal(t, 77, m)
+func TestMax(t *testing.T) {
+	assert.Equal(t, 77, V{-10, 3, 77}.Max())
+	assert.Equal(t, 55, V{5, 55, -1}.Max())
+	assert.Equal(t, 11, V{11, -33, 0}.Max())
 }
 
-func TestVectorAdd(t *testing.T) {
+func TestAdd(t *testing.T) {
 	a := V{-1, 5, 42}
 	b := V{3, 0, 5}
 	actual := a.Add(b)
@@ -34,7 +38,7 @@ func TestVectorAdd(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestVectorSub(t *testing.T) {
+func TestSub(t *testing.T) {
 	a := V{-1, 5, 42}
 	b := V{3, 0, 5}
 	actual := a.Sub(b)
@@ -42,7 +46,7 @@ func TestVectorSub(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestVectorMult(t *testing.T) {
+func TestMult(t *testing.T) {
 	a := V{-1, 5, 42}
 	b := 3
 	actual := a.Mult(b)
@@ -50,7 +54,7 @@ func TestVectorMult(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestVectorDiv(t *testing.T) {
+func TestDiv(t *testing.T) {
 	a := V{-1, 5, 42}
 	b := 2.0
 	actual := a.Div(b)
@@ -58,7 +62,7 @@ func TestVectorDiv(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestVectorFlip(t *testing.T) {
+func TestFlip(t *testing.T) {
 	a := V{-1, 5, 42}
 	actual := a.Flip()
 	expected := V{1, -5, -42}

@@ -13,10 +13,10 @@ import (
 )
 
 func TestNewProblem(t *testing.T) {
-	bf := blockfactory.GetBlockFactory()
+	bf := blockfactory.Get()
 	shape := array2d.NewFromData([][]int8{{0, 0}, {-1, 0}})
-	bs := blockset.NewBlockset(bf.Green_L, bf.Blue_v)
-	p := NewProblem(shape, 2, bs)
+	bs := blockset.New(bf.Green_L, bf.Blue_v)
+	p := New(shape, 2, bs)
 
 	assert.True(t, shape.IsEqual(p.Shape))
 	assert.Equal(t, 2, p.Height)
@@ -24,17 +24,17 @@ func TestNewProblem(t *testing.T) {
 }
 
 func TestProblemString(t *testing.T) {
-	bf := blockfactory.GetBlockFactory()
-	p := NewProblem(array2d.New(2, 2), 2, blockset.NewBlockset(bf.Blue_flash))
+	bf := blockfactory.Get()
+	p := New(array2d.New(2, 2), 2, blockset.New(bf.Blue_flash))
 	s := p.String()
 	assert.True(t, len(s) > 10)
 }
 
 func TestProblemClone(t *testing.T) {
-	bf := blockfactory.GetBlockFactory()
+	bf := blockfactory.Get()
 	shape := array2d.NewFromData([][]int8{{0, 0}, {-1, 0}})
-	bs := blockset.NewBlockset(bf.Green_L, bf.Blue_v)
-	p := NewProblem(shape, 2, bs)
+	bs := blockset.New(bf.Green_L, bf.Blue_v)
+	p := New(shape, 2, bs)
 	c := p.Clone()
 
 	assert.Equal(t, p.Height, c.Height)
@@ -45,11 +45,11 @@ func TestProblemClone(t *testing.T) {
 }
 
 func TestProblemIsEqual(t *testing.T) {
-	bf := blockfactory.GetBlockFactory()
-	a := NewProblem(array2d.New(2, 2), 2, blockset.NewBlockset(bf.Blue_flash))
-	b := NewProblem(array2d.New(2, 2), 2, blockset.NewBlockset(bf.Blue_flash))
-	c := NewProblem(array2d.New(3, 2), 3, blockset.NewBlockset(bf.Blue_flash))
-	d := NewProblem(array2d.New(2, 2), 2, blockset.NewBlockset(bf.Red_flash))
+	bf := blockfactory.Get()
+	a := New(array2d.New(2, 2), 2, blockset.New(bf.Blue_flash))
+	b := New(array2d.New(2, 2), 2, blockset.New(bf.Blue_flash))
+	c := New(array2d.New(3, 2), 3, blockset.New(bf.Blue_flash))
+	d := New(array2d.New(2, 2), 2, blockset.New(bf.Red_flash))
 	assert.True(t, a.IsEqual(b))
 	assert.False(t, a.IsEqual(c))
 	assert.False(t, a.IsEqual(d))

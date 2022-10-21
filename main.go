@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"ubongo/base/array2d"
 	"ubongo/blockfactory"
 	"ubongo/card"
 	"ubongo/cardfactory"
@@ -10,23 +11,26 @@ import (
 )
 
 func main() {
-	var mode int = 1
+	var mode int = 0
 
 	switch mode {
+	case 0:
+		var a *array2d.A = nil
+		fmt.Println(a)
 	case 1:
 		// create block render images:
-		graphics.RenderAll(blockfactory.GetBlockFactory().GetAll(), "./results/images", 500, 500)
+		graphics.RenderAll(blockfactory.Get().GetAll(), "./results/images", 500, 500)
 	case 2:
 		// solve all problems and save stats:
-		game.CreateSolutionStatistics(cardfactory.GetCardFactory(), "./results/solutions.csv")
+		game.CreateSolutionStatistics(cardfactory.Get(), "./results/solutions.csv")
 	case 3:
 		// Generate Insane problems
 		for _, animal := range card.AllAnimals() {
-			game.GenerateCardSet(cardfactory.GetCardFactory(), blockfactory.GetBlockFactory(), animal, card.Easy, card.Insane, 3, 5, fmt.Sprintf("./results/cards/%s.txt", animal))
+			game.GenerateCardSet(cardfactory.Get(), blockfactory.Get(), animal, card.Easy, card.Insane, 3, 5, fmt.Sprintf("./results/cards/%s.txt", animal))
 		}
 	case 4:
 		// Visualize a solution
-		gs := game.NewGame(cardfactory.GetCardFactory().Get(card.Difficult, 1).Problems[1]).Solve()[0]
+		gs := game.New(cardfactory.Get().Get(card.Difficult, 1).Problems[1]).Solve()[0]
 		graphics.Visualize(gs)
 	}
 }

@@ -1,13 +1,4 @@
-/*
-*******************************************************************
-
-This file contains all block-related types and functions:
-
-- Block struct: defines a block
-- functions that create the 16 blocks of the game
-
-*******************************************************************
-*/
+// Package block contains the Block type, the BlockColor enum related methods
 package block
 
 import (
@@ -19,6 +10,7 @@ import (
 // BlockColor is the color of a block in the original game
 type BlockColor int8
 
+// Color enumeration values for the BlockColor type
 const (
 	Blue BlockColor = iota
 	Red
@@ -26,7 +18,7 @@ const (
 	Green
 )
 
-// Returns a string representation for the BlockColor enum
+// String returns a string representation for the BlockColor enum
 func (s BlockColor) String() string {
 	switch s {
 	case Blue:
@@ -41,6 +33,7 @@ func (s BlockColor) String() string {
 	return "Unknown"
 }
 
+// ToRGBA converts a block color to an RGBA value
 func (c BlockColor) ToRGBA() color.RGBA {
 	switch c {
 	case Green:
@@ -55,16 +48,16 @@ func (c BlockColor) ToRGBA() color.RGBA {
 	return color.RGBA{255, 255, 255, 0}
 }
 
-// Block represents a single Ubongo block including all
+// B represents a single Ubongo block including all
 // of it's possible rotations in space
-type Block struct {
+type B struct {
 	// Color of the block as in the original game
 	Color BlockColor
 
 	// Number of the block, 1-16 for the blocks of the original game
 	Number int
 
-	// Easily recognizable name of the block, unique together with the color
+	// Name is an easily recognizable name of the block, unique together with the color
 	Name string
 
 	// Shapes is an array of all rotations of the block
@@ -75,8 +68,12 @@ type Block struct {
 	Volume int
 }
 
-// Returns a string representation of the block
-func (b *Block) String() string {
-	return fmt.Sprintf("Block %d: %s %s (volume %d, %d orientations)",
-		b.Number, b.Color, b.Name, b.Volume, len(b.Shapes))
+// String returns a string representation of the block
+func (b *B) String() string {
+	if b == nil {
+		return "(nil)"
+	} else {
+		return fmt.Sprintf("Block %d: %s %s (volume %d, %d orientations)",
+			b.Number, b.Color, b.Name, b.Volume, len(b.Shapes))
+	}
 }

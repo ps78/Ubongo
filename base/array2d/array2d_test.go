@@ -3,16 +3,16 @@ package array2d_test
 import (
 	"testing"
 
-	"ubongo/base/array2d"
+	. "ubongo/base/array2d"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewArray2d(t *testing.T) {
+func TestNew(t *testing.T) {
 	dimX := 2
 	dimY := 3
 
-	a := array2d.New(dimX, dimY)
+	a := New(dimX, dimY)
 
 	assert.Equal(t, dimX, a.DimX, "Wrong x-dimension")
 	assert.Equal(t, dimY, a.DimY, "Wrong y-dimension")
@@ -24,9 +24,14 @@ func TestNewArray2d(t *testing.T) {
 	}
 }
 
-func TestNewArray2dFromData(t *testing.T) {
+func TestNewError(t *testing.T) {
+	assert.Panics(t, func() { New(1, 0) })
+	assert.Panics(t, func() { New(-1, 5) })
+}
+
+func TestNewFromData(t *testing.T) {
 	data := [][]int8{{0, 1}, {1, 2}, {2, 3}}
-	a := array2d.NewFromData(data)
+	a := NewFromData(data)
 
 	assert.Equal(t, len(data), a.DimX, "Wrong x-dimension")
 	assert.Equal(t, len(data[0]), a.DimY, "Wrong y-dimension")
@@ -39,15 +44,27 @@ func TestNewArray2dFromData(t *testing.T) {
 	}
 }
 
-func TestArray2dString(t *testing.T) {
-	a := array2d.NewFromData([][]int8{{0, 1, 0}, {1, 0, 1}})
+func TestNewFromDataNil(t *testing.T) {
+	a := NewFromData(nil)
+	assert.Nil(t, a)
+}
+
+func TestString(t *testing.T) {
+	a := NewFromData([][]int8{{0, 1, 0}, {1, 0, 1}})
 	exp := "<2-3>[[0 1 0] [1 0 1]]"
 	act := a.String()
 	assert.Equal(t, exp, act)
 }
 
-func TestArray2dGetSet(t *testing.T) {
-	a := array2d.New(7, 9)
+func TestStringNil(t *testing.T) {
+	var a *A = nil
+	exp := "(nil)"
+	act := a.String()
+	assert.Equal(t, exp, act)
+}
+
+func TestGetSet(t *testing.T) {
+	a := New(7, 9)
 	for x := 0; x < a.DimX; x++ {
 		for y := 0; y < a.DimY; y++ {
 			a.Set(x, y, int8(x+y))
@@ -56,8 +73,8 @@ func TestArray2dGetSet(t *testing.T) {
 	}
 }
 
-func TestArray2dExtrude(t *testing.T) {
-	a2d := array2d.NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
+func TestExtrude(t *testing.T) {
+	a2d := NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
 	height := 2
 	a := a2d.Extrude(height)
 
@@ -70,12 +87,17 @@ func TestArray2dExtrude(t *testing.T) {
 	}
 }
 
-func TestArray2dIsEqual(t *testing.T) {
-	a := array2d.NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 5}})
-	b := array2d.NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 5}}) // == a
-	c := array2d.NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 0}}) // != a
-	d := array2d.NewFromData([][]int8{{2}, {3}})
-	var e *array2d.A = nil
+func TestExtrudeError(t *testing.T) {
+	a2d := NewFromData([][]int8{{-1, 0, -1}, {-1, 0, 0}})
+	assert.Panics(t, func() { a2d.Extrude(0) })
+}
+
+func TestIsEqual(t *testing.T) {
+	a := NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 5}})
+	b := NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 5}}) // == a
+	c := NewFromData([][]int8{{2, 3, 5, 6}, {7, 8, 6, 2}, {1, 0, -1, 0}}) // != a
+	d := NewFromData([][]int8{{2}, {3}})
+	var e *A = nil
 
 	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal2DArray reports they are not")
 	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal2DArray reports they are")
@@ -85,8 +107,8 @@ func TestArray2dIsEqual(t *testing.T) {
 	assert.False(t, a.IsEqual(e))
 }
 
-func TestArray2dClone(t *testing.T) {
-	orig := array2d.NewFromData([][]int8{{0, 1}, {1, 2}, {2, 3}})
+func TestClone(t *testing.T) {
+	orig := NewFromData([][]int8{{0, 1}, {1, 2}, {2, 3}})
 	copy := orig.Clone()
 	orig.Set(0, 0, 42) // this should not affect the copy
 
@@ -99,12 +121,23 @@ func TestArray2dClone(t *testing.T) {
 	}
 }
 
-func TestArray2dCount(t *testing.T) {
-	a := array2d.NewFromData([][]int8{{1, 3, 6, 1}, {3, 3, 0, 9}, {1, 1, 9, 0}})
+func TestCloneNil(t *testing.T) {
+	var a *A = nil
+	b := a.Clone()
+	assert.Nil(t, b)
+}
+
+func TestCount(t *testing.T) {
+	a := NewFromData([][]int8{{1, 3, 6, 1}, {3, 3, 0, 9}, {1, 1, 9, 0}})
 	assert.Equal(t, 2, a.Count(0))
 	assert.Equal(t, 4, a.Count(1))
 	assert.Equal(t, 3, a.Count(3))
 	assert.Equal(t, 1, a.Count(6))
 	assert.Equal(t, 2, a.Count(9))
 	assert.Equal(t, 0, a.Count(7))
+}
+
+func TestCountNil(t *testing.T) {
+	var a *A = nil
+	assert.Equal(t, 0, a.Count(0))
 }

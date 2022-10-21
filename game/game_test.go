@@ -22,31 +22,31 @@ import (
 )
 
 func TestNewGame(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
-	g := NewGame(p)
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
+	g := New(p)
 
 	assert.True(t, g.Shape.IsEqual(p.Shape), "Shape is wrong")
 	assert.True(t, g.Volume.IsEqual(p.Shape.Extrude(p.Height)), "Wrong volume")
 }
 
 func TestGameString(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
-	g := NewGame(p)
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
+	g := New(p)
 	s := g.String()
 	assert.True(t, len(s) > 10)
 }
 
 func TestGameSolution(t *testing.T) {
-	f := blockfactory.GetBlockFactory()
-	b := []*block.Block{f.ByNumber(1), f.ByNumber(2)}
-	gs := gamesolution.NewGameSolution(b, []int{0, 0}, []vector.V{{0, 0, 0}, {0, 0, 0}})
+	f := blockfactory.Get()
+	b := []*block.B{f.ByNumber(1), f.ByNumber(2)}
+	gs := gamesolution.New(b, []int{0, 0}, []vector.V{{0, 0, 0}, {0, 0, 0}})
 	s := gs.String()
 	assert.True(t, len(s) > 10)
 }
 
 func TestClear(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
-	g := NewGame(p)
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
+	g := New(p)
 
 	g.Volume.Set(0, 1, 0, 1)
 	g.Volume.Set(0, 1, 1, 1)
@@ -58,8 +58,8 @@ func TestClear(t *testing.T) {
 }
 
 func TestClone(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
-	g := NewGame(p)
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
+	g := New(p)
 	c := g.Clone()
 
 	assert.True(t, g.Shape.IsEqual(c.Shape), "Shape does not match")
@@ -68,11 +68,11 @@ func TestClone(t *testing.T) {
 }
 
 func TestTryAddBlock(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
 	p.Shape = array2d.NewFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
-	g := NewGame(p)
+	g := New(p)
 	origVolume := g.Volume.Clone()
-	blockShape := blockfactory.GetBlockFactory().ByNumber(8).Shapes[0]
+	blockShape := blockfactory.Get().ByNumber(8).Shapes[0]
 	pos := vector.V{0, 0, 0}
 
 	// test a case where TryAdd should fail
@@ -88,10 +88,10 @@ func TestTryAddBlock(t *testing.T) {
 }
 
 func TestRemoveBlock(t *testing.T) {
-	g := new(Game)
+	g := new(G)
 	g.Volume = array3d.NewFromData([][][]int8{{{0, 1}, {1, 1}, {-1, -1}, {-1, -1}}, {{-1, -1}, {0, 0}, {0, 0}, {-1, -1}}, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}})
 	origVolume := g.Volume.Clone()
-	blockShape := blockfactory.GetBlockFactory().ByNumber(8).Shapes[0]
+	blockShape := blockfactory.Get().ByNumber(8).Shapes[0]
 	pos := vector.V{0, 0, 0}
 
 	// test case where block is outside volume, this should not change the volume
@@ -100,26 +100,26 @@ func TestRemoveBlock(t *testing.T) {
 	assert.True(t, g.Volume.IsEqual(origVolume), "The the volume changed after a failed RemoveBlock() call")
 
 	// test case where removal works
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
 	p.Shape = array2d.NewFromData([][]int8{{0, 0, -1, -1}, {-1, 0, 0, -1}, {0, 0, 0, 0}})
-	exp := NewGame(p)
+	exp := New(p)
 	ok := g.RemoveBlock(blockShape, pos)
 	assert.True(t, ok)
 	assert.True(t, exp.Volume.IsEqual(g.Volume))
 }
 
 func TestSolveNoSolution(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1].Clone()
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1].Clone()
 	p.Blocks.RemoveAt(3)
-	g := NewGame(p)
+	g := New(p)
 	solutions := g.Solve()
 
 	assert.Equal(t, 0, len(solutions), "Expected 0 solutions, but found %d", len(solutions))
 }
 
 func TestSolve(t *testing.T) {
-	p := cardfactory.GetCardFactory().Get(card.Difficult, 12).Problems[1]
-	g := NewGame(p)
+	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
+	g := New(p)
 
 	solutions := g.Solve()
 
@@ -127,7 +127,7 @@ func TestSolve(t *testing.T) {
 }
 
 func TestCreateSolutionStatistics(t *testing.T) {
-	f := cardfactory.GetCardFactory()
+	f := cardfactory.Get()
 	rand.Seed(time.Now().Unix())
 	csvFile := "solution_stats_test_" + strconv.Itoa(rand.Int()) + ".csv"
 	defer os.Remove(csvFile)
@@ -142,36 +142,36 @@ func TestCreateSolutionStatistics(t *testing.T) {
 }
 
 func TestIsPossibleCardSet(t *testing.T) {
-	f := blockfactory.GetBlockFactory()
+	f := blockfactory.Get()
 	shape := array2d.New(3, 3)
-	okProblemsSet := map[int]*problem.Problem{
-		1: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_bighook, f.Blue_flash)),
-		2: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Red_smallhook, f.Blue_flash)),
-		3: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Yellow_gate, f.Blue_bighook)),
-		4: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_lighter, f.Yellow_hello)),
+	okProblemsSet := map[int]*problem.P{
+		1: problem.New(shape, 2, blockset.New(f.Blue_bighook, f.Blue_flash)),
+		2: problem.New(shape, 2, blockset.New(f.Red_smallhook, f.Blue_flash)),
+		3: problem.New(shape, 2, blockset.New(f.Yellow_gate, f.Blue_bighook)),
+		4: problem.New(shape, 2, blockset.New(f.Blue_lighter, f.Yellow_hello)),
 	}
 
 	assert.True(t, IsPossibleCardSet(okProblemsSet))
 
-	nokProblemsSet := map[int]*problem.Problem{
-		1: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_bighook, f.Blue_flash)),
-		2: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_bighook, f.Blue_flash)),
-		3: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_bighook, f.Blue_bighook)),
-		4: problem.NewProblem(shape, 2, blockset.NewBlockset(f.Blue_lighter, f.Blue_bighook)),
+	nokProblemsSet := map[int]*problem.P{
+		1: problem.New(shape, 2, blockset.New(f.Blue_bighook, f.Blue_flash)),
+		2: problem.New(shape, 2, blockset.New(f.Blue_bighook, f.Blue_flash)),
+		3: problem.New(shape, 2, blockset.New(f.Blue_bighook, f.Blue_bighook)),
+		4: problem.New(shape, 2, blockset.New(f.Blue_lighter, f.Blue_bighook)),
 	}
 
 	assert.False(t, IsPossibleCardSet(nokProblemsSet))
 
-	emptyProblemSet := map[int]*problem.Problem{}
+	emptyProblemSet := map[int]*problem.P{}
 	assert.False(t, IsPossibleCardSet(emptyProblemSet))
 
-	nilProblemSet := map[int]*problem.Problem{1: nil}
+	nilProblemSet := map[int]*problem.P{1: nil}
 	assert.False(t, IsPossibleCardSet(nilProblemSet))
 }
 
 func TestGenerateCardSet(t *testing.T) {
-	bf := blockfactory.GetBlockFactory()
-	cf := cardfactory.GetCardFactory()
+	bf := blockfactory.Get()
+	cf := cardfactory.Get()
 
 	rand.Seed(time.Now().Unix())
 	file := "cardset_test_" + strconv.Itoa(rand.Int()) + ".txt"
@@ -184,8 +184,8 @@ func TestGenerateCardSet(t *testing.T) {
 }
 
 func TestGenerateProblems(t *testing.T) {
-	fp := cardfactory.GetCardFactory()
-	fb := blockfactory.GetBlockFactory()
+	fp := cardfactory.Get()
+	fb := blockfactory.Get()
 
 	shape := fp.Get(card.Easy, 1).Problems[1].Shape
 	problems := GenerateProblems(fb, shape, 3, 5, 10)
@@ -194,7 +194,7 @@ func TestGenerateProblems(t *testing.T) {
 
 	// check that each problem has a solution
 	for _, p := range problems {
-		g := NewGame(p)
+		g := New(p)
 		solutions := g.Solve()
 		assert.Less(t, 0, len(solutions))
 	}

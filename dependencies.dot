@@ -1,0 +1,16 @@
+digraph {
+"array2d.A" -> { "array2d.int8" };
+"array3d.A" -> { "array3d.int8" };
+"block.B" -> { "block.BlockColor" "array3d.A" };
+"blockfactory.F" -> { "block.B" "blockset.S" };
+"blockset.S" -> { "block.B" };
+"card.C" -> { "card.UbongoAnimal" "card.UbongoDifficulty" "problem.P" };
+"card.item" -> { "problem.P" };
+"cardfactory.F" -> { "card.UbongoDifficulty" "cardfactory.map" "card.C" };
+"game.G" -> { "array3d.A" "blockset.S" "array2d.A" };
+"game.SolutionStatisticsRecord" -> { "card.UbongoDifficulty" "card.UbongoAnimal" "blockset.S" };
+"game.key" -> { "card.UbongoAnimal" };
+"game.item" -> { "problem.P" "game.key" };
+"gamesolution.S" -> { "block.B" "gamesolution.int" "vector.V" };
+"problem.P" -> { "array2d.A" "vector.V" "blockset.S" };
+}

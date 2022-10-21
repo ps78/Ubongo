@@ -1,3 +1,4 @@
+// Package blockset contains the type Blockset and its methods
 package blockset
 
 import (
@@ -6,139 +7,175 @@ import (
 	"ubongo/block"
 )
 
-// Blockset is a (unordered) set of blocks
-type Blockset struct {
-	Items []*block.Block
+// S is a (unordered) set of blocks, without duplicates
+type S struct {
+	items []*block.B
 	Count int
 }
 
-// Sorts the items in bs by the block number
-func (bs *Blockset) normalize() {
-	sort.Slice(bs.Items, func(i, j int) bool {
-		return bs.Items[i].Number < bs.Items[j].Number
+// normalize sorts the items in bs by the block number
+func (bs *S) normalize() {
+	sort.Slice(bs.items, func(i, j int) bool {
+		return bs.items[i].Number < bs.items[j].Number
 	})
 }
 
-// Creates a blockset from a list/slice of blocks
-func NewBlockset(blocks ...*block.Block) *Blockset {
-	bs := Blockset{}
-	bs.Count = len(blocks)
-	bs.Items = make([]*block.Block, len(blocks))
-	copy(bs.Items, blocks)
-	bs.normalize()
+// New creates a blockset from a list/slice of blocks
+func New(blocks ...*block.B) *S {
+	bs := S{}
+	bs.items = make([]*block.B, 0)
+	for _, block := range blocks {
+		bs.Add(block)
+	}
 	return &bs
 }
 
-// Returns the block reference for the given index
-func (bs *Blockset) At(idx int) *block.Block {
+// Get returns the block reference for the given index
+// returns nil if the index is invalid
+func (bs *S) Get(idx int) *block.B {
+	if bs == nil {
+		return nil
+	}
 	if idx < 0 || idx >= bs.Count {
 		return nil
 	} else {
-		return bs.Items[idx]
+		return bs.items[idx]
 	}
 }
 
-// Returns a string representation of a blockset
-func (bs *Blockset) String() string {
-	s := "["
-	for i := 0; i < bs.Count; i++ {
-		if i != 0 {
-			s += ", "
+// String returns a string representation of a blockset
+func (bs *S) String() string {
+	if bs == nil {
+		return "(nil)"
+	} else {
+		s := "["
+		for i := 0; i < bs.Count; i++ {
+			if i != 0 {
+				s += ", "
+			}
+			s += fmt.Sprintf("%s %s", bs.Get(i).Color, bs.Get(i).Name)
 		}
-		s += fmt.Sprintf("%s %s", bs.At(i).Color, bs.At(i).Name)
+		return s + "]"
 	}
-	return s + "]"
 }
 
-// Returns a copy of the blockset as slice. The slice is ordered
-// in contrast to the blockset
-func (bs *Blockset) AsSlice() []*block.Block {
-	s := make([]*block.Block, bs.Count)
-	copy(s, bs.Items)
-	return s
+// AsSlice returns a copy of the blockset as slice. The slice is ordered
+// by block number
+func (bs *S) AsSlice() []*block.B {
+	if bs == nil {
+		return nil
+	} else {
+		s := make([]*block.B, bs.Count)
+		copy(s, bs.items)
+		return s
+	}
 }
 
-// Adds block to the blockset
-func (bs *Blockset) Add(blocks ...*block.Block) {
-	if blocks == nil {
+// Add adds block to the blockset, if it doesn't already exist
+func (bs *S) Add(blocks ...*block.B) {
+	if bs == nil || blocks == nil {
 		return
 	}
 	for _, b := range blocks {
 		if b != nil {
-			bs.Items = append(bs.Items, b)
+			if !bs.Contains(b.Number) {
+				bs.items = append(bs.items, b)
+			}
 		}
 	}
-	bs.Count = len(bs.Items)
+	bs.Count = len(bs.items)
 	bs.normalize()
 }
 
-// Removes all blocks with the given blockNumber from the blockset
-func (bs *Blockset) Remove(blockNumber int) {
-	if bs.Contains(blockNumber) {
-		newItems := make([]*block.Block, 0, bs.Count-1)
-		for oldIdx := range bs.Items {
-			if bs.Items[oldIdx].Number != blockNumber {
-				newItems = append(newItems, bs.Items[oldIdx])
+// Remove removes the block with the given blockNumber from the blockset
+func (bs *S) Remove(blockNumber int) {
+	if bs == nil {
+		return
+	} else {
+		if bs.Contains(blockNumber) {
+			newItems := make([]*block.B, 0, bs.Count-1)
+			for oldIdx := range bs.items {
+				if bs.items[oldIdx].Number != blockNumber {
+					newItems = append(newItems, bs.items[oldIdx])
+				}
 			}
+			bs.items = newItems
+			bs.Count = len(newItems)
 		}
-		bs.Items = newItems
-		bs.Count = len(newItems)
 	}
 }
 
-func (bs *Blockset) RemoveAt(idx int) {
-	if idx < 0 || idx >= bs.Count {
+// RemoveAt removes a block from the set by its index
+func (bs *S) RemoveAt(idx int) {
+	if bs == nil || idx < 0 || idx >= bs.Count {
 		return
 	} else if idx == bs.Count-1 {
-		bs.Items = bs.Items[:idx]
+		bs.items = bs.items[:idx]
 	} else {
-		bs.Items = append(bs.Items[:idx], bs.Items[idx+1:]...)
+		bs.items = append(bs.items[:idx], bs.items[idx+1:]...)
 	}
-	bs.Count = len(bs.Items)
+	bs.Count = len(bs.items)
 }
 
-// Compares two Blocksets. Considers blocks with the same number as identical
-func (bs *Blockset) IsEqual(other *Blockset) bool {
-	if bs == nil || other == nil || bs.Count != other.Count {
+// IsEqual compares two Blocksets. Considers blocks with the same number as identical
+func (bs *S) IsEqual(other *S) bool {
+	if bs == nil && other == nil {
+		return true
+	} else if bs == nil || other == nil || bs.Count != other.Count {
+		return false
+	} else {
+		for i := 0; i < bs.Count; i++ {
+			if bs.items[i].Number != other.items[i].Number {
+				return false
+			}
+		}
+		return true
+	}
+}
+
+// Contains returns true of the set contains a block with the given number
+func (bs *S) Contains(blockNumber int) bool {
+	if bs == nil {
+		return false
+	} else {
+		for _, b := range bs.items {
+			if b.Number == blockNumber {
+				return true
+			}
+		}
 		return false
 	}
-	for i := 0; i < bs.Count; i++ {
-		if bs.Items[i].Number != other.Items[i].Number {
-			return false
-		}
+}
+
+// Clone creates a clone of the blockset, copying the block references,
+// not the blocks themselves
+func (orig *S) Clone() *S {
+	if orig == nil {
+		return nil
+	} else {
+		clone := S{}
+		clone.Count = orig.Count
+		clone.items = make([]*block.B, orig.Count)
+		copy(clone.items, orig.items)
+		return &clone
 	}
-	return true
 }
 
-// Returns true of the set contains a block with the given number
-func (bs *Blockset) Contains(blockNumber int) bool {
-	for _, b := range bs.Items {
-		if b.Number == blockNumber {
-			return true
-		}
-	}
-	return false
-}
-
-// Creates a clone of the blockset
-func (orig *Blockset) Clone() *Blockset {
-	clone := Blockset{}
-	clone.Count = orig.Count
-	clone.Items = make([]*block.Block, orig.Count)
-	copy(clone.Items, orig.Items)
-	return &clone
-}
-
-// Returns the total volume of the blockset
-func (bs *Blockset) Volume() int {
+// Volume returns the total volume of the blockset
+// 0 for a nil reference
+func (bs *S) Volume() int {
 	sum := 0
-	for _, bl := range bs.Items {
-		sum += bl.Volume
+	if bs != nil {
+		for _, bl := range bs.items {
+			sum += bl.Volume
+		}
 	}
 	return sum
 }
 
-func ContainsBlockset(sets []*Blockset, bs *Blockset) bool {
+// ContainsBlockset checks if a slice of blocksets contains a
+// specific blockset
+func ContainsBlockset(sets []*S, bs *S) bool {
 	if sets == nil || bs == nil {
 		return false
 	}

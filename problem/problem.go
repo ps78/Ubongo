@@ -7,8 +7,8 @@ import (
 	"ubongo/blockset"
 )
 
-// Problem represents a single Ubongo problem to solve
-type Problem struct {
+// P represents a single Ubongo problem to solve
+type P struct {
 	// Shape is the 2D shape of the puzzle, first is the index X-direction (horizontal, to the right),
 	// the second index is the Y-direction (up)
 	Shape *array2d.A // -1=not part of volume, 0=empty, 1=occupied by a block
@@ -23,17 +23,17 @@ type Problem struct {
 	BoundingBox vector.V
 
 	// Blocks is an array of the blocks to be used to fill the volume
-	Blocks *blockset.Blockset
+	Blocks *blockset.S
 }
 
 // Returns a string representation of the problem
-func (p Problem) String() string {
+func (p P) String() string {
 	return fmt.Sprintf("Problem: %d blocks, area %d, height %d", p.Blocks.Count, p.Area, p.Height)
 }
 
 // Creates a problem instance
-func NewProblem(shape *array2d.A, height int, blocks *blockset.Blockset) *Problem {
-	var p *Problem = new(Problem)
+func New(shape *array2d.A, height int, blocks *blockset.S) *P {
+	var p *P = new(P)
 
 	p.Shape = shape.Clone()
 	p.Blocks = blocks.Clone()
@@ -45,7 +45,7 @@ func NewProblem(shape *array2d.A, height int, blocks *blockset.Blockset) *Proble
 }
 
 // IsEqual returns true of o contains the same data as p
-func (p *Problem) IsEqual(o *Problem) bool {
+func (p *P) IsEqual(o *P) bool {
 	if o == nil {
 		return false
 	} else {
@@ -58,8 +58,8 @@ func (p *Problem) IsEqual(o *Problem) bool {
 }
 
 // Clone creates a deep copy of a problem
-func (p *Problem) Clone() *Problem {
-	var n *Problem = new(Problem)
+func (p *P) Clone() *P {
+	var n *P = new(P)
 
 	n.Shape = p.Shape.Clone()
 	n.Blocks = p.Blocks.Clone()

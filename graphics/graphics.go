@@ -155,7 +155,7 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *array3d.A, blockColor block.Bloc
 
 // CreateImage creates an image the given game solution
 // The rotation can be given with the rx, ry, rz parameters
-func CreateImage(gs *gamesolution.GameSolution, width, height int, rx, ry, rz, explode float64) *image.RGBA {
+func CreateImage(gs *gamesolution.S, width, height int, rx, ry, rz, explode float64) *image.RGBA {
 
 	pn := pinhole.New()
 
@@ -186,7 +186,7 @@ func CreateImage(gs *gamesolution.GameSolution, width, height int, rx, ry, rz, e
 }
 
 // Creates an image of a single block
-func Render(block *block.Block, width, height int, rx, ry, rz float64) *image.RGBA {
+func Render(block *block.B, width, height int, rx, ry, rz float64) *image.RGBA {
 	pn := pinhole.New()
 
 	shape := block.Shapes[0]
@@ -217,9 +217,9 @@ func SaveAsPng(img image.Image, path string) error {
 	return png.Encode(file, img)
 }
 
-func Visualize(gs *gamesolution.GameSolution) {
+func Visualize(gs *gamesolution.S) {
 
-	updateImage := func(win fyne.Window, sol *gamesolution.GameSolution, w, h int, rx, ry, rz float64) {
+	updateImage := func(win fyne.Window, sol *gamesolution.S, w, h int, rx, ry, rz float64) {
 		img := CreateImage(sol, w, h, rx, ry, rz, 0.1)
 		win.SetContent(canvas.NewImageFromImage(img))
 	}
@@ -256,7 +256,7 @@ func Visualize(gs *gamesolution.GameSolution) {
 
 // Renders all blocks to an image, storing it in the given path
 // returns a list of filenames
-func RenderAll(blocks []*block.Block, dir string, width, height int) []string {
+func RenderAll(blocks []*block.B, dir string, width, height int) []string {
 	files := make([]string, 0)
 	for _, b := range blocks {
 		img := Render(b, width, height, math.Pi/4, -math.Pi/8, 0)

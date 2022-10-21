@@ -9,7 +9,7 @@ import (
 )
 
 func TestCardFactoryInstance(t *testing.T) {
-	f := GetCardFactory()
+	f := Get()
 
 	easyCount := 0
 	easyCards := f.Cards[card.Easy]
@@ -30,7 +30,7 @@ func TestCardFactoryInstance(t *testing.T) {
 }
 
 func TestCardFactoryGet(t *testing.T) {
-	f := GetCardFactory()
+	f := Get()
 
 	c := f.Get(card.Difficult, 12)
 	assert.NotNil(t, c)
@@ -42,7 +42,7 @@ func TestCardFactoryGet(t *testing.T) {
 }
 
 func TestCardFactoryGetByAnimal(t *testing.T) {
-	f := GetCardFactory()
+	f := Get()
 
 	cards := f.GetByAnimal(card.Difficult, card.Zebra)
 	assert.Equal(t, 4, len(cards))
@@ -53,7 +53,7 @@ func TestCardFactoryGetByAnimal(t *testing.T) {
 }
 
 func TestCardFactoryGetAll(t *testing.T) {
-	f := GetCardFactory()
+	f := Get()
 
 	easyCards := f.GetAll(card.Easy)
 	assert.Equal(t, 36, len(easyCards))
@@ -69,7 +69,7 @@ func TestCardFactoryGetAll(t *testing.T) {
 }
 
 func TestCardFactoryGetAllProblems(t *testing.T) {
-	f := GetCardFactory()
+	f := Get()
 
 	easyProbs := f.GetAllProblems(card.Easy)
 	assert.Equal(t, 144, len(easyProbs))

@@ -20,10 +20,10 @@ import (
 	"ubongo/problem"
 )
 
-type Game struct {
+type G struct {
 	Shape  *array2d.A
 	Volume *array3d.A
-	Blocks *blockset.Blockset
+	Blocks *blockset.S
 }
 
 // The number of blocks of each type in the original Ubongo game
@@ -47,22 +47,22 @@ var UbongoBlockSet map[int]int = map[int]int{
 	16: 4, // green L
 }
 
-// Creates a new game, initialized with the given shape and height and an empty volume
-func NewGame(p *problem.Problem) *Game {
-	return &Game{
+// New creates a new game, initialized with the given shape and height and an empty volume
+func New(p *problem.P) *G {
+	return &G{
 		Shape:  p.Shape.Clone(),
 		Volume: p.Shape.Extrude(p.Height),
 		Blocks: p.Blocks.Clone()}
 }
 
 // Returns a nicely formatted string representation of the game
-func (g *Game) String() string {
+func (g *G) String() string {
 	return fmt.Sprintf("Game (area %d, volume %d, empty %d)",
 		g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
 }
 
 // Removes all blocks from a game
-func (g *Game) Clear() {
+func (g *G) Clear() {
 	for x := 0; x < g.Volume.DimX; x++ {
 		for y := 0; y < g.Volume.DimY; y++ {
 			for z := 0; z < g.Volume.DimZ; z++ {
@@ -73,8 +73,8 @@ func (g *Game) Clear() {
 }
 
 // Creates a copy of the game
-func (g *Game) Clone() *Game {
-	return &Game{
+func (g *G) Clone() *G {
+	return &G{
 		Shape:  g.Shape.Clone(),
 		Volume: g.Volume.Clone(),
 		Blocks: g.Blocks.Clone()}
@@ -82,7 +82,7 @@ func (g *Game) Clone() *Game {
 
 // Tries to add the given block to the game volume
 // returns true if successful, false if not
-func (g *Game) TryAddBlock(block *array3d.A, pos vector.V) bool {
+func (g *G) TryAddBlock(block *array3d.A, pos vector.V) bool {
 	// check overall dimensions
 	if pos[0]+block.DimX > g.Volume.DimX ||
 		pos[1]+block.DimY > g.Volume.DimY ||
@@ -121,7 +121,7 @@ func (g *Game) TryAddBlock(block *array3d.A, pos vector.V) bool {
 // Removes the block at the given position from the volume
 // This does not check if the block is actually present and
 // simply sets all values from 1 to 0
-func (g *Game) RemoveBlock(block *array3d.A, pos vector.V) bool {
+func (g *G) RemoveBlock(block *array3d.A, pos vector.V) bool {
 	// check overall dimensions
 	if pos[0]+block.DimX > g.Volume.DimX ||
 		pos[1]+block.DimY > g.Volume.DimY ||
@@ -146,14 +146,14 @@ func (g *Game) RemoveBlock(block *array3d.A, pos vector.V) bool {
 }
 
 // Finds all solutino for a given game using the set of blocks provided
-func (g *Game) Solve() []*gamesolution.GameSolution {
+func (g *G) Solve() []*gamesolution.S {
 	// check the sum of the block volumes, it must match the empty volume of the game to yield a solution
 	if g.Volume.Count(0) != g.Blocks.Volume() {
-		return []*gamesolution.GameSolution{}
+		return []*gamesolution.S{}
 	}
 
 	// working arrays for the recursive solver:
-	solutions := make([]*gamesolution.GameSolution, 0)
+	solutions := make([]*gamesolution.S, 0)
 	shapeIdx := make([]int, 0)
 	shifts := make([]vector.V, 0)
 
@@ -163,10 +163,10 @@ func (g *Game) Solve() []*gamesolution.GameSolution {
 }
 
 // Recursive function called by Solve, don't call directly
-func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]vector.V, solutions *[]*gamesolution.GameSolution) {
+func (g *G) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]vector.V, solutions *[]*gamesolution.S) {
 	gameBox := g.Volume.GetBoundingBox()
 
-	block := g.Blocks.At(blockIdx)
+	block := g.Blocks.Get(blockIdx)
 
 	for shapeIdx, shape := range block.Shapes {
 		*shapeIndices = append(*shapeIndices, shapeIdx)
@@ -181,7 +181,7 @@ func (g *Game) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]vect
 				if blockIdx == g.Blocks.Count-1 {
 					// check if we have a solution
 					if g.Volume.Count(0) == 0 {
-						*solutions = append(*solutions, gamesolution.NewGameSolution(g.Blocks.AsSlice(), *shapeIndices, *shifts))
+						*solutions = append(*solutions, gamesolution.New(g.Blocks.AsSlice(), *shapeIndices, *shifts))
 					}
 					// if it wasn't the last block, continue recursion
 				} else {
@@ -208,20 +208,20 @@ type SolutionStatisticsRecord struct {
 	Area          int
 	Height        int
 	SolutionCount int
-	Blocks        *blockset.Blockset
+	Blocks        *blockset.S
 }
 
 // Solves all Easy & Difficult problems and returns the statistics
 // If the csvFile parameter is provided (and not empty), the data is also
 // written to a csv file
-func CreateSolutionStatistics(f *cardfactory.CardFactory, csvFile string) []SolutionStatisticsRecord {
+func CreateSolutionStatistics(f *cardfactory.F, csvFile string) []SolutionStatisticsRecord {
 
 	// create the dataset to return / write
 	records := make([]SolutionStatisticsRecord, 0)
 	for _, difficulty := range []card.UbongoDifficulty{card.Easy, card.Difficult} {
 		for _, c := range f.GetAll(difficulty) {
 			for diceNumber, p := range c.Problems {
-				g := NewGame(p)
+				g := New(p)
 				solutions := g.Solve()
 				records = append(records, SolutionStatisticsRecord{
 					c.Difficulty, c.Animal, c.CardNumber, diceNumber, p.Area, p.Height,
@@ -273,7 +273,7 @@ func CreateSolutionStatistics(f *cardfactory.CardFactory, csvFile string) []Solu
 // as a set in the game. Condition is that the combined
 // blocks are available in the game
 // The map-key is the card-number
-func IsPossibleCardSet(problems map[int]*problem.Problem) bool {
+func IsPossibleCardSet(problems map[int]*problem.P) bool {
 	if len(problems) == 0 {
 		return false
 	}
@@ -307,8 +307,8 @@ func IsPossibleCardSet(problems map[int]*problem.Problem) bool {
 // for every possible throw of the dice (and of course every problem has a solution)
 // Returns: map[diceNumber][cardNumber]*Problem
 // Optionally write the result to the given file, if not empty
-func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
-	animal card.UbongoAnimal, sourceDifficulty, targetDifficulty card.UbongoDifficulty, height, blockCount int, outputFile string) []*card.Card {
+func GenerateCardSet(bc *cardfactory.F, bf *blockfactory.F,
+	animal card.UbongoAnimal, sourceDifficulty, targetDifficulty card.UbongoDifficulty, height, blockCount int, outputFile string) []*card.C {
 
 	// ** Utility types / functions and constants ** //
 
@@ -321,7 +321,7 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 		diceNumber int
 	}
 	// this function selects a shape from a given card with a diceNumber
-	shapeSelector := func(card *card.Card, diceNumber int) *array2d.A {
+	shapeSelector := func(card *card.C, diceNumber int) *array2d.A {
 		if diceNumber <= 5 {
 			return card.Problems[1].Shape // top shape
 		} else {
@@ -330,13 +330,13 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 	}
 
 	// ** Generate problems ** //
-	problems := map[key]map[int][]*problem.Problem{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
+	problems := map[key]map[int][]*problem.P{} // value of map: map[cardnumber](problems with with same animal/dice/cardnum)
 	sourceCards := bc.GetByAnimal(sourceDifficulty, animal)
 
 	type item struct {
 		key        key
 		cardNumber int
-		problems   []*problem.Problem
+		problems   []*problem.P
 	}
 	queueSize := 10 * len(sourceCards)
 	queue := make(chan item, queueSize)
@@ -346,7 +346,7 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 			curKey := key{animal, diceNumber}
 			// create new entry in map if necessary
 			if _, ok := problems[curKey]; !ok {
-				problems[curKey] = map[int][]*problem.Problem{}
+				problems[curKey] = map[int][]*problem.P{}
 			}
 			go func(cardNum int) {
 				probs := GenerateProblems(bf, shape, height, blockCount, numProblemsPerDiceNum)
@@ -362,9 +362,9 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 
 	// ** Initialize set of cards to return ** //
 
-	cardSet := make(map[int]*card.Card) // key = CardNumber
+	cardSet := make(map[int]*card.C) // key = CardNumber
 	for _, crd := range sourceCards {
-		cardSet[crd.CardNumber] = card.NewCard(crd.CardNumber, targetDifficulty, animal, make(map[int]*problem.Problem))
+		cardSet[crd.CardNumber] = card.New(crd.CardNumber, targetDifficulty, animal, make(map[int]*problem.P))
 	}
 
 	// ** try to build sets for each diceNumber ** //
@@ -374,7 +374,7 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 
 		for try := 0; try < maxTry; try++ {
 			// randomly choose one problem from each card/dicenum
-			problemSet := make(map[int]*problem.Problem) // key=CardNumber
+			problemSet := make(map[int]*problem.P) // key=CardNumber
 			for cardNum, probs := range problems[curKey] {
 				if len(probs) == 0 {
 					problemSet = nil
@@ -395,7 +395,7 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 	}
 
 	// flatten and sort map to array
-	result := make([]*card.Card, 0)
+	result := make([]*card.C, 0)
 	for _, crd := range cardSet {
 		result = append(result, crd)
 	}
@@ -417,16 +417,16 @@ func GenerateCardSet(bc *cardfactory.CardFactory, bf *blockfactory.BlockFactory,
 
 // GenerateProblems creates numProblems new problems based on the given
 // parameters (height, shape, blockCount)
-func GenerateProblems(bf *blockfactory.BlockFactory, shape *array2d.A, height, blockCount, numProblems int) []*problem.Problem {
+func GenerateProblems(bf *blockfactory.F, shape *array2d.A, height, blockCount, numProblems int) []*problem.P {
 	multiplier := 5 // we generate more problems than requested, as some might not have a solution
-	results := make([]*problem.Problem, 0)
+	results := make([]*problem.P, 0)
 
 	// generate random blocksets, more than we need, as not all might be solvable
 	sets := bf.GenerateBlocksets(shape.Count(0)*height, blockCount, multiplier*numProblems)
 
 	for i := range sets {
-		p := problem.NewProblem(shape, height, sets[i])
-		g := NewGame(p)
+		p := problem.New(shape, height, sets[i])
+		g := New(p)
 		solutions := g.Solve()
 
 		if len(solutions) > 0 {

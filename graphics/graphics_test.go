@@ -14,9 +14,9 @@ import (
 )
 
 func TestGameSolutionCreateImage(t *testing.T) {
-	cf := cardfactory.GetCardFactory()
+	cf := cardfactory.Get()
 	p := cf.Get(card.Difficult, 3).Problems[7]
-	g := game.NewGame(p)
+	g := game.New(p)
 	solutions := g.Solve()
 
 	width := 400
@@ -30,7 +30,7 @@ func TestGameSolutionCreateImage(t *testing.T) {
 }
 
 func TestRenderAll(t *testing.T) {
-	f := blockfactory.GetBlockFactory()
+	f := blockfactory.Get()
 	dir, _ := os.MkdirTemp("./", "testing*")
 	defer os.RemoveAll(dir)
 
