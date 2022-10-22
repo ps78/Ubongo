@@ -25,8 +25,8 @@ func TestNewGame(t *testing.T) {
 	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
 	g := New(p)
 
-	assert.True(t, g.Shape.IsEqual(p.Shape), "Shape is wrong")
-	assert.True(t, g.Volume.IsEqual(p.Shape.Extrude(p.Height)), "Wrong volume")
+	assert.True(t, g.Shape.Equals(p.Shape), "Shape is wrong")
+	assert.True(t, g.Volume.Equals(p.Shape.Extrude(p.Height)), "Wrong volume")
 }
 
 func TestGameString(t *testing.T) {
@@ -54,7 +54,7 @@ func TestClear(t *testing.T) {
 
 	g.Clear()
 
-	assert.True(t, g.Volume.IsEqual(p.Shape.Extrude(p.Height)), "Clear() didn't produce the right result")
+	assert.True(t, g.Volume.Equals(p.Shape.Extrude(p.Height)), "Clear() didn't produce the right result")
 }
 
 func TestClone(t *testing.T) {
@@ -62,9 +62,9 @@ func TestClone(t *testing.T) {
 	g := New(p)
 	c := g.Clone()
 
-	assert.True(t, g.Shape.IsEqual(c.Shape), "Shape does not match")
-	assert.True(t, g.Volume.IsEqual(c.Volume), "Volume does not match")
-	assert.True(t, g.Blocks.IsEqual(c.Blocks), "Block arrays do not match")
+	assert.True(t, g.Shape.Equals(c.Shape), "Shape does not match")
+	assert.True(t, g.Volume.Equals(c.Volume), "Volume does not match")
+	assert.True(t, g.Blocks.Equals(c.Blocks), "Block arrays do not match")
 }
 
 func TestTryAddBlock(t *testing.T) {
@@ -78,13 +78,13 @@ func TestTryAddBlock(t *testing.T) {
 	// test a case where TryAdd should fail
 	nok := g.TryAddBlock(blockShape, vector.V{3, 4, 1})
 	assert.False(t, nok, "TryAddBlock did not return false where it should")
-	assert.True(t, g.Volume.IsEqual(origVolume), "The the volume changed after a failed TryAddBlock() call")
+	assert.True(t, g.Volume.Equals(origVolume), "The the volume changed after a failed TryAddBlock() call")
 
 	// test a case where it should succeed
 	ok := g.TryAddBlock(blockShape, pos)
 	assert.True(t, ok, "TryAddBlock returned no success where it should")
 	exp := array3d.NewFromData([][][]int8{{{0, 1}, {1, 1}, {-1, -1}, {-1, -1}}, {{-1, -1}, {0, 0}, {0, 0}, {-1, -1}}, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}})
-	assert.True(t, exp.IsEqual(g.Volume), "The resulting volume after TryAddBlock is not as expected")
+	assert.True(t, exp.Equals(g.Volume), "The resulting volume after TryAddBlock is not as expected")
 }
 
 func TestRemoveBlock(t *testing.T) {
@@ -97,7 +97,7 @@ func TestRemoveBlock(t *testing.T) {
 	// test case where block is outside volume, this should not change the volume
 	nok := g.RemoveBlock(blockShape, vector.V{3, 4, 1})
 	assert.False(t, nok, "RemoveBlock did not return false where it should")
-	assert.True(t, g.Volume.IsEqual(origVolume), "The the volume changed after a failed RemoveBlock() call")
+	assert.True(t, g.Volume.Equals(origVolume), "The the volume changed after a failed RemoveBlock() call")
 
 	// test case where removal works
 	p := cardfactory.Get().Get(card.Difficult, 12).Problems[1]
@@ -105,7 +105,7 @@ func TestRemoveBlock(t *testing.T) {
 	exp := New(p)
 	ok := g.RemoveBlock(blockShape, pos)
 	assert.True(t, ok)
-	assert.True(t, exp.Volume.IsEqual(g.Volume))
+	assert.True(t, exp.Volume.Equals(g.Volume))
 }
 
 func TestSolveNoSolution(t *testing.T) {

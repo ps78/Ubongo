@@ -79,7 +79,7 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, diff, c.Difficulty)
 	assert.Equal(t, animal, c.Animal)
 	assert.Equal(t, 1, len(c.Problems))
-	assert.True(t, shape.IsEqual(c.Problems[diceNum].Shape))
+	assert.True(t, shape.Equals(c.Problems[diceNum].Shape))
 	assert.Equal(t, height, c.Problems[diceNum].Height)
 	assert.Equal(t, shape.Count(0), c.Problems[diceNum].Area)
 	assert.Equal(t, vector.V{shape.DimX, shape.DimY, height}, c.Problems[diceNum].BoundingBox)
@@ -94,7 +94,7 @@ func TestClone(t *testing.T) {
 	assert.Equal(t, o.Difficulty, c.Difficulty)
 	assert.Equal(t, len(o.Problems), len(c.Problems))
 	for k, v := range o.Problems {
-		assert.True(t, v.IsEqual(c.Problems[k]))
+		assert.True(t, v.Equals(c.Problems[k]))
 	}
 
 	var nilCard *C = nil

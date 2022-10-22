@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 	"ubongo/blockfactory"
@@ -22,6 +23,7 @@ type Cli struct {
 	doQuitFlag bool
 }
 
+// MenuEntry represents an entry in the menu
 type MenuEntry struct {
 	Key    string
 	Title  string
@@ -65,23 +67,76 @@ func (cli *Cli) GetMenuChoice() *MenuEntry {
 		input, readErr := reader.ReadString('\n')
 		key := replacer.Replace(input)
 
-		if readErr == nil && cli.IsValidOption(key) {
-			for _, m := range cli.Menu {
-				if m.Key == key {
-					return m
-				}
+		if readErr == nil {
+			m := cli.GetMenuEntry(key)
+			if m != nil {
+				return m
+			} else {
+				fmt.Println("Invalid option")
 			}
-			break
-		} else {
-			fmt.Println("Invalid option")
+		}
+
+		// abort loop if termination was signalled
+		if cli.doQuitFlag {
+			return nil
 		}
 	}
-	return nil
 }
 
-// Run is the main routine of the command line interface
-func (cli *Cli) Run() {
+// readProblem reads a valid problem id from the command line
+// it must be entered as 'cardnumber difficulty dicenumber'
+func (cli *Cli) readProblem(cf *cardfactory.F) (int, card.UbongoDifficulty, int) {
+	reader := bufio.NewReader(os.Stdin)
+	replacer := strings.NewReplacer("\n", "", "\r", "")
+	for {
+		fmt.Print("Enter problem (CardNumber Difficulty DiceNumber): ")
 
+		input, readErr := reader.ReadString('\n')
+
+		if readErr == nil {
+			input = replacer.Replace(input)
+			parts := strings.Split(input, " ")
+			if len(parts) == 3 {
+				cardNumber, err := strconv.Atoi(parts[0])
+				if err == nil && cardNumber >= 1 && cardNumber <= 36 {
+
+					difficulty, err := card.ParseDifficulty(parts[1])
+					if err == nil {
+
+						diceNumber, err := strconv.Atoi(parts[2])
+						if err == nil && diceNumber >= 1 && diceNumber <= 10 {
+							card := cf.Get(difficulty, cardNumber)
+							if card != nil {
+								if _, ok := card.Problems[diceNumber]; ok {
+									return cardNumber, difficulty, diceNumber
+								} else {
+									fmt.Println("Problem does not exist on this card")
+								}
+							} else {
+								fmt.Println("Card does not exist")
+							}
+						} else {
+							fmt.Println("Invalid dice number, must be a number from 1..10")
+						}
+					} else {
+						fmt.Println("Invalid difficulty, must be Easy or Difficult")
+					}
+				} else {
+					fmt.Println("Invalid card number, must be a number from 1..36")
+				}
+			}
+		}
+
+		// abort loop if termination was signalled
+		if cli.doQuitFlag {
+			break
+		}
+	}
+	return 0, card.Easy, 0
+}
+
+// Run is the main routine of the command line interface and runs in a loop until terminated
+func (cli *Cli) Run() {
 	for {
 		cli.ShowMenu()
 
@@ -95,21 +150,21 @@ func (cli *Cli) Run() {
 			fmt.Printf("%v elapsed\n\n", time.Since(start))
 		}
 
+		// check for termination flag
 		if cli.doQuitFlag {
 			break
 		}
 	}
-
 }
 
-// IsValidOption returns true if n is a valid selection in the current menu of cli
-func (cli *Cli) IsValidOption(key string) bool {
+// Returns the menu entry with the given key, or nil if it not exists
+func (cli *Cli) GetMenuEntry(key string) *MenuEntry {
 	for _, item := range cli.Menu {
 		if item.Key == key {
-			return true
+			return item
 		}
 	}
-	return false
+	return nil
 }
 
 func menuOptionRenderAllBlocks(cli *Cli) {
@@ -119,9 +174,9 @@ func menuOptionRenderAllBlocks(cli *Cli) {
 
 	bf := blockfactory.Get()
 	blocks := bf.GetAll()
-	graphics.RenderAll(blocks, blockTargetPath, blockRenderResX, blockRenderResY)
+	graphics.RenderBlockset(blocks, blockTargetPath, blockRenderResX, blockRenderResY)
 
-	fmt.Printf("Rendered %d blocks to path %s at resolution %dx%d\n", len(blocks), blockTargetPath, blockRenderResX, blockRenderResY)
+	fmt.Printf("Rendered %d blocks to path %s at resolution %dx%d\n", blocks.Count, blockTargetPath, blockRenderResX, blockRenderResY)
 }
 
 func menuOptionCalcSolutionStatistics(cli *Cli) {
@@ -176,12 +231,11 @@ func menuOptionGenerateInsaneProblems(cli *Cli) {
 }
 
 func menuOptionVisualizeSolution(cli *Cli) {
-	difficulty := card.Difficult
-	cardNumber := 1
-	diceNumber := 1
 	solutionNumber := 0
 
 	cf := cardfactory.Get()
+	cardNumber, difficulty, diceNumber := cli.readProblem(cf)
+
 	sols := game.New(cf.Get(difficulty, cardNumber).Problems[diceNumber]).Solve()
 	gs := sols[solutionNumber]
 

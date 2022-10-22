@@ -93,7 +93,7 @@ func (arr *A) Extrude(height int) *array3d.A {
 
 // Equal returns true if the dimensions and all elements of a and b are equal
 // Accepts nil arguments
-func (a *A) IsEqual(b *A) bool {
+func (a *A) Equals(b *A) bool {
 	if a == nil && b == nil {
 		return true
 	} else if a == nil || b == nil {

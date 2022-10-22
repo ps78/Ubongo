@@ -84,11 +84,11 @@ func TestGetAll(t *testing.T) {
 	f := Get()
 
 	blocks := f.GetAll()
-	assert.Equal(t, 16, len(blocks))
+	assert.Equal(t, 16, blocks.Count)
 
 	// check the blocks are unique
 	blockMap := make(map[string]*block.B)
-	for _, b := range blocks {
+	for _, b := range blocks.AsSlice() {
 		blockMap[b.Color.String()+b.Name] = b
 	}
 	assert.Equal(t, 16, len(blockMap))
@@ -129,7 +129,7 @@ func TestGenerateBlocksetsEmpty(t *testing.T) {
 func TestBlocks(t *testing.T) {
 	blocks := Get().GetAll()
 
-	for _, block := range blocks {
+	for _, block := range blocks.AsSlice() {
 
 		// all shapes must have the same volume
 		expVolume := block.Volume

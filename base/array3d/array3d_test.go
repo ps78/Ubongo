@@ -92,12 +92,12 @@ func TestIsEqual(t *testing.T) {
 	d := NewFromData([][][]int8{{{2}, {3}}})
 	var e *A = nil
 
-	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal3DArray reports they are not")
-	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal3DArray reports they are")
-	assert.False(t, a.IsEqual(d), "Array a and d have different dimensions but Equal3DArray reports they are equal")
-	assert.True(t, e.IsEqual(nil))
-	assert.False(t, e.IsEqual(a))
-	assert.False(t, a.IsEqual(e))
+	assert.True(t, a.Equals(b), "Array a and b are equal but Equal3DArray reports they are not")
+	assert.False(t, a.Equals(c), "Array a and c are not equal but Equal3DArray reports they are")
+	assert.False(t, a.Equals(d), "Array a and d have different dimensions but Equal3DArray reports they are equal")
+	assert.True(t, e.Equals(nil))
+	assert.False(t, e.Equals(a))
+	assert.False(t, a.Equals(e))
 }
 
 func TestClone(t *testing.T) {
@@ -174,7 +174,7 @@ func TestApplyOnNil(t *testing.T) {
 func TestApplyNilFunc(t *testing.T) {
 	a := New(2, 3, 4)
 	b := a.Apply(nil)
-	assert.True(t, a.IsEqual(b))
+	assert.True(t, a.Equals(b))
 }
 
 func TestAllTrue(t *testing.T) {
@@ -205,16 +205,16 @@ func TestRotateZ(t *testing.T) {
 	r := orig.RotateZ()
 
 	// rotate once
-	assert.True(t, r.IsEqual(exp))
+	assert.True(t, r.Equals(exp))
 
 	// rotate 2x 2x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateZ2().RotateZ2()))
+	assert.True(t, orig.Equals(orig.RotateZ2().RotateZ2()))
 
 	// rotate x and 3x shoudl be the identity
-	assert.True(t, orig.IsEqual(orig.RotateZ3().RotateZ()))
+	assert.True(t, orig.Equals(orig.RotateZ3().RotateZ()))
 
 	// rotate 4x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateZ().RotateZ().RotateZ().RotateZ()))
+	assert.True(t, orig.Equals(orig.RotateZ().RotateZ().RotateZ().RotateZ()))
 }
 
 func TestRotateY(t *testing.T) {
@@ -223,16 +223,16 @@ func TestRotateY(t *testing.T) {
 	r := orig.RotateY()
 
 	// rotate once
-	assert.True(t, r.IsEqual(exp))
+	assert.True(t, r.Equals(exp))
 
 	// rotate 2x 2x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateY2().RotateY2()))
+	assert.True(t, orig.Equals(orig.RotateY2().RotateY2()))
 
 	// rotate x and 3x shoudl be the identity
-	assert.True(t, orig.IsEqual(orig.RotateY3().RotateY()))
+	assert.True(t, orig.Equals(orig.RotateY3().RotateY()))
 
 	// rotate 4x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateY().RotateY().RotateY().RotateY()))
+	assert.True(t, orig.Equals(orig.RotateY().RotateY().RotateY().RotateY()))
 }
 
 func TestRotateX(t *testing.T) {
@@ -241,16 +241,16 @@ func TestRotateX(t *testing.T) {
 	r := orig.RotateX()
 
 	// rotate once
-	assert.True(t, r.IsEqual(exp))
+	assert.True(t, r.Equals(exp))
 
 	// rotate 2x 2x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateX2().RotateX2()))
+	assert.True(t, orig.Equals(orig.RotateX2().RotateX2()))
 
 	// rotate x and 3x shoudl be the identity
-	assert.True(t, orig.IsEqual(orig.RotateX3().RotateX()))
+	assert.True(t, orig.Equals(orig.RotateX3().RotateX()))
 
 	// rotate 4x should be the identity
-	assert.True(t, orig.IsEqual(orig.RotateX().RotateX().RotateX().RotateX()))
+	assert.True(t, orig.Equals(orig.RotateX().RotateX().RotateX().RotateX()))
 }
 
 func TestRotateNil(t *testing.T) {

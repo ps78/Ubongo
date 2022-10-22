@@ -13,7 +13,7 @@ import (
 
 func TestBlockColorString(t *testing.T) {
 	f := blockfactory.Get()
-	for _, b := range f.GetAll() {
+	for _, b := range f.GetAll().AsSlice() {
 		colorName := strings.ToLower(b.Color.String())
 		assert.NotEqual(t, "unknown", colorName)
 	}

@@ -7,6 +7,10 @@ import (
 	"ubongo/base/array3d"
 )
 
+// ***************************************** //
+// ** Type BlockColor and related methods ** //
+// ***************************************** //
+
 // BlockColor is the color of a block in the original game
 type BlockColor int8
 
@@ -47,6 +51,10 @@ func (c BlockColor) ToRGBA() color.RGBA {
 	}
 	return color.RGBA{255, 255, 255, 0}
 }
+
+// ***************************************** //
+// ** Type B(lock) and related methods ** //
+// ***************************************** //
 
 // B represents a single Ubongo block including all
 // of it's possible rotations in space

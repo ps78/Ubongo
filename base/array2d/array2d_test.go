@@ -99,12 +99,12 @@ func TestIsEqual(t *testing.T) {
 	d := NewFromData([][]int8{{2}, {3}})
 	var e *A = nil
 
-	assert.True(t, a.IsEqual(b), "Array a and b are equal but Equal2DArray reports they are not")
-	assert.False(t, a.IsEqual(c), "Array a and c are not equal but Equal2DArray reports they are")
-	assert.False(t, a.IsEqual(d), "Array a and d have different dimensions but Equal2DArray reports they are equal")
-	assert.True(t, e.IsEqual(nil))
-	assert.False(t, e.IsEqual(a))
-	assert.False(t, a.IsEqual(e))
+	assert.True(t, a.Equals(b), "Array a and b are equal but Equal2DArray reports they are not")
+	assert.False(t, a.Equals(c), "Array a and c are not equal but Equal2DArray reports they are")
+	assert.False(t, a.Equals(d), "Array a and d have different dimensions but Equal2DArray reports they are equal")
+	assert.True(t, e.Equals(nil))
+	assert.False(t, e.Equals(a))
+	assert.False(t, a.Equals(e))
 }
 
 func TestClone(t *testing.T) {

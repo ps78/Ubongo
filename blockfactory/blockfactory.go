@@ -1,4 +1,4 @@
-// Package blockfactory contains the BlockFactory singleton type and related methods
+// Package blockfactory contains the F (BlockFactory) singleton type and related methods
 package blockfactory
 
 import (
@@ -18,10 +18,10 @@ var onceBlockFactorySingleton sync.Once
 // blockFactoryInstance the singleton instance of the BlockFactory
 var blockFactoryInstance *F
 
-// F represents a type that allow accessing the game's various blocks
+// F represents factory that allows accessing the game's various blocks
 type F struct {
 	// block is a map where each of the game's 16 block types can be accessed by their number 1..16
-	block map[int]*block.B // access block by number
+	block map[int]*block.B
 
 	// MinBlockNumber can be used to iterate over Block, it is equal to 1
 	MinBlockNumber int
@@ -163,14 +163,12 @@ func (f *F) ByVolume(volume int) *blockset.S {
 	}
 }
 
-// GetAll returns an array with all blocks
-func (f *F) GetAll() []*block.B {
-	a := make([]*block.B, 0)
+// GetAll returns the set with all blocks
+func (f *F) GetAll() *blockset.S {
+	a := blockset.New()
 	if f != nil {
 		for i := f.MinBlockNumber; i <= f.MaxBlockNumber; i++ {
-			if block := f.ByNumber(i); block != nil {
-				a = append(a, block)
-			}
+			a.Add(f.ByNumber(i))
 		}
 	}
 	return a
@@ -248,9 +246,10 @@ func (bf *F) GenerateBlocksets(volume, blockCount, resultCount int) []*blockset.
 	return results
 }
 
-/*******************************************************************************
- * Block-creator functions for the 16 blocks of the game
- *******************************************************************************/
+// *********************************************************** //
+// * Block-creator functions for the 16 blocks of the game   * //
+// *********************************************************** //
+
 func newBlock1() *block.B {
 	baseShape := array3d.NewFromData([][][]int8{{{1, 1}, {1, 0}, {1, 0}}, {{0, 0}, {1, 0}, {0, 0}}})
 	return &block.B{

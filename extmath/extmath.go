@@ -1,7 +1,7 @@
+// Package extmath contains extended math functions (e.g. partitioning of integers)
 package extmath
 
 // CreateParitions returns all possible partition given the parameters:
-//
 //	n         : The number to partition
 //	parts     : slice of allowed integers to use as parts of the partitions
 //	maxCounts : map defining the maximum multiplier of each part in the partition
@@ -14,7 +14,7 @@ func CreateParitions(n int, parts []int, maxCounts map[int]int, partLen int) [](
 	return solutions
 }
 
-// Recursive function called by CreatePartitions. Don't use directly
+// createPartitionsRecursive is a recursive function called by CreatePartitions. Don't use directly
 func createPartitionsRecurisve(nRemainder int, parts *[]int, partIdx int, maxCounts *map[int]int, partLen int, curSolution *map[int]int, solutions *[](map[int]int)) {
 	if curSolution == nil {
 		s := make(map[int]int)

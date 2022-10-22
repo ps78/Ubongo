@@ -1,4 +1,4 @@
-// Package blockset contains the type Blockset and its methods
+// Package blockset contains the type S (Blockset) and its methods
 package blockset
 
 import (
@@ -117,8 +117,8 @@ func (bs *S) RemoveAt(idx int) {
 	bs.Count = len(bs.items)
 }
 
-// IsEqual compares two Blocksets. Considers blocks with the same number as identical
-func (bs *S) IsEqual(other *S) bool {
+// Equals compares two Blocksets. Considers blocks with the same number as identical
+func (bs *S) Equals(other *S) bool {
 	if bs == nil && other == nil {
 		return true
 	} else if bs == nil || other == nil || bs.Count != other.Count {
@@ -181,7 +181,7 @@ func ContainsBlockset(sets []*S, bs *S) bool {
 	}
 
 	for _, s := range sets {
-		if bs.IsEqual(s) {
+		if bs.Equals(s) {
 			return true
 		}
 	}

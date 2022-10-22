@@ -1,3 +1,5 @@
+// Package graphics contains functionality to render and display parts of the ubongo game,
+// like single blocks or solutions to problems
 package graphics
 
 import (
@@ -18,11 +20,13 @@ import (
 	"ubongo/base/array3d"
 	"ubongo/base/vectorf"
 	"ubongo/block"
+	"ubongo/blockset"
 	"ubongo/gamesolution"
 )
 
-// pinhole has a coordinate system confined to +/-1
-// also the z-axis is flipped, -1 is directed towards the viewer, y is up, x is right
+// convertCoordinates is internally used to convert coordinates for the pinhole library,
+// which has a coordinate system confined to +/-1 and also the z-axis is flipped,
+// -1 is directed towards the viewer, y is up, x is right
 // x, y, z are expected to be integer-array coordinates ranging from 0..maxDim-1
 // The coordinates will be scaled such that maxDim equals 1 and everything will be
 // moved by offset (before scaling)
@@ -37,7 +41,7 @@ func convertCoords(x1, y1, z1, x2, y2, z2 int, offset vectorf.V, maxDim float64)
 	return xf1, yf1, zf1, xf2, yf2, zf2
 }
 
-// draws the given block at the given position to the pinhole object
+// drawBlock draws the given block at the given position to the pinhole object
 func drawBlock(pn *pinhole.Pinhole, blockShape *array3d.A, blockColor block.BlockColor, pos vectorf.V, maxDim float64) {
 
 	// implements the logical function that decides if an edge should be
@@ -153,9 +157,47 @@ func drawBlock(pn *pinhole.Pinhole, blockShape *array3d.A, blockColor block.Bloc
 	pn.End()
 }
 
-// CreateImage creates an image the given game solution
+// RenderBlock creates an image of a single block
+func RenderBlock(block *block.B, width, height int, rx, ry, rz float64) *image.RGBA {
+	pn := pinhole.New()
+
+	shape := block.Shapes[0]
+	bb := shape.GetBoundingBox()
+	maxDim := float64(bb.Max())
+	offset := shape.GetCenterOfGravity().Flip()
+
+	drawBlock(pn, shape, block.Color, offset, maxDim)
+
+	pn.Translate(0, 0, 0)
+	pn.Rotate(rx, ry, rz)
+
+	opt := pinhole.ImageOptions{
+		BGColor:   color.Black,
+		LineWidth: 1.0,
+		Scale:     0.9}
+
+	return pn.Image(width, height, &opt)
+}
+
+// RenderBlockset renders all blocks of the set to an image each, storing it in the given path
+// returns a list of filenames
+func RenderBlockset(blocks *blockset.S, dir string, width, height int) []string {
+	files := make([]string, 0)
+	for _, b := range blocks.AsSlice() {
+		img := RenderBlock(b, width, height, math.Pi/4, -math.Pi/8, 0)
+		filename := fmt.Sprintf("%s_%s.png", b.Color, b.Name)
+		fullpath := path.Join(dir, filename)
+		err := SaveAsPng(img, fullpath)
+		if err == nil {
+			files = append(files, fullpath)
+		}
+	}
+	return files
+}
+
+// RenderSolution creates an image the given game solution
 // The rotation can be given with the rx, ry, rz parameters
-func CreateImage(gs *gamesolution.S, width, height int, rx, ry, rz, explode float64) *image.RGBA {
+func RenderSolution(gs *gamesolution.S, width, height int, rx, ry, rz, explode float64) *image.RGBA {
 
 	pn := pinhole.New()
 
@@ -185,28 +227,6 @@ func CreateImage(gs *gamesolution.S, width, height int, rx, ry, rz, explode floa
 	return pn.Image(width, height, &opt)
 }
 
-// Creates an image of a single block
-func Render(block *block.B, width, height int, rx, ry, rz float64) *image.RGBA {
-	pn := pinhole.New()
-
-	shape := block.Shapes[0]
-	bb := shape.GetBoundingBox()
-	maxDim := float64(bb.Max())
-	offset := shape.GetCenterOfGravity().Flip()
-
-	drawBlock(pn, shape, block.Color, offset, maxDim)
-
-	pn.Translate(0, 0, 0)
-	pn.Rotate(rx, ry, rz)
-
-	opt := pinhole.ImageOptions{
-		BGColor:   color.Black,
-		LineWidth: 1.0,
-		Scale:     0.9}
-
-	return pn.Image(width, height, &opt)
-}
-
 // SaveAsPng save the given image as png-file to disk
 func SaveAsPng(img image.Image, path string) error {
 	file, err := os.Create(path)
@@ -217,10 +237,11 @@ func SaveAsPng(img image.Image, path string) error {
 	return png.Encode(file, img)
 }
 
+// Visualize shows a gamesolution on the screen using the Fyne library
 func Visualize(gs *gamesolution.S) {
 
 	updateImage := func(win fyne.Window, sol *gamesolution.S, w, h int, rx, ry, rz float64) {
-		img := CreateImage(sol, w, h, rx, ry, rz, 0.1)
+		img := RenderSolution(sol, w, h, rx, ry, rz, 0.1)
 		win.SetContent(canvas.NewImageFromImage(img))
 	}
 
@@ -252,20 +273,4 @@ func Visualize(gs *gamesolution.S) {
 	}()
 
 	w.ShowAndRun()
-}
-
-// Renders all blocks to an image, storing it in the given path
-// returns a list of filenames
-func RenderAll(blocks []*block.B, dir string, width, height int) []string {
-	files := make([]string, 0)
-	for _, b := range blocks {
-		img := Render(b, width, height, math.Pi/4, -math.Pi/8, 0)
-		filename := fmt.Sprintf("%s_%s.png", b.Color, b.Name)
-		fullpath := path.Join(dir, filename)
-		err := SaveAsPng(img, fullpath)
-		if err == nil {
-			files = append(files, fullpath)
-		}
-	}
-	return files
 }

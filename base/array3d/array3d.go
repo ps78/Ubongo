@@ -76,20 +76,20 @@ func NewFromData(data [][][]int8) *A {
 	}
 }
 
-// Returns element [x][y][z] of the 3D array
+// Get returns element [x][y][z] of the 3D array
 // Invalid indices will create an exception
 func (a *A) Get(x, y, z int) int8 {
 	return a.data[x][y][z]
 }
 
-// Sets the element [x][y][z] of the 3D array
+// Set sets the element [x][y][z] of the 3D array
 // Invalid indices will create an exception
 func (a *A) Set(x, y, z int, value int8) {
 	a.data[x][y][z] = value
 }
 
-// Tests if the 3D array a and b contain the same elements
-func (a *A) IsEqual(b *A) bool {
+// Equals tests if the 3D array a and b contain the same elements
+func (a *A) Equals(b *A) bool {
 	if a == nil && b == nil {
 		return true
 	} else if a == nil || b == nil {
@@ -306,7 +306,7 @@ func Find(lst []*A, a *A) (bool, int) {
 	} else {
 		if lst != nil && a != nil {
 			for i, arr := range lst {
-				if a.IsEqual(arr) {
+				if a.Equals(arr) {
 					return true, i
 				}
 			}
@@ -325,7 +325,7 @@ func (base *A) CreateRotations() []*A {
 	// helper function that adds el to lst if it is not already in lst
 	addIfNotInList := func(lst []*A, el *A) []*A {
 		for _, a := range lst {
-			if a.IsEqual(el) {
+			if a.Equals(el) {
 				return lst
 			}
 		}

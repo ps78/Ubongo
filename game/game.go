@@ -1,3 +1,5 @@
+// Package game contains the G type and the main game algorithms like solving
+// the actual Ubongo problems
 package game
 
 import (
@@ -19,14 +21,23 @@ import (
 	"ubongo/problem"
 )
 
+// G is the main type of the package, representing a game
 type G struct {
-	Shape  *array2d.A
+	// Shape is the 2D array of the game, on which to build the solution
+	Shape *array2d.A
+
+	// Volume is the 3D array based on Shape, which must contain all blocks in the end
 	Volume *array3d.A
+
+	// Blocks is the set of blocks from which to build the solution
 	Blocks *blockset.S
 }
 
-// The number of blocks of each type in the original Ubongo game
+// UbonboBlockSet lists the number of blocks of each type in the original Ubongo game
 // map[BlockNumer]Count
+// This is mainly used by the method GenerateCardSet that must make sure that for any
+// dice number enough blocks will be available in the game to solve the problems with
+// 4 players participating
 var UbongoBlockSet map[int]int = map[int]int{
 	1:  2, // yellow hello
 	2:  2, // yellow bighook
@@ -54,114 +65,139 @@ func New(p *problem.P) *G {
 		Blocks: p.Blocks.Clone()}
 }
 
-// Returns a nicely formatted string representation of the game
+// String returns a nicely formatted string representation of the game
 func (g *G) String() string {
-	return fmt.Sprintf("Game (area %d, volume %d, empty %d)",
-		g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
+	if g == nil {
+		return "(nil)"
+	} else {
+		return fmt.Sprintf("Game (area %d, volume %d, empty %d)",
+			g.Shape.Count(0), g.Shape.Count(0)*g.Volume.DimZ, g.Volume.Count(0))
+	}
 }
 
-// Removes all blocks from a game
+// Clear removes all blocks from a game
 func (g *G) Clear() {
-	for x := 0; x < g.Volume.DimX; x++ {
-		for y := 0; y < g.Volume.DimY; y++ {
-			for z := 0; z < g.Volume.DimZ; z++ {
-				g.Volume.Set(x, y, z, g.Shape.Get(x, y))
+	if g != nil {
+		for x := 0; x < g.Volume.DimX; x++ {
+			for y := 0; y < g.Volume.DimY; y++ {
+				for z := 0; z < g.Volume.DimZ; z++ {
+					g.Volume.Set(x, y, z, g.Shape.Get(x, y))
+				}
 			}
 		}
 	}
 }
 
-// Creates a copy of the game
+// Clone creates a deep copy of the game
 func (g *G) Clone() *G {
-	return &G{
-		Shape:  g.Shape.Clone(),
-		Volume: g.Volume.Clone(),
-		Blocks: g.Blocks.Clone()}
+	if g == nil {
+		return nil
+	} else {
+		return &G{
+			Shape:  g.Shape.Clone(),
+			Volume: g.Volume.Clone(),
+			Blocks: g.Blocks.Clone()}
+	}
 }
 
-// Tries to add the given block to the game volume
+// TryAddBlock tries to add the given block to the game volume
 // returns true if successful, false if not
 func (g *G) TryAddBlock(block *array3d.A, pos vector.V) bool {
-	// check overall dimensions
-	if pos[0]+block.DimX > g.Volume.DimX ||
-		pos[1]+block.DimY > g.Volume.DimY ||
-		pos[2]+block.DimZ > g.Volume.DimZ {
+	if g == nil {
 		return false
-	}
+	} else {
 
-	// step 1: test if it is possible to add block
-	for x := 0; x < block.DimX; x++ {
-		for y := 0; y < block.DimY; y++ {
-			for z := 0; z < block.DimZ; z++ {
-				if block.Get(x, y, z) == 1 && g.Volume.Get(x+pos[0], y+pos[1], z+pos[2]) != 0 {
-					return false
-				}
-			}
+		// check overall dimensions
+		if pos[0]+block.DimX > g.Volume.DimX ||
+			pos[1]+block.DimY > g.Volume.DimY ||
+			pos[2]+block.DimZ > g.Volume.DimZ {
+			return false
 		}
-	}
 
-	// step 2: actually add the block, the expensive step is the cloning of the object
-	v := g.Volume.Clone()
-	for x := 0; x < block.DimX; x++ {
-		for y := 0; y < block.DimY; y++ {
-			for z := 0; z < block.DimZ; z++ {
-				if block.Get(x, y, z) == 1 {
-					v.Set(x+pos[0], y+pos[1], z+pos[2], 1)
-				}
-			}
-		}
-	}
-
-	// replace the game's volume with the new one containing the block
-	g.Volume = v
-	return true
-}
-
-// Removes the block at the given position from the volume
-// This does not check if the block is actually present and
-// simply sets all values from 1 to 0
-func (g *G) RemoveBlock(block *array3d.A, pos vector.V) bool {
-	// check overall dimensions
-	if pos[0]+block.DimX > g.Volume.DimX ||
-		pos[1]+block.DimY > g.Volume.DimY ||
-		pos[2]+block.DimZ > g.Volume.DimZ {
-		return false
-	}
-
-	for x := 0; x < block.DimX; x++ {
-		for y := 0; y < block.DimY; y++ {
-			for z := 0; z < block.DimZ; z++ {
-				// only run following test if the block-cube is solid at the current position
-				if block.Get(x, y, z) == 1 {
-					// if space is occupied by block, set it to 0
-					if g.Volume.Get(x+pos[0], y+pos[1], z+pos[2]) == 1 {
-						g.Volume.Set(x+pos[0], y+pos[1], z+pos[2], 0) // mark space as empty
+		// step 1: test if it is possible to add block
+		for x := 0; x < block.DimX; x++ {
+			for y := 0; y < block.DimY; y++ {
+				for z := 0; z < block.DimZ; z++ {
+					if block.Get(x, y, z) == 1 && g.Volume.Get(x+pos[0], y+pos[1], z+pos[2]) != 0 {
+						return false
 					}
 				}
 			}
 		}
+
+		// step 2: actually add the block, the expensive step is the cloning of the object
+		v := g.Volume.Clone()
+		for x := 0; x < block.DimX; x++ {
+			for y := 0; y < block.DimY; y++ {
+				for z := 0; z < block.DimZ; z++ {
+					if block.Get(x, y, z) == 1 {
+						v.Set(x+pos[0], y+pos[1], z+pos[2], 1)
+					}
+				}
+			}
+		}
+
+		// replace the game's volume with the new one containing the block
+		g.Volume = v
+		return true
 	}
-	return true
 }
 
-// Finds all solutino for a given game using the set of blocks provided
+// RemoveBlock removes the block at the given position from the volume
+// This does not check if the block is actually present and
+// simply sets all values from 1 to 0
+func (g *G) RemoveBlock(block *array3d.A, pos vector.V) bool {
+	if g == nil {
+		return false
+	} else {
+
+		// check overall dimensions
+		if pos[0]+block.DimX > g.Volume.DimX ||
+			pos[1]+block.DimY > g.Volume.DimY ||
+			pos[2]+block.DimZ > g.Volume.DimZ {
+			return false
+		}
+
+		for x := 0; x < block.DimX; x++ {
+			for y := 0; y < block.DimY; y++ {
+				for z := 0; z < block.DimZ; z++ {
+					// only run following test if the block-cube is solid at the current position
+					if block.Get(x, y, z) == 1 {
+						// if space is occupied by block, set it to 0
+						if g.Volume.Get(x+pos[0], y+pos[1], z+pos[2]) == 1 {
+							g.Volume.Set(x+pos[0], y+pos[1], z+pos[2], 0) // mark space as empty
+						}
+					}
+				}
+			}
+		}
+		return true
+	}
+}
+
+// Solve finds all solutino for a given game using the set of blocks provided
 func (g *G) Solve() []*gamesolution.S {
-	// check the sum of the block volumes, it must match the empty volume of the game to yield a solution
-	if g.Volume.Count(0) != g.Blocks.Volume() {
+	if g == nil {
 		return []*gamesolution.S{}
+	} else {
+
+		// check the sum of the block volumes, it must match the empty volume of the game to yield a solution
+		if g.Volume.Count(0) != g.Blocks.Volume() {
+			return []*gamesolution.S{}
+		}
+
+		// working arrays for the recursive solver:
+		solutions := make([]*gamesolution.S, 0)
+		shapeIdx := make([]int, 0)
+		shifts := make([]vector.V, 0)
+
+		g.recursiveSolver(0, &shapeIdx, &shifts, &solutions)
+
+		return solutions
 	}
-
-	// working arrays for the recursive solver:
-	solutions := make([]*gamesolution.S, 0)
-	shapeIdx := make([]int, 0)
-	shifts := make([]vector.V, 0)
-
-	g.recursiveSolver(0, &shapeIdx, &shifts, &solutions)
-
-	return solutions
 }
 
-// Recursive function called by Solve, don't call directly
+// recursiveSolver function is called by Solve, don't call directly
 func (g *G) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]vector.V, solutions *[]*gamesolution.S) {
 	gameBox := g.Volume.GetBoundingBox()
 
@@ -198,7 +234,7 @@ func (g *G) recursiveSolver(blockIdx int, shapeIndices *[]int, shifts *[]vector.
 	} // end loop over shapes
 }
 
-// Represents a single entry of the output of CreateSolutionStatistics()
+// SolutionStatiscitsRecord represents a single entry of the output of CreateSolutionStatistics()
 type SolutionStatisticsRecord struct {
 	Difficulty    card.UbongoDifficulty
 	Animal        card.UbongoAnimal
@@ -210,10 +246,13 @@ type SolutionStatisticsRecord struct {
 	Blocks        *blockset.S
 }
 
-// Solves all Easy & Difficult problems and returns the statistics
+// CreateSolutionStatistics solves all Easy & Difficult problems and returns the statistics
 // If the csvFile parameter is provided (and not empty), the data is also
 // written to a csv file
 func CreateSolutionStatistics(f *cardfactory.F, csvFile string) []SolutionStatisticsRecord {
+	if f == nil {
+		panic("CardFactory must not be nil")
+	}
 
 	// create the dataset to return / write
 	records := make([]SolutionStatisticsRecord, 0)
@@ -268,7 +307,7 @@ func CreateSolutionStatistics(f *cardfactory.F, csvFile string) []SolutionStatis
 	return records
 }
 
-// verifies if the set of problems given can be used
+// IsPossibleCardSet verifies if the set of problems given can be used
 // as a set in the game. Condition is that the combined
 // blocks are available in the game
 // The map-key is the card-number
@@ -300,14 +339,24 @@ func IsPossibleCardSet(problems map[int]*problem.P) bool {
 	return true
 }
 
-// Creates 10 sets of problems for diceNumber=1..10 where each problem set
-// consists of the 4 cards assiciated with the given animal and the blocks are
-// chosen such that the game contains enough blocks to play a round with people
+// GenerateCardSet creates 10 sets of problems for diceNumber=1..10 where each problem set
+// consists of the 4 cards associated with the given animal and the blocks are
+// chosen such that the game contains enough blocks to play a round with 4 people
 // for every possible throw of the dice (and of course every problem has a solution)
 // Returns: map[diceNumber][cardNumber]*Problem
 // Optionally write the result to the given file, if not empty
 func GenerateCardSet(bc *cardfactory.F, bf *blockfactory.F,
 	animal card.UbongoAnimal, sourceDifficulty, targetDifficulty card.UbongoDifficulty, height, blockCount int, outputFile string) []*card.C {
+
+	if bc == nil || bf == nil {
+		panic("CardFactory and BlockFactory must not be nil")
+	}
+	if height < 1 {
+		panic("Height must be >= 1")
+	}
+	if blockCount < 1 {
+		panic("BlockCount must be >= 1")
+	}
 
 	// ** Utility types / functions and constants ** //
 
@@ -417,6 +466,13 @@ func GenerateCardSet(bc *cardfactory.F, bf *blockfactory.F,
 // GenerateProblems creates numProblems new problems based on the given
 // parameters (height, shape, blockCount)
 func GenerateProblems(bf *blockfactory.F, shape *array2d.A, height, blockCount, numProblems int) []*problem.P {
+	if bf == nil || shape == nil {
+		panic("BlockFactory and shape parameters must not be nil")
+	}
+	if height <= 1 || blockCount <= 1 || numProblems >= 1 {
+		panic("Height, BlockCount and NumProblems must all be >= 1")
+	}
+
 	multiplier := 5 // we generate more problems than requested, as some might not have a solution
 	results := make([]*problem.P, 0)
 

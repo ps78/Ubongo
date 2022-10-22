@@ -132,14 +132,14 @@ func TestBlocksetIsEqual(t *testing.T) {
 	d := New(f.ByNumber(5), f.ByNumber(1), f.ByNumber(7), f.ByNumber(7))
 	var e *S = nil
 
-	assert.True(t, a.IsEqual(a))
-	assert.True(t, b.IsEqual(c))
-	assert.True(t, d.IsEqual(d))
-	assert.False(t, a.IsEqual(b))
-	assert.True(t, b.IsEqual(d))
-	assert.False(t, e.IsEqual(a))
-	assert.False(t, a.IsEqual(e))
-	assert.True(t, e.IsEqual(e))
+	assert.True(t, a.Equals(a))
+	assert.True(t, b.Equals(c))
+	assert.True(t, d.Equals(d))
+	assert.False(t, a.Equals(b))
+	assert.True(t, b.Equals(d))
+	assert.False(t, e.Equals(a))
+	assert.False(t, a.Equals(e))
+	assert.True(t, e.Equals(e))
 }
 
 func TestContains(t *testing.T) {

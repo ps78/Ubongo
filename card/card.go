@@ -2,10 +2,16 @@
 package card
 
 import (
+	"errors"
 	"fmt"
 	"sort"
+	"strings"
 	"ubongo/problem"
 )
+
+// *********************************************** //
+// ** Type UbongoDifficulty and related methods ** //
+// *********************************************** //
 
 // UbongoDifficulty is an enum representing the difficulty in the game
 type UbongoDifficulty int
@@ -32,6 +38,24 @@ func (s UbongoDifficulty) String() string {
 	}
 	return "Unknown"
 }
+
+// ParseDifficulty attempts to turn a string into a difficulty enum value
+func ParseDifficulty(s string) (UbongoDifficulty, error) {
+	input := strings.ToLower(s)
+	switch input {
+	case "easy":
+		return Easy, nil
+	case "difficult":
+		return Difficult, nil
+	case "insane":
+		return Insane, nil
+	}
+	return UbongoDifficulty(-1), errors.New("error parsing string to difficulty")
+}
+
+// ******************************************* //
+// ** Type UbongoAnimal and related methods ** //
+// ******************************************* //
 
 // UbongoAnimal represents the animal on the cards of the original Ubongo game
 type UbongoAnimal int
@@ -78,6 +102,10 @@ func (s UbongoAnimal) String() string {
 	}
 	return "(N/A)"
 }
+
+// ************************************* //
+// ** Type C(ard) and related methods ** //
+// ************************************* //
 
 // C represents a physical card of the Ubongo game with multiple problems
 type C struct {

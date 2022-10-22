@@ -1,3 +1,4 @@
+// Package cardfactory implements mainly the type F (cardfactory) and it's methods
 package cardfactory
 
 import (
@@ -13,13 +14,13 @@ import (
 // Public elements
 // ******************************************************************
 
-// Represents the singleton card factory. Get instance with GetCardFactory()
+// F represents the singleton CardFactory. Get instance with Get()
 type F struct {
 	// Contains all cards in map with 3 keys: [Difficulty][cardNumber][DiceNumber]
 	Cards map[card.UbongoDifficulty](map[int]*card.C)
 }
 
-// Returns the singleton instance of the problem factory
+// Get returns the singleton instance of the CardFactory
 func Get() *F {
 	// Create the singleton instance
 	onceCardFactorySingleton.Do(func() {
@@ -46,7 +47,7 @@ func Get() *F {
 	return cardFactoryInstance
 }
 
-// Returns the problem with the given parameters if it exists, nil otherwise
+// Get returns the card with the given parameters if it exists, nil otherwise
 func (f *F) Get(difficulty card.UbongoDifficulty, cardNumber int) *card.C {
 	if _, okDiff := f.Cards[difficulty]; okDiff {
 		if _, okCard := f.Cards[difficulty][cardNumber]; okCard {
@@ -56,7 +57,7 @@ func (f *F) Get(difficulty card.UbongoDifficulty, cardNumber int) *card.C {
 	return nil
 }
 
-// Returns all cards as a slice
+// GetByAnimal returns all cards of a set (annimal) and a given difficulty as a slice (i.e. 4 cards)
 func (f *F) GetByAnimal(difficulty card.UbongoDifficulty, animal card.UbongoAnimal) []*card.C {
 	result := make([]*card.C, 0)
 	for _, card := range f.Cards[difficulty] {
@@ -67,7 +68,7 @@ func (f *F) GetByAnimal(difficulty card.UbongoDifficulty, animal card.UbongoAnim
 	return result
 }
 
-// Returns all cards as a slice
+// GetAll returns all cards of the given difficulty as a slice (with 36 elements)
 func (f *F) GetAll(difficulty card.UbongoDifficulty) []*card.C {
 	result := make([]*card.C, 0)
 	for _, numV := range f.Cards[difficulty] {
@@ -91,10 +92,10 @@ func (f *F) GetAllProblems(difficulty card.UbongoDifficulty) []*problem.P {
 // Private elements
 // ******************************************************************
 
-// used to create a thread-safe singleton instance of a CardFactory
+// onceCardFactorySingled is used to create a thread-safe singleton instance of a CardFactory
 var onceCardFactorySingleton sync.Once
 
-// the singleton
+// cardFactoryInstance is the actual singleton
 var cardFactoryInstance *F
 
 // animalByCardNum is used to assign animal to a card number
@@ -137,7 +138,7 @@ var animalByCardNum = map[int]card.UbongoAnimal{
 	36: card.Warthog,
 }
 
-// Creates all easy cards of a specific card (as many as there are keys in the blocks-map)
+// createEasyCard creates all easy problems of a specific card (as many as there are keys in the blocks-map)
 func createEasyCard(cardNum int, topShape, bottomShape *array2d.A, blocks map[int]*blockset.S, f *blockfactory.F) *card.C {
 	problems := make(map[int]*problem.P)
 
@@ -154,7 +155,7 @@ func createEasyCard(cardNum int, topShape, bottomShape *array2d.A, blocks map[in
 	return card.New(cardNum, card.Easy, animalByCardNum[cardNum], problems)
 }
 
-// Creates all difficult cards of a specific card (as many as there are keys in the blocks-map)
+// createDifficultCard creates all difficult problems of a specific card (as many as there are keys in the blocks-map)
 func createDifficultCard(cardNum int, topShape, bottomShape *array2d.A, blocks map[int]*blockset.S, f *blockfactory.F) *card.C {
 	problems := make(map[int]*problem.P)
 
@@ -171,8 +172,8 @@ func createDifficultCard(cardNum int, topShape, bottomShape *array2d.A, blocks m
 	return card.New(cardNum, card.Difficult, animalByCardNum[cardNum], problems)
 }
 
-// Creates all the problems from the original Ubongo game with the difficulty 'Easy'
-// Returns a slice with 144 elements
+// createAllEasyCards creates all the cards and with problems from the original Ubongo game with the difficulty 'Easy'
+// Returns a slice with 36 elements (and a total of 144 problems)
 func createAllEasyCards(f *blockfactory.F) []*card.C {
 	cards := make([]*card.C, 0)
 
@@ -495,8 +496,8 @@ func createAllEasyCards(f *blockfactory.F) []*card.C {
 	return cards
 }
 
-// Creates all the problems from the original Ubongo game with the difficulty 'Easy'
-// Returns a slice with 144 elements
+// createAllDifficultCards creates all the cards and problems from the original Ubongo game with the difficulty 'Easy'
+// Returns a slice with 36 elements (and a total of 360 problems)
 func createAllDifficultCards(f *blockfactory.F) []*card.C {
 	cards := make([]*card.C, 0)
 

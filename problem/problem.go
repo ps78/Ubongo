@@ -1,3 +1,4 @@
+// Package problem contains the type P(roblem) and its methods
 package problem
 
 import (
@@ -26,12 +27,16 @@ type P struct {
 	Blocks *blockset.S
 }
 
-// Returns a string representation of the problem
-func (p P) String() string {
-	return fmt.Sprintf("Problem: %d blocks, area %d, height %d", p.Blocks.Count, p.Area, p.Height)
+// String returns a string representation of the problem
+func (p *P) String() string {
+	if p == nil {
+		return "(nil)"
+	} else {
+		return fmt.Sprintf("Problem: %d blocks, area %d, height %d", p.Blocks.Count, p.Area, p.Height)
+	}
 }
 
-// Creates a problem instance
+// New creates a problem instance
 func New(shape *array2d.A, height int, blocks *blockset.S) *P {
 	var p *P = new(P)
 
@@ -44,28 +49,32 @@ func New(shape *array2d.A, height int, blocks *blockset.S) *P {
 	return p
 }
 
-// IsEqual returns true of o contains the same data as p
-func (p *P) IsEqual(o *P) bool {
+// Equals returns true of o contains the same data as p
+func (p *P) Equals(o *P) bool {
 	if o == nil {
 		return false
 	} else {
 		return p.Area == o.Area &&
 			p.Height == o.Height &&
 			p.BoundingBox == o.BoundingBox &&
-			p.Shape.IsEqual(o.Shape) &&
-			p.Blocks.IsEqual(o.Blocks)
+			p.Shape.Equals(o.Shape) &&
+			p.Blocks.Equals(o.Blocks)
 	}
 }
 
 // Clone creates a deep copy of a problem
 func (p *P) Clone() *P {
-	var n *P = new(P)
+	if p == nil {
+		return nil
+	} else {
+		var n *P = new(P)
 
-	n.Shape = p.Shape.Clone()
-	n.Blocks = p.Blocks.Clone()
-	n.Height = p.Height
-	n.Area = p.Area
-	n.BoundingBox = p.BoundingBox
+		n.Shape = p.Shape.Clone()
+		n.Blocks = p.Blocks.Clone()
+		n.Height = p.Height
+		n.Area = p.Area
+		n.BoundingBox = p.BoundingBox
 
-	return n
+		return n
+	}
 }

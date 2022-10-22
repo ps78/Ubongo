@@ -22,7 +22,7 @@ func TestGameSolutionCreateImage(t *testing.T) {
 	width := 400
 	height := 300
 
-	img := CreateImage(solutions[0], width, height, 0, 0, 0, 0.1)
+	img := RenderSolution(solutions[0], width, height, 0, 0, 0, 0.1)
 
 	assert.NotNil(t, img)
 	assert.Equal(t, width, img.Bounds().Dx())
@@ -40,7 +40,7 @@ func TestRenderAll(t *testing.T) {
 	maxBlackRatio := 0.98
 
 	// read back the images that were created
-	files := RenderAll(f.GetAll(), dir, width, height)
+	files := RenderBlockset(f.GetAll(), dir, width, height)
 	assert.Equal(t, 16, len(files))
 	for _, file := range files {
 		infile, err := os.Open(file)
