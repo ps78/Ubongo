@@ -238,20 +238,19 @@ func SaveAsPng(img image.Image, path string) error {
 }
 
 // Visualize shows a gamesolution on the screen using the Fyne library
-func Visualize(gs *gamesolution.S) {
+// Note this blocks the main thread and can only be called once
+// during program execution
+func Visualize(gs *gamesolution.S, imgWidth, imgHeight int) {
 
 	updateImage := func(win fyne.Window, sol *gamesolution.S, w, h int, rx, ry, rz float64) {
 		img := RenderSolution(sol, w, h, rx, ry, rz, 0.1)
 		win.SetContent(canvas.NewImageFromImage(img))
 	}
 
-	a := app.New()
-	w := a.NewWindow("Ubongo")
-	imgWidth := 800
-	imgHeight := 600
-
-	w.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
-	updateImage(w, gs, imgWidth, imgHeight, 0, 0, 0)
+	appInstance := app.New()
+	win := appInstance.NewWindow("Ubongo")
+	win.Resize(fyne.NewSize(float32(imgWidth), float32(imgHeight)))
+	updateImage(win, gs, imgWidth, imgHeight, 0, 0, 0)
 
 	var RX, RY, RZ float64 = math.Pi / 2, 0.0, 0.0
 	go func() {
@@ -263,7 +262,7 @@ func Visualize(gs *gamesolution.S) {
 		for range time.Tick(time.Millisecond) {
 			timePassed := float64(time.Since(lastFrame).Seconds())
 			if timePassed >= minFrameTime {
-				updateImage(w, gs, imgWidth, imgHeight, RX, RY, RZ)
+				updateImage(win, gs, imgWidth, imgHeight, RX, RY, RZ)
 				RX += speedRx * timePassed
 				RY += speedRy * timePassed
 				RZ += speedRz * timePassed
@@ -272,5 +271,5 @@ func Visualize(gs *gamesolution.S) {
 		}
 	}()
 
-	w.ShowAndRun()
+	win.ShowAndRun()
 }

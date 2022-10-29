@@ -241,7 +241,8 @@ func menuOptionVisualizeSolution(cli *Cli) {
 
 	fmt.Printf("Showing solution of %s problem on card %d, dice %d (solution %d out of %d)", difficulty, cardNumber, diceNumber, solutionNumber+1, len(sols))
 
-	graphics.Visualize(gs)
+	graphics.Visualize(gs, 800, 600)
+	cli.doQuitFlag = true // we cannot continue with the cli because the Fyne-App is not reusalbe once closed
 }
 
 func menuOptionQuit(cli *Cli) {
