@@ -239,7 +239,8 @@ func menuOptionVisualizeSolution(cli *Cli) {
 	sols := game.New(cf.Get(difficulty, cardNumber).Problems[diceNumber]).Solve()
 	gs := sols[solutionNumber]
 
-	fmt.Printf("Showing solution of %s problem on card %d, dice %d (solution %d out of %d)", difficulty, cardNumber, diceNumber, solutionNumber+1, len(sols))
+	fmt.Printf("Showing solution of %s problem on card %d, dice %d (solution %d out of %d)\n",
+		difficulty, cardNumber, diceNumber, solutionNumber+1, len(sols))
 
 	graphics.Visualize(gs, 800, 600)
 	cli.doQuitFlag = true // we cannot continue with the cli because the Fyne-App is not reusalbe once closed
