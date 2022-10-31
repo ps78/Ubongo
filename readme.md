@@ -30,10 +30,14 @@ All results generated will be stored in `./results`:
 
 ## Dependencies
 
-The following packages are used by the project:
+The following packages are used by the project (you need to install these first):
 
 - Pinhole <https://github.com/tidwall/pinhole>: Allows drawing simple 3D wireframe graphics
 - Fyne <https://fyne.io>: Is a fully fletched GUI framework for Go. We only use it to display a solution rendered with Pinhole on screen
+
+## Known Issues and Limitations
+
+This is a command-line application. The GUI framework Fyne is only used to visualize a solution. Once this has been done and the window was closed, it cannot be opened again without restarting the CLI. A future version of the program might use Fyne as a user interface entirely.
 
 ## Notes
 
