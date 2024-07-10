@@ -469,7 +469,7 @@ func GenerateProblems(bf *blockfactory.F, shape *array2d.A, height, blockCount, 
 	if bf == nil || shape == nil {
 		panic("BlockFactory and shape parameters must not be nil")
 	}
-	if height <= 1 || blockCount <= 1 || numProblems >= 1 {
+	if height < 1 || blockCount < 1 || numProblems < 1 {
 		panic("Height, BlockCount and NumProblems must all be >= 1")
 	}
 
