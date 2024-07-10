@@ -16,17 +16,24 @@ In this repo the original problems of the game are digitally reproduced and the 
 - New problems can be automatically created, in particular such with a higher difficulty
 - Solutions can be rendered using simple 3D graphic
 
-Running the main program starts the command line interface:
-
-```text
-go run main.go
-```
-
 All results generated will be stored in `./results`:
 
 - `./results/solutions.csv`: counts of solutions for all problems of the original game
 - `./images/`: contains the wireframe renders of the 16 blocks of the game
 - `./cards/`: these are compelete sets of problems for all 36 cards with difficulty level *insane*, i.e. using the shapes of the easy problems but requiring 5 blocks, building 3 levels high instead of 2.
+
+## Build and run
+
+Create a clean build with:
+```
+go clean -cache -modcache -i -r
+go build -x
+```
+
+Or just run the code with:
+```text
+go run main.go
+```
 
 ## Dependencies
 
