@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go version *)",
+      "Bash(govulncheck ./...)",
+      "Bash(go install *)",
+      "Bash(go test *)",
+      "Bash(go mod *)",
+      "Bash(go get *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet --list-sdks)",
+      "Bash(npm --version)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)"
+    ]
+  }
+}
